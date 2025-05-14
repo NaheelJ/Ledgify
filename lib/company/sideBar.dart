@@ -1,8 +1,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ledgifi/company/finantial%20operations/ledgersInFinantialOperationsScreen.dart';
+import 'package:ledgifi/company/internal%20transfer/internalTransferScreen.dart';
 import 'package:ledgifi/company/loginScreen.dart';
 import 'package:ledgifi/company/paymentPortalScreen.dart';
+import 'package:ledgifi/company/purchaseRecordScreen/purchaseRecordScreen.dart';
+import 'package:ledgifi/company/purchaseRecordScreen/ventorsScreen.dart';
+import 'package:ledgifi/company/receiptPortalScreen.dart';
+import 'package:ledgifi/company/reports/balanceSheet.dart';
+import 'package:ledgifi/company/reports/dayBookScreen.dart';
+import 'package:ledgifi/company/reports/ledgersScreenInReports.dart';
 import 'package:ledgifi/constants/myColors.dart';
 import 'package:provider/provider.dart';
 
@@ -12,17 +20,17 @@ class DashboardScreenForAdmin extends StatelessWidget {
 
   final List<Widget> sections = const [
     LoginScreenCompany(),
-    LoginScreenCompany(),
-    LoginScreenCompany(),
+    PurchaseRecordScreen(),
+    VendorsInPurchaseScreen(),
     LoginScreenCompany(),
     LoginScreenCompany(),
     PaymentPortalScreen(),
-    LoginScreenCompany(),
-    LoginScreenCompany(),
-    LoginScreenCompany(),
-    LoginScreenCompany(),
-    LoginScreenCompany(),
-    LoginScreenCompany(),
+    ReceiptPortalScreen(),
+    InternalTransferScreen(),
+    DayBookScreenInReport(),
+    LedgerScreenInReports(),
+    BalanceSheetScreen(),
+    LedgersInFinantialOperationsScreen(),
     LoginScreenCompany(),
     LoginScreenCompany(),
   ];

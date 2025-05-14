@@ -30,33 +30,9 @@ class PurchaseRecordScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: clwhite, // or Colors.white
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFFEBEBEB),
-                      width: 0.8,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0x14000000),
-                        blurRadius: 16,
-                        offset: Offset(0, 0),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: Icon(
-                    CupertinoIcons.back,
-                    size: 25,
-                    color: Colors.black, // optional
-                  ),
-                ),
-                SizedBox(width: 16,),
 
                 Text(
-                  'New Transfer',
+                  'Purchase Records ',
                   style: GoogleFonts.notoSans(
                     fontWeight: FontWeight.w600,
                     fontSize: 19,
