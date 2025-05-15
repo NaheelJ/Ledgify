@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/myColors.dart';
-import '../../providers/mainProvider.dart';
+import '../../../constants/myColors.dart';
+import '../../../providers/mainProvider.dart';
+
+
 
 class NewTransferScreen extends StatelessWidget {
   const NewTransferScreen({super.key});

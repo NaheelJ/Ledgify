@@ -16,5 +16,7 @@ const clFAFAFA= Color(0xFFFAFAFA);
 const cl5856D6= Color(0xFF5856D6);
 const cl808080= Color(0xFF808080);
 const clF34745= Color(0xFFF34745);
+const clCCCCCC= Color(0xFFCCCCCC);
+const clE5E5EF= Color(0xFFE5E5EF);
 
 

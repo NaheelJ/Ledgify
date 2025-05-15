@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../constants/myColors.dart';
 
@@ -46,8 +49,17 @@ void dispose() {
   invoiceDateFocusNode.dispose();
   billAmountFocusNode.dispose();
   paidAmountFocusNode.dispose();
+  createJournalNode.dispose();
   super.dispose();
 }
+
+final FocusNode createJournalNode = FocusNode();
+
+TextFieldJornalFocusProvider() {
+  createJournalNode.addListener(_onFocusChange);
+}
+
+
 
 
 /// purchase records
@@ -153,4 +165,194 @@ void setPayable(String value) {
   }
 
 
+  /// add purchase
+
+
+  String _selectedCurrency = 'zł';
+
+  String get selectedCurrency => _selectedCurrency;
+
+  void setCurrency(String currency) {
+    _selectedCurrency = currency;
+    notifyListeners(); // Triggers UI rebuild
+  }
+
+  // Add other properties like focusNode and borderColor
+  final FocusNode billAmount2FocusNode = FocusNode();
+  final Color borderColor2 = Colors.grey;
+
+
+  // date
+  TextEditingController dueDateController = TextEditingController();
+
+  DateTime? _invoiceAddDate;
+
+  DateTime? get invoiceAddDate => _invoiceAddDate;
+
+  void setInvoiceAddDate(DateTime date) {
+    _invoiceAddDate = date;
+    notifyListeners();
+  }
+  DateTime? _dueAddDate;
+
+  DateTime? get dueAddDate => _dueAddDate;
+
+  void setDueAddDate(DateTime date) {
+    _dueDate = date;
+    notifyListeners();
+  }
+
+  //
+
+  File? _invoiceImage;
+  File? get invoiceImage => _invoiceImage;
+
+  void setImageInInvoiceImage(File image) {
+    _invoiceImage = image;
+    notifyListeners();
+  }
+
+  void clearImageInInvoiceImage() {
+    _invoiceImage = null;
+    notifyListeners();
+  }
+
+  void showImagePicker(BuildContext context) {
+    final ImagePicker picker = ImagePicker();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      builder: (BuildContext bottomSheetContext) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt,color: cl8F1A3F,),
+                title: const Text('Take Photo'),
+                onTap: () async {
+                  final XFile? picked =
+                  await picker.pickImage(source: ImageSource.camera);
+                  if (picked != null) {
+                  /*  if(from=='expatriateIssueReporting'){
+                      setImageInExpatriateIssueReporting(File(picked.path));
+                    }else if(from=='generalIssueReporting'){
+                      setImage(File(picked.path));
+                    }else if(from=='adminUploadImage'){
+                      setImageInUploadImage(File(picked.path));
+                    }*/
+                    setImageInInvoiceImage(File(picked.path));
+
+                  }
+                  Navigator.of(bottomSheetContext).pop();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library,color: cl8F1A3F,),
+                title: const Text('Choose from Gallery'),
+                onTap: () async {
+                  final XFile? picked =
+                  await picker.pickImage(source: ImageSource.gallery);
+                  if (picked != null) {
+                    /*if(from=='expatriateIssueReporting'){
+                      setImageInExpatriateIssueReporting(File(picked.path));
+                    }else if(from=='generalIssueReporting'){
+                      setImage(File(picked.path));
+                    }else if(from=='adminUploadImage'){
+                      setImageInUploadImage(File(picked.path));
+                    }*/
+                    setImageInInvoiceImage(File(picked.path));
+                  }
+                  Navigator.of(bottomSheetContext).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+// sales records date
+
+  DateTime? _invoiceSalesDate;
+
+  DateTime? get invoiceSalesDate => _invoiceSalesDate;
+
+  void setInvoiceSalesDate(DateTime date) {
+    _invoiceSalesDate = date;
+    notifyListeners();
+  }
+  DateTime? _dueSalesDate;
+
+  DateTime? get dueSalesDate => _dueSalesDate;
+
+  void setDueSalesDate(DateTime date) {
+    _dueSalesDate = date;
+    notifyListeners();
+  }
+
+  String _receivables= 'Receivables';
+
+  String get receivables => _receivables;
+
+  void setReceivables(String value) {
+    _receivables = value;
+    notifyListeners();
+  }
+
+// dash Board Expense chart
+
+  final List<Expense> _expenses = [
+    Expense(category: 'Purchase', amount: 980254),
+    Expense(category: 'Travel', amount: 730684),
+    Expense(category: 'Salary', amount: 720684),
+    Expense(category: 'Rent', amount: 685754),
+    Expense(category: 'Utilities', amount: 590254),
+    Expense(category: 'Taxes', amount: 580999),
+    Expense(category: 'Maintenance', amount: 305999),
+    Expense(category: 'Advertising', amount: 304875),
+    Expense(category: 'Services', amount: 300875),
+  ];
+
+  List<Expense> get expenses => _expenses;
+
+  double get totalExpenses => _expenses.fold(0, (sum, expense) => sum + expense.amount);
+
+  // This calculates the maximum Y value for the chart based on the highest expense
+  double get maxExpenseValue {
+    final maxAmount = _expenses.map((e) => e.amount).reduce((a, b) => a > b ? a : b);
+    // Convert to "L" units as shown in chart and round up to nearest 1.5L increment
+    return ((maxAmount / 100000) / 1.5).ceil() * 1.5;
+  }
+
+  void addExpense(Expense expense) {
+    _expenses.add(expense);
+    notifyListeners();
+  }
+
+  void updateExpense(int index, Expense expense) {
+    if (index >= 0 && index < _expenses.length) {
+      _expenses[index] = expense;
+      notifyListeners();
+    }
+  }
+
+  void removeExpense(int index) {
+    if (index >= 0 && index < _expenses.length) {
+      _expenses.removeAt(index);
+      notifyListeners();
+    }
+  }
+
+}
+
+
+
+
+class Expense {
+  final String category;
+  final double amount;
+
+  Expense({required this.category, required this.amount});
 }

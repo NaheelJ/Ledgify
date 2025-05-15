@@ -5,8 +5,8 @@ import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
 
-class PurchaseRecordScreen extends StatelessWidget {
-  const PurchaseRecordScreen({super.key});
+class SalesRecordScreen extends StatelessWidget {
+  const SalesRecordScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,184 +18,209 @@ class PurchaseRecordScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: clwhite,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(125),
+        preferredSize: const Size.fromHeight(180),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               border: Border.all(color: const Color(0xFFD5D7DA)),
               borderRadius: BorderRadius.circular(8),
               color: Colors.white,
             ),
-            child: Row(
-              children: [
-
-                Text(
-                  'Purchase Records ',
-                  style: GoogleFonts.notoSans(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 19,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 16),
-
-                // Search Field
-                Expanded(
-                  child: buildSearchTextField()
-                ),
-
-                const SizedBox(width: 16),
-                Expanded(child: Consumer<MainProvider>(
-                  builder: (context,mainProvider,chid) {
-                    return _buildDateBox(imagePath: 'asset/icons/calenderIcon.png', hint: 'Invoice Date', context: context,
-                      selectedDate: mainProvider.invoiceDate,
-                      onDateSelected: (date) => mainProvider.setInvoiceDate(date),);
-                  }
-                )),
-
-                const SizedBox(width: 16),
-
-                // Payable Dropdown
-                Expanded(child: Consumer<MainProvider>(
-                  builder: (context,mainProvider,child) {
-                    return _buildDateBox(imagePath: 'asset/icons/calenderIcon.png', hint: 'Due Date', context: context,
-                      selectedDate: mainProvider.dueDate,
-                      onDateSelected: (date) => mainProvider.setDueDate(date),);
-                  }
-                )),
-
-                const SizedBox(width: 16),
-
-                // Invoice Date Picker
-                Consumer<MainProvider>(
-                  builder: (context,mainProvider,child) {
-                    return Expanded(
-                      child:   _buildDropdown(
-                        context,
-                        value: mainProvider.priority,
-                        items: ['Priority', 'High', 'Medium', 'Low'],
-                        onChanged: (val) => mainProvider.setPriority(val!),
-                      ),
-                    );
-                  }
-                ),
-
-                const SizedBox(width: 16),
-
-                // Due Date Picker
-                Expanded(
-                  child: Consumer<MainProvider>(
-                    builder: (context,mainProvider,child) {
-                      return _buildDropdown(
-                        context,
-                        value: mainProvider.payable,
-                        items: ['Payable', 'Yes', 'No'],
-                        onChanged: (val) => mainProvider.setPayable(val!),
-                      );
-                    }
-                  ),
-                ),
-
-                const SizedBox(width: 16),
-
-                // Priority Dropdown
-
-
-                // Apply Button
-                SizedBox(
-                  width: 150,
-                  height: 45,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Save action
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: cl8F1A3F,
-                      foregroundColor: Colors.white,
-                      side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 0,
-                    ),
-                    child:  Text(
-                      "Apply",
-                        style: GoogleFonts.notoSans(
-                          textStyle: TextStyle(
-                            color: clwhite,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ))
-                  ),
-                ),
-
-                const SizedBox(width: 16),
-
-                // Reset Icon
-                Image.asset('asset/icons/resetIcon.png',scale: 3.5,),
-
-                const SizedBox(width: 20),
-
-
-                // PDF Icon
-                Image.asset('asset/icons/pdfIcon.png',scale: 3.7,),
-
-                const SizedBox(width: 16),
-
-                // Add Invoice Button
-                Expanded(
-                  child: SizedBox(
-                    width: 150,
-                    height: 45,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Save action
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: cl8F1A3F,
-                        foregroundColor: Colors.white,
-                        side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        elevation: 0,
-                      ),
-                      child:  Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                    child: IntrinsicWidth(
+                      child: Wrap(
+                        spacing: 16,
+                        runSpacing: 12,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        alignment: WrapAlignment.start,
                         children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: clwhite, // or Colors.white
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFFEBEBEB),
+                                width: 0.8,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0x14000000),
+                                  blurRadius: 16,
+                                  offset: Offset(0, 0),
+                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            child:  Icon(
+                              CupertinoIcons.back,
+                              size: 24,
+                              color: Colors.black, // optional
+                            ),
+                          ),
+                          //  SizedBox(width: 12,),
+
+                          // Title
                           Text(
-                            "+ ",
+                            'Sales Records',
                             style: GoogleFonts.notoSans(
-                              textStyle: TextStyle(
-                                color: clwhite,
-                                fontSize: 19,
-                                fontWeight: FontWeight.w800,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 19,
+                              color: Colors.black,
+                            ),
+                          ),
+                          SizedBox(width: 10,),
+
+                          // Search Field
+                          SizedBox(
+                            width: 200,
+                            child: buildSearchTextField(),
+                          ),
+
+                          // Invoice Date
+                          SizedBox(
+                            width: 180,
+                            child: Consumer<MainProvider>(
+                              builder: (context, mainProvider, child) {
+                                return _buildDateBox(
+                                  imagePath: 'asset/icons/calenderIcon.png',
+                                  hint: 'Invoice Date',
+                                  context: context,
+                                  selectedDate: mainProvider.invoiceSalesDate,
+                                  onDateSelected: (date) => mainProvider.setInvoiceSalesDate(date),
+                                );
+                              },
+                            ),
+                          ),
+
+                          // Due Date
+                          SizedBox(
+                            width: 180,
+                            child: Consumer<MainProvider>(
+                              builder: (context, mainProvider, child) {
+                                return _buildDateBox(
+                                  imagePath: 'asset/icons/calenderIcon.png',
+                                  hint: 'Due Date',
+                                  context: context,
+                                  selectedDate: mainProvider.dueSalesDate,
+                                  onDateSelected: (date) => mainProvider.setDueSalesDate(date),
+                                );
+                              },
+                            ),
+                          ),
+
+                          // Priority Dropdown
+                          SizedBox(
+                            width: 150,
+                            child: Consumer<MainProvider>(
+                              builder: (context, mainProvider, child) {
+                                return _buildDropdown(
+                                  context,
+                                  value: mainProvider.receivables,
+                                  items: ['Receivables', 'a', 'b', 'c'],
+                                  onChanged: (val) => mainProvider.setReceivables(val!),
+                                );
+                              },
+                            ),
+                          ),
+
+                          // Apply Button
+                          SizedBox(
+                            width: 100,
+                            height: 45,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // Save action
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: cl8F1A3F,
+                                foregroundColor: Colors.white,
+                                side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                elevation: 0,
                               ),
-                            )
-                          ), Text(
-                            "Add Invoice",
-                            style: GoogleFonts.notoSans(
-                              textStyle: TextStyle(
-                                color: clwhite,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
+                              child: Text(
+                                "Apply",
+                                style: GoogleFonts.notoSans(
+                                  textStyle: TextStyle(
+                                    color: clwhite,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ),
-                            )
+                            ),
+                          ),
+
+                          // Reset Icon
+                          Image.asset('asset/icons/resetIcon.png', scale: 3.5),
+
+                          // PDF Icon
+                          Image.asset('asset/icons/pdfIcon.png', scale: 3.7),
+
+                          // Add Invoice Button
+                          SizedBox(
+                            width: 180,
+                            height: 45,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // Add Invoice action
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: cl8F1A3F,
+                                foregroundColor: Colors.white,
+                                side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "+ ",
+                                    style: GoogleFonts.notoSans(
+                                      textStyle: TextStyle(
+                                        color: clwhite,
+                                        fontSize: 19,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    "Add Sales",
+                                    style: GoogleFonts.notoSans(
+                                      textStyle: TextStyle(
+                                        color: clwhite,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
-
-              ],
+                );
+              },
             ),
           ),
         ),
       ),
+
 
       body: Column(
         children: [
@@ -203,34 +228,44 @@ class PurchaseRecordScreen extends StatelessWidget {
           // Table content
           Expanded(
             child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Column(
-                    children: [
-                      SingleChildScrollView(
-                        child: Container(
-                          width: 2200,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: clE9EAEB), // Outer border
-                            borderRadius: BorderRadius.circular(10),),
-                          child: Column(
-                            children: [
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,                                child: Column(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Column(
+                children: [
+                  SingleChildScrollView(
+                    child: Container(
+                      width: 2500,
+                      height: height/1.17,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: clE9EAEB), // Outer border
+                        borderRadius: BorderRadius.circular(10),),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     // Table Header
                                     Container(
-                                      width: 2200, // Sum of all column widths
+                                      width: 2500, // Sum of all column widths
                                       height: 44,
                                       padding: const EdgeInsets.symmetric(horizontal: 10,),
                                       decoration: BoxDecoration(
+                                        border: const Border(
+                                          bottom: BorderSide(
+                                            color: clE9EAEB,
+                                            width: 1,
+                                          ),
+                                        ),
                                         color: Colors.white,
                                         borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10)),
                                       ),
                                       child: Row(
                                         children: [
                                           SizedBox(
-                                            width: 120,
+                                            width: 90,
                                             child: Text(
                                                 "Sl.No",
                                                 style: GoogleFonts.notoSans(
@@ -243,7 +278,7 @@ class PurchaseRecordScreen extends StatelessWidget {
                                             ),
                                           ),
                                           SizedBox(
-                                            width: 210,
+                                            width: 190,
                                             child: Text(
                                                 "Invoice Date",
                                                 style: GoogleFonts.notoSans(
@@ -256,7 +291,7 @@ class PurchaseRecordScreen extends StatelessWidget {
                                             ),
                                           ),
                                           SizedBox(
-                                            width: 210,
+                                            width: 200,
                                             child: Text(
                                                 "Invoice Number",
                                                 style: GoogleFonts.notoSans(
@@ -269,74 +304,10 @@ class PurchaseRecordScreen extends StatelessWidget {
                                             ),
                                           ),
                                           SizedBox(
-                                            width: 210,
+                                            width: 200,
                                             child: Text(
-                                                "Bill Amount",
-                                                style: GoogleFonts.notoSans(
-                                                  textStyle: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w500,
-                                                      color: clblack
-                                                  ),
-                                                )
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 210,
-                                            child: Text(
-                                                "Hospital Name",
-                                                style: GoogleFonts.notoSans(
-                                                  textStyle: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w500,
-                                                      color: clblack
-                                                  ),
-                                                )
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 210,
-                                            child: Text(
-                                                "Balance",
-                                                style: GoogleFonts.notoSans(
-                                                  textStyle: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w500,
-                                                      color: clblack
-                                                  ),
-                                                )
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 210,
-                                            child: Text(
-                                                "Priority",
-                                                style: GoogleFonts.notoSans(
-                                                  textStyle: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w500,
-                                                      color: clblack
-                                                  ),
-                                                )
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 210,
-                                            child: Text(
-                                                "Settlement",
-                                                style: GoogleFonts.notoSans(
-                                                  textStyle: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w500,
-                                                      color: clblack
-                                                  ),
-                                                )
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 210,
-                                            child: Text(
-                                                "Due Date",
+                                                "Total Amount",
+                                                textAlign: TextAlign.end,
                                                 style: GoogleFonts.notoSans(
                                                   textStyle: TextStyle(
                                                       fontSize: 16,
@@ -349,6 +320,70 @@ class PurchaseRecordScreen extends StatelessWidget {
                                           SizedBox(
                                             width: 200,
                                             child: Text(
+                                                "Paid Amount",
+                                                textAlign: TextAlign.end,
+                              
+                                                style: GoogleFonts.notoSans(
+                                                  textStyle: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight: FontWeight.w500,
+                                                      color: clblack
+                                                  ),
+                                                )
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 16),
+                                            child: SizedBox(
+                                              width: 200,
+                                              child: Text(
+                                                  "Balance",
+                                                  textAlign: TextAlign.end,
+                              
+                                                  style: GoogleFonts.notoSans(
+                                                    textStyle: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight: FontWeight.w500,
+                                                        color: clblack
+                                                    ),
+                                                  )
+                                              ),
+                                            ),
+                                          ),
+                              
+                              
+                                          SizedBox(
+                                            width: 190,
+                                            child: Text(
+                                                textAlign: TextAlign.center,
+                                                "Settlement",
+                                                style: GoogleFonts.notoSans(
+                                                  textStyle: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight: FontWeight.w500,
+                                                      color: clblack
+                                                  ),
+                                                )
+                                            ),
+                                          ),
+                              
+                                          SizedBox(
+                                            width: 310,
+                                            child: Text(
+                                                "Customer Name",
+                                                style: GoogleFonts.notoSans(
+                                                  textStyle: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight: FontWeight.w500,
+                                                      color: clblack
+                                                  ),
+                                                )
+                                            ),
+                                          ),
+                              
+                                          SizedBox(
+                                            width: 180,
+                                            child: Text(
                                                 "Narration",
                                                 style: GoogleFonts.notoSans(
                                                   textStyle: TextStyle(
@@ -360,29 +395,53 @@ class PurchaseRecordScreen extends StatelessWidget {
                                             ),
                                           ),
                                           SizedBox(
-                                            width: 160,
-                                            child: Text('View Invoice'),
+                                            width: 190,
+                                            child: Text(
+                                                "Due Date",
+                                                style: GoogleFonts.notoSans(
+                                                  textStyle: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight: FontWeight.w500,
+                                                      color: clblack
+                                                  ),
+                                                )
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 180,
+                                            child: Text('View Invoice',
+                                                textAlign: TextAlign.start,
+                                                style: GoogleFonts.notoSans(
+                              
+                              
+                                                    textStyle: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight: FontWeight.w500,
+                                                        color: clblack
+                                                    ))),
                                           ),
                                         ],
                                       ),
                                     ),
-
+                              
                                     // Table Rows
                                     Column(
-                                      children: _buildTravelersPaymentRows(context),
+                                      children: _buildPurchaseRecordRows(context),
                                     ),
                                   ],
                                 ),
                               ),
-                              buildPagination(),
-                            ],
+                            ),
                           ),
-                        ),
+                          buildPagination(),
+                        ],
                       ),
-
-                    ],
+                    ),
                   ),
-                ),
+
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -401,24 +460,24 @@ class PurchaseRecordScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-         Image.asset('asset/icons/searchIcon.png',scale: 4,),
+          Image.asset('asset/icons/searchIcon.png',scale: 4,),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search',
                 hintStyle:  GoogleFonts.notoSans(
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-                color: cl666666,
-              ),
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16,
+                  color: cl666666,
+                ),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
               ),
               style: GoogleFonts.notoSans(
                 fontWeight: FontWeight.w400,
-                fontSize: 14,
+                fontSize: 16,
                 color: cl666666,
               ),
             ),
@@ -437,7 +496,7 @@ class PurchaseRecordScreen extends StatelessWidget {
       }) {
     return Container(
       height: 45,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: clFAFAFA,
         border: Border.all(color: Colors.grey.shade400),
@@ -450,7 +509,7 @@ class PurchaseRecordScreen extends StatelessWidget {
           icon: Image.asset('asset/icons/arrowDown.png',scale: 4,),
           style: GoogleFonts.notoSans(
             fontWeight: FontWeight.w400,
-            fontSize: 14,
+            fontSize: 16,
             color: cl666666,
           ),
           onChanged: onChanged,
@@ -499,7 +558,7 @@ class PurchaseRecordScreen extends StatelessWidget {
                   : hint,
               style: GoogleFonts.notoSans(
                 fontWeight: FontWeight.w400,
-                fontSize: 14,
+                fontSize: 16,
                 color: cl666666,
               ),
             ),
@@ -525,14 +584,14 @@ class PurchaseRecordScreen extends StatelessWidget {
   Widget buildPagination() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10),
-      width: 2200,
+      width: 2500,
       child: Row(
         children: [
           Align(
               alignment: Alignment.centerLeft,
               child: Text('Total : 10',style:  GoogleFonts.inter(
                 fontWeight: FontWeight.w500,
-                fontSize: 14,
+                fontSize: 16,
                 color: cl666666,
               ),)),
           Expanded(
@@ -540,7 +599,7 @@ class PurchaseRecordScreen extends StatelessWidget {
               alignment: Alignment.center,
               child: Container(
                 height: 50,width: 500,
-               /* decoration: const BoxDecoration(
+                /* decoration: const BoxDecoration(
                   boxShadow: [
                     BoxShadow(
                       color: Color(0x1F000000),
@@ -622,103 +681,83 @@ class PurchaseRecordScreen extends StatelessWidget {
       ),
     );
   }}
-List<Widget> _buildTravelersPaymentRows(BuildContext context) {
+
+List<Widget> _buildPurchaseRecordRows(BuildContext context) {
   var width = MediaQuery.of(context).size.width;
 
   // Dummy data
   final List<Map<String, String>> dummyList = [
     {
-      'slNo': '1',
       'invoiceDate': '12-04-2025',
       'invoiceNumber': 'INV001',
-      'billAmount': 'zł1,000',
-      'paidAmount': '₹0',
-      'balance': '₹1,000',
-      'priority': 'High',
+      'totalAmount': 'zł1,000',
+      'paidAmount': 'zł0',
+      'balance': 'zł1,000',
       'settlement': 'Settlement',
+      'customerName': 'Krakow Electronics',
+      'narration': 'Narration',
       'dueDate': '12-05-2025',
-      'narration': 'Narration text',
+
     },
     {
-      'slNo': '2',
       'invoiceDate': '11-04-2025',
       'invoiceNumber': 'INV002',
-      'billAmount': 'z10,000',
-      'paidAmount': '₹0',
-      'balance': '₹1,000',
-      'priority': 'High',
+      'totalAmount': 'zł1,000',
+      'paidAmount': 'zł0',
+      'balance': 'zł1,000',
+
       'settlement': 'Settlement',
+      'customerName': 'Wawel Electronics Services',
+      'narration': 'Narration',
       'dueDate': '11-05-2025',
-      'narration': 'Narration text'
     },
     {
-      'slNo': '3',
       'invoiceDate': '10-04-2025',
       'invoiceNumber': 'INV003',
-      'billAmount': 'zł1,000',
-      'paidAmount': '₹0',
-      'balance': '₹1,000',
-      'priority': 'Medium',
+      'totalAmount': 'zł1,000',
+      'paidAmount': 'zł0',
+      'balance': 'zł1,000',
       'settlement': 'Settlement',
+      'customerName': 'Vistula Electronics',
+      'narration': 'Narration',
       'dueDate': '10-05-2025',
-      'narration': 'Narration text'
+
     },
     {
-      'slNo': '4',
       'invoiceDate': '09-04-2025',
       'invoiceNumber': 'INV004',
-      'billAmount': 'zł1,000',
-      'paidAmount': '₹0',
-      'balance': '₹1,000',
-      'priority': 'Low',
+      'totalAmount': 'zł1,000',
+      'paidAmount': 'zł0',
+      'balance': 'zł1,000',
       'settlement': 'Settlement',
+      'customerName': 'Polish Electronics Hub',
+      'narration': 'Narration',
       'dueDate': '09-05-2025',
-      'narration': 'Narration text'
+
+
     },
-    {
-      'slNo': '5',
-      'invoiceDate': '08-04-2025',
-      'invoiceNumber': 'INV005',
-      'billAmount': 'zł1,000',
-      'paidAmount': 'zł2,500',
-      'balance': 'zł1,500',
-      'priority': 'High',
-      'settlement': 'Settlement',
-      'dueDate': '08-05-2025',
-      'narration': 'Narration text'
-    },
-    {
-      'slNo': 'Total',
-      'invoiceDate': '',
-      'invoiceNumber': '',
-      'billAmount': 'zł5,000',
-      'paidAmount': 'zł2,500',
-      'balance': 'zł1,500',
-      'priority': '',
-      'settlement': '',
-      'dueDate': '',
-      'narration': ''
-    }, {
-      'slNo': 'Grand Total',
-      'invoiceDate': '',
-      'invoiceNumber': '',
-      'billAmount': 'zł5,000',
-      'paidAmount': 'zł2,500',
-      'balance': 'zł1,500',
-      'priority': '',
-      'settlement': '',
-      'dueDate': '',
-      'narration': ''
-    },
-    // Add more items as needed
   ];
 
   return dummyList.asMap().entries.map((entry) {
     final index = entry.key;
     final item = entry.value;
 
+    // Auto-generate slNo based on index for regular rows
+    String slNo = '';
+    if (index < 10) {
+      // Regular row
+      slNo = (index + 1).toString();
+    } else if (index == 10) {
+      // Total row
+      slNo = 'Total';
+    } else if (index == 11) {
+      // Grand Total row
+      slNo = 'Grand Total';
+    }
+
+    final bool isTotal = index >= 10;
     return Container(
-      width: 2200,
+      width: 2500,
       height: 40,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -733,12 +772,12 @@ List<Widget> _buildTravelersPaymentRows(BuildContext context) {
       child: Row(
         children: [
           SizedBox(
-            width: 120,
+            width: 90,
             child: Text(
-              item['slNo'] ?? '',
+              slNo,
               style: GoogleFonts.notoSans(
                 textStyle: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w400,
                   color: clblack,
                 ),
@@ -746,131 +785,12 @@ List<Widget> _buildTravelersPaymentRows(BuildContext context) {
             ),
           ),
           SizedBox(
-            width: 210,
+            width: 190,
             child: Text(
               item['invoiceDate'] ?? '',
               style: GoogleFonts.notoSans(
                 textStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: clblack,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 210,
-            child: Text(
-              item['invoiceNumber'] ?? '',
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: clblack,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 210,
-            child: Text(
-              item['billAmount'] ?? '',
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: clblack,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 210,
-            child: Text(
-              item['paidAmount'] ?? '',
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: clblack,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 210,
-            child: Text(
-              item['balance'] ?? '',
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: clblack,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 210,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius:
-                  BorderRadius.circular(16),
-                border: Border.all(width: 1, color: clFD23F6D)
-              ),
-              child: Center(
-                child: Text(
-                  item['priority'] ?? '',
-                  style: GoogleFonts.notoSans(
-                    textStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: clblack,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 210,
-            child: Center(
-              child: SizedBox(
-                width: 150,
-                height: 32,
-                child: ElevatedButton(
-                    onPressed: () {
-                      // Save action
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: cl8F1A3F,
-                      foregroundColor: Colors.white,
-                      side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 0,
-                    ),
-                    child:  Text(
-                        "Settlement ",
-                        style: GoogleFonts.notoSans(
-                          textStyle: TextStyle(
-                            color: clwhite,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ))
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 210,
-            child: Text(
-              item['dueDate'] ?? '',
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w400,
                   color: clblack,
                 ),
@@ -880,10 +800,135 @@ List<Widget> _buildTravelersPaymentRows(BuildContext context) {
           SizedBox(
             width: 200,
             child: Text(
+              item['invoiceNumber'] ?? '',
+              style: GoogleFonts.notoSans(
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: clblack,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 200,
+            child: Text(
+
+              item['totalAmount'] ?? '',
+              textAlign: TextAlign.end,
+              style: GoogleFonts.notoSans(
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: clblack,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 200,
+            child: Text(
+              textAlign: TextAlign.end,
+
+              item['paidAmount'] ?? '',
+              style: GoogleFonts.notoSans(
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: clblack,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: SizedBox(
+              width: 200,
+              child: Text(
+                textAlign: TextAlign.end,
+
+                item['balance'] ?? '',
+                style: GoogleFonts.notoSans(
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: clblack,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+
+          SizedBox(
+            width: 190,
+            child: !isTotal ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal:12),
+              child: Center(
+                child: SizedBox(
+                  width: 150,
+                  height: 32,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        // Settlement action
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF8F1A3F), // Maroon color from the image
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                          "Settlement",
+                          style: GoogleFonts.notoSans(
+                            textStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )
+                      )
+                  ),
+                ),
+              ),
+            ) : SizedBox(),
+          ),
+
+          SizedBox(
+            width: 310,
+            child: Text(
+              item['customerName'] ?? '',
+              style: GoogleFonts.notoSans(
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: clblack,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 180,
+            child: Text(
               item['narration'] ?? '',
               style: GoogleFonts.notoSans(
                 textStyle: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: clblack,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 190,
+            child: Text(
+              item['dueDate'] ?? '',
+              style: GoogleFonts.notoSans(
+                textStyle: const TextStyle(
+                  fontSize: 16,
                   fontWeight: FontWeight.w400,
                   color: clblack,
                 ),
@@ -891,25 +936,25 @@ List<Widget> _buildTravelersPaymentRows(BuildContext context) {
             ),
           ),
 
-          // View Bill Button
+
+          // View Invoice Button
           SizedBox(
-            width: 160,
-            child: InkWell(
+            width: 180,
+            child: !isTotal ? InkWell(
               onTap: () {
-                // TODO: Implement bill view logic
+                // Implement invoice view logic
               },
-
-              child: Center(
-                  child: Text(
-                    'View Invoice',
-                    style: GoogleFonts.roboto(
-                      fontSize: 12,
-                      color: CupertinoColors.systemBlue,
-                    ),
-                  ),
-
+              child: Text(
+                'View Invoice',
+                textAlign: TextAlign.start,
+                style: GoogleFonts.roboto(
+                    fontSize: 16,
+                    color: cl5856D6,
+                    decoration: TextDecoration.underline,
+                    decorationColor: cl5856D6
+                ),
               ),
-            ),
+            ) : SizedBox(),
           ),
         ],
       ),
@@ -917,19 +962,3 @@ List<Widget> _buildTravelersPaymentRows(BuildContext context) {
   }).toList();
 }
 
-// Reusable text cell builder
-Widget _buildCell(String? text, double width) {
-  return SizedBox(
-    width: width,
-    child: Text(
-      text ?? '',
-      style: GoogleFonts.notoSans(
-        textStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: clblack,
-        ),
-      ),
-    ),
-  );
-}
