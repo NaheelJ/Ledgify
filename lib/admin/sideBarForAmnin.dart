@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ledgifi/admin/dashBoard/dashBoardAdmin.dart';
 import 'package:ledgifi/company/DashBoard/dashBoardScreen.dart';
 import 'package:ledgifi/company/finantial%20operations/GroupScreen.dart';
 import 'package:ledgifi/company/finantial%20operations/journalCategoriesScreen.dart';
@@ -19,27 +20,16 @@ import 'package:ledgifi/constants/myColors.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/mainProvider.dart';
-import 'journal entry/internal transfer/internalTransferScreen.dart';
-import 'journal entry/paymentPortalScreen.dart';
-import 'journal entry/receiptPortalScreen.dart';
-class SideBarScreenForCompany extends StatelessWidget {
-  SideBarScreenForCompany({super.key});
+class SideBarScreenForAdmin extends StatelessWidget {
+  SideBarScreenForAdmin({super.key});
 
-  final List<Widget> sections =  [
-    DashBoardScreen(),
+  final List<Widget> sections = [
+    DashBoardScreenAdmin(),
     PurchaseRecordScreen(),
     VendorsInPurchaseScreen(),
     SalesRecordScreen(),
     CustomersInSalesScreen(),
-    PaymentPortalScreen(),
-    ReceiptPortalScreen(),
-    InternalTransferScreen(),
     DayBookScreenInReport(),
-    LedgerScreenInReports(),
-    BalanceSheetScreen(),
-    LedgersInFinantialOperationsScreen(),
-    GroupScreen(),
-    JournalCategoriesScreen(),
   ];
 
   @override
@@ -51,7 +41,10 @@ class SideBarScreenForCompany extends StatelessWidget {
         children: [
           const SidebarForCompany(),
           Expanded(
-            child: sections[provider.selectedIndex < 0 ? 0 : provider.selectedIndex],
+            child: sections[
+            provider.selectedIndex >= 0 && provider.selectedIndex < sections.length
+                ? provider.selectedIndex
+                : 0],
           ),
         ],
       ),
@@ -69,12 +62,18 @@ class SidebarForCompany extends StatelessWidget {
 
     return Container(
       width: width / 6,
-      color: Colors.white, // ✅ Sidebar background is white
+
+      decoration: BoxDecoration(
+          color: Colors.white,
+        border:Border(right: BorderSide(color: clD5D7DA))
+      ),
       child: Padding(
         padding: const EdgeInsets.all(9),
-        child: ListView(
+        child: Column(
           children: [
             const SizedBox(height: 10),
+
+            // Top Logo Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -82,112 +81,81 @@ class SidebarForCompany extends StatelessWidget {
                 Image.asset('asset/icons/menuIcon.png', scale: 3),
               ],
             ),
-            const SizedBox(height: 20),
 
+            const SizedBox(height: 22),
+
+            // Static Items
             SidebarItem(
-              label: 'Dashboard',
+              label: 'Companies',
               selected: provider.selectedIndex == 0,
               onTap: () => provider.setSelectedIndex(0),
-              imagePath: 'asset/icons/dashBoardIcon.png',
+              imagePath: 'asset/icons/companyIcon.png',
             ),
 
-            // Staff Purchase
-            SidebarExpandable(
-              label: 'Staff Purchase',
-             imagePath: 'asset/icons/purchaseIcon.png',
-              subItems: [
-                SidebarSubItem(label: 'Purchase Records', index: 1, imagePath: 'asset/icons/purchaseRecordIcon.png'),
-                SidebarSubItem(label: 'Vendors', index: 2, imagePath: 'asset/icons/vendor.png'),
-              ],
-            ),
-
-            // Sales
-            SidebarExpandable(
-              label: 'Sales',
-             imagePath: 'asset/icons/salesicon.png',
-              subItems: [
-                SidebarSubItem(label: 'Sales Records', index: 3,imagePath: 'asset/icons/salesRecordIcon.png'),
-                SidebarSubItem(label: 'Customers', index: 4, imagePath: 'asset/icons/customesIcon.png'),
-              ],
-            ),
-
-            // Journal Entry
-            SidebarExpandable(
-              label: 'Journal Entry',
-             imagePath: 'asset/icons/journalEntryIcon.png',
-              subItems: [
-                SidebarSubItem(label: 'Payment Portal', index: 5,imagePath: 'asset/icons/paymentPortalicon.png' ),
-                SidebarSubItem(label: 'Receipt Portal', index: 6,imagePath: 'asset/icons/receiptPortalIcon.png'),
-                SidebarSubItem(label: 'Internal Transfer', index: 7, imagePath: 'asset/icons/internalTransferIcon.png'),
-              ],
-            ),
-
-            // Reports
+            // Expandable Report Items
             SidebarExpandable(
               label: 'Reports',
               imagePath: 'asset/icons/reportsIcon.png',
               subItems: [
-                SidebarSubItem(label: 'Daybook', index: 8,imagePath: 'asset/icons/dayBookIcon.png'),
-                SidebarSubItem(label: 'Ledgers', index: 9,imagePath: 'asset/icons/ledgersIcon.png'),
-                SidebarSubItem(label: 'Balance Sheet', index: 10,imagePath: 'asset/icons/balanceSheetIcon.png'),
+                SidebarSubItem(
+                    label: 'Sales Report',
+                    index: 1,
+                    imagePath: 'asset/icons/purchaseRecordIcon.png'),
+                SidebarSubItem(
+                    label: 'Vendors',
+                    index: 2,
+                    imagePath: 'asset/icons/vendor.png'),
+                SidebarSubItem(
+                    label: 'Sales Records',
+                    index: 3,
+                    imagePath: 'asset/icons/salesIcon.png'),
+                SidebarSubItem(
+                    label: 'Customers',
+                    index: 4,
+                    imagePath: 'asset/icons/customersIcon.png'),
+                SidebarSubItem(
+                    label: 'Day Book',
+                    index: 5,
+                    imagePath: 'asset/icons/daybookIcon.png'),
               ],
             ),
 
-            // Financial Operations
-            SidebarExpandable(
-              label: 'Financial Operations',
-              imagePath: 'asset/icons/finantial.png',
-              subItems: [
-                SidebarSubItem(label: 'Ledgers ', index: 11, imagePath: 'asset/icons/ledgersIcon.png'),
-                SidebarSubItem(label: 'Groups', index: 11, imagePath: 'asset/icons/groupsIcon.png'),
-              ],
+            // Users
+            SidebarItem(
+              label: 'Users',
+              imagePath: 'asset/icons/usersIcon.png',
+              selected: provider.selectedIndex == 6,
+              onTap: () => provider.setSelectedIndex(6),
             ),
 
-            // Staff Management
-            SidebarExpandable(
-              label: 'Staff Management',
-             imagePath: 'asset/icons/staffManagementicon.png',
-              subItems: [
-                SidebarSubItem(label: 'Staffs', index: 12, imagePath: 'asset/icons/staffsicon.png'),
-                SidebarSubItem(label: 'Payroll', index: 13, imagePath: 'asset/icons/payRollIcon.png'),
-              ],
-            ),
+           /* const Spacer(),
 
-            const SizedBox(height: 30),
-
-
+            // Bottom Company Info
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  border: Border(top: BorderSide(color: Colors.grey)),
+                  border: const Border(top: BorderSide(color: Colors.grey)),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child:Row(
+                child: Row(
                   children: [
-                    // Circle avatar with building icon
                     Container(
                       width: 40,
                       height: 40,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Color(0xFFF0F0F0), // light grey background
+                        color: Color(0xFFF0F0F0),
                       ),
-                      child: Center(
-                        child: Icon(
-                          Icons.apartment, // building icon
-                          size: 20,
-                          color: Colors.black54,
-                        ),
+                      child: const Center(
+                        child: Icon(Icons.apartment, size: 20, color: Colors.black54),
                       ),
                     ),
                     const SizedBox(width: 10),
-
-                    // Texts: Company name and email
-                    Column(
+                    const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           'Company A',
                           style: TextStyle(
@@ -207,9 +175,9 @@ class SidebarForCompany extends StatelessWidget {
                       ],
                     ),
                   ],
-                )
+                ),
               ),
-            ),
+            ),*/
           ],
         ),
       ),
@@ -236,8 +204,8 @@ class SidebarItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: selected ? const Color(0xFF8F1A3F) : Colors.transparent,
-        borderRadius: BorderRadius.circular(6),
+        color: selected ?  cl8F1A3F : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
       ),
       child: ListTile(
         leading: imagePath != null
@@ -246,7 +214,7 @@ class SidebarItem extends StatelessWidget {
         title: Text(
           label,
           style: GoogleFonts.notoSans(
-            fontSize: 14,
+            fontSize: 14.5,
             fontWeight: FontWeight.w500,
             color: selected ? Colors.white : Colors.black,
           ),
@@ -302,7 +270,7 @@ class _SidebarExpandableState extends State<SidebarExpandable> {
             widget.label,
             style: GoogleFonts.notoSans(
               fontWeight: FontWeight.w500,
-              fontSize: 14,
+              fontSize: 14.5,
               color: Colors.black,
             ),
           ),
@@ -325,7 +293,7 @@ class _SidebarExpandableState extends State<SidebarExpandable> {
                   sub.label,
                   style: GoogleFonts.notoSans(
                     fontWeight: FontWeight.w500,
-                    fontSize: 14,
+                    fontSize: 14.5,
                     color: isSelected ? Colors.white : Colors.black,
                   ),
                 ),

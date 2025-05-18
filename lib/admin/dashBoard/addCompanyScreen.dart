@@ -1,19 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ledgifi/admin/dashBoard/dashBoardAdmin.dart';
+import 'package:ledgifi/company/employees%20management/employeesScreen.dart';
+import 'package:ledgifi/company/sales/customersScreen.dart';
 import 'package:provider/provider.dart';
 
+import '../../constants/functions.dart';
 import '../../constants/myColors.dart';
 import '../../providers/mainProvider.dart';
 
-class AddCustomersScreen extends StatelessWidget {
-  const AddCustomersScreen({super.key});
+class AddCompanyScreen extends StatelessWidget {
+  const AddCompanyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
 
     var width = MediaQuery.of(context).size.width;
-    String selectedAccount = 'Cash in Hand';
 
     return Scaffold(
       backgroundColor: clwhite,
@@ -30,33 +33,38 @@ class AddCustomersScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: clwhite, // or Colors.white
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFFEBEBEB),
-                      width: 0.8,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0x14000000),
-                        blurRadius: 16,
-                        offset: Offset(0, 0),
+                InkWell(
+                  onTap: () {
+                    back(context);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: clwhite, // or Colors.white
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFFEBEBEB),
+                        width: 0.8,
                       ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child:  Icon(
-                    CupertinoIcons.back,
-                    size: 24,
-                    color: Colors.black, // optional
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0x14000000),
+                          blurRadius: 16,
+                          offset: Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(8),
+                    child:  Icon(
+                      CupertinoIcons.back,
+                      size: 24,
+                      color: Colors.black, // optional
+                    ),
                   ),
                 ),
                 SizedBox(width: 12,),
 
                 Text(
-                  'Add Vendor',
+                  'Add Company',
                   style: GoogleFonts.notoSans(
                     fontWeight: FontWeight.w600,
                     fontSize: 19,
@@ -87,16 +95,16 @@ class AddCustomersScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: TextField(
-                              focusNode: mainProvider.focusNode,
+                              focusNode: mainProvider.focusCompanyName,
                               style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               decoration: InputDecoration(
                                 isDense: true, // Reduces vertical spacing
                                 contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
                                 border: InputBorder.none,
                                 label: RichText(
                                   text: TextSpan(
-                                    text: 'Customer Name ',
+                                    text: 'Company Name ',
                                     style:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
                                     children: [
                                       TextSpan(
@@ -123,16 +131,16 @@ class AddCustomersScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: TextField(
-                              focusNode: mainProvider.focusNode,
+                              focusNode: mainProvider.focusCompanyEmail,
                               style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               decoration: InputDecoration(
                                 isDense: true, // Reduces vertical spacing
                                 contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
                                 border: InputBorder.none,
                                 label: RichText(
                                   text: TextSpan(
-                                    text: 'Contact Number    ',
+                                    text: 'Email ',
                                     style:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
                                     children: [
                                       TextSpan(
@@ -162,16 +170,16 @@ class AddCustomersScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: TextField(
-                              focusNode: mainProvider.focusNode,
+                              focusNode: mainProvider.focusCompanyAddress,
                               style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               decoration: InputDecoration(
                                 isDense: true, // Reduces vertical spacing
                                 contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
                                 border: InputBorder.none,
                                 label: RichText(
                                   text: TextSpan(
-                                    text: 'Email  ',
+                                    text: 'Address ',
                                     style:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
                                     children: [
                                       TextSpan(
@@ -195,16 +203,16 @@ class AddCustomersScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: TextField(
-                              focusNode: mainProvider.focusNode,
+                              focusNode: mainProvider.focusCompanyContact,
                               style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               decoration: InputDecoration(
                                 isDense: true, // Reduces vertical spacing
                                 contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
                                 border: InputBorder.none,
                                 label: RichText(
                                   text: TextSpan(
-                                    text: 'Billing Address    ',
+                                    text: 'Contact Number ',
                                     style:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
                                     children: [
                                       TextSpan(
@@ -232,16 +240,16 @@ class AddCustomersScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: TextField(
-                              focusNode: mainProvider.focusNode,
+                              focusNode: mainProvider.focusCompanyTaxId,
                               style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.phone,
                               decoration: InputDecoration(
                                 isDense: true, // Reduces vertical spacing
                                 contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
                                 border: InputBorder.none,
                                 label: RichText(
                                   text: TextSpan(
-                                    text: 'Contact Person ',
+                                    text: 'Tax ID',
                                     style:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
                                     children: [
                                       TextSpan(
@@ -251,55 +259,6 @@ class AddCustomersScreen extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Container(
-                            // Optional: reduce outer padding if not needed
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: mainProvider.borderColor),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: TextField(
-                              focusNode: mainProvider.focusNode,
-                              style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                isDense: true, // Reduces vertical spacing
-                                contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
-                                border: InputBorder.none,
-                                labelText: 'Tax ID ',
-                                labelStyle:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ), const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            // Optional: reduce outer padding if not needed
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: mainProvider.borderColor),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: TextField(
-                              focusNode: mainProvider.focusNode,
-                              style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                isDense: true, // Reduces vertical spacing
-                                contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
-                                border: InputBorder.none,
-                                labelText: 'Opening Balance  ',
-                                labelStyle:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
                               ),
                             ),
                           ),
@@ -319,7 +278,7 @@ class AddCustomersScreen extends StatelessWidget {
                           height: 40,
                           child: ElevatedButton(
                             onPressed: () {
-                              // Cancel action
+
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
@@ -345,7 +304,7 @@ class AddCustomersScreen extends StatelessWidget {
                           height: 40,
                           child: ElevatedButton(
                             onPressed: () {
-                              // Save action
+                              showSuccessDialog(context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: cl8F1A3F,
@@ -377,4 +336,60 @@ class AddCustomersScreen extends StatelessWidget {
       ),
     );
   }
+
+  void showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        Future.delayed(const Duration(seconds: 4), () {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => DashBoardScreenAdmin(),)
+          );
+        });
+
+        return Dialog(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            decoration: BoxDecoration(
+              color: clwhite, // Light green background
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset('asset/gif/success.gif',scale: 1.5,) ,
+                const SizedBox(height: 18),
+                Flexible(
+                  child: Text(
+                    'Added New Company ',
+                    style: GoogleFonts.notoSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Flexible(
+                  child: Text(
+                    'The company has been successfully added.',
+                    style: GoogleFonts.notoSans(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: cl808080,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+
 }

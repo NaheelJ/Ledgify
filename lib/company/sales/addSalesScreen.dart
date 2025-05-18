@@ -385,7 +385,116 @@ class AddSalesScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
+                        Expanded(
+                          child: Container(
+                            // Optional: reduce outer padding if not needed
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: mainProvider.borderColor),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: TextField(
+                              focusNode: mainProvider.focusNode,
+                              style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                isDense: true, // Reduces vertical spacing
+                                contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
+                                border: InputBorder.none,
+                                label: RichText(
+                                  text: TextSpan(
+                                    text: 'Received Amount ',
+                                    style:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
+                                    children: [
+                                      TextSpan(
+                                        text: '*',
+                                        style: TextStyle(color: Colors.red, fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Container(
+                            // Optional: reduce outer padding if not needed
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: clFFEACC,
+                              // border: Border.all(color: mainProvider.borderColor),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: TextField(
+                              readOnly: true,
+                              focusNode: mainProvider.focusNode,
+                              style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                  isDense: true, // Reduces vertical spacing
+                                  contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
+                                  border: InputBorder.none,
+                                  labelText: 'Balance',
+                                  labelStyle:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) )
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: mainProvider.borderColor),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: DropdownButtonHideUnderline( // Hides default underline
+                              child: DropdownButtonFormField<String>(
+                                dropdownColor: clwhite,
+                                value: selectedAccount,
+                                items: const [
+                                  DropdownMenuItem(value: 'Cash in Hand', child: Text('Cash in Hand')),
+                                  DropdownMenuItem(value: 'Bank', child: Text('Bank')),
+                                ],
+                                onChanged: (value) {
+                                  selectedAccount = value!;
+                                },
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                  border: InputBorder.none,
+                                  label: RichText(
+                                    text: TextSpan(
+                                      text: 'Destination Account ',
+                                      style: GoogleFonts.notoSans(
+                                        textStyle: const TextStyle(color: Colors.grey, fontSize: 16),
+                                      ),
+                                      children: const [
+                                        TextSpan(
+                                          text: '*',
+                                          style: TextStyle(color: Colors.red, fontSize: 16),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                icon: Image.asset('asset/icons/arrowDown.png',scale: 4,),
+                                style: GoogleFonts.notoSans(
+                                  textStyle: TextStyle(color: clblack, fontSize: 16),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -457,7 +566,13 @@ class AddSalesScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 16),
+
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
                         Expanded(
                           child: Container(
                             // Optional: reduce outer padding if not needed
@@ -480,59 +595,7 @@ class AddSalesScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Payment Priority ',
-                                  style:GoogleFonts.notoSans(textStyle: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 12,
-                                    color: cl808080,
-                                  ),)),
-                              SizedBox(height: 8,),
-                              Expanded(
-                                child: Container(
-                                  // Optional: reduce outer padding if not needed
-                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: mainProvider.borderColor),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: TextField(
-                                    focusNode: mainProvider.focusNode,
-                                    style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                                    keyboardType: TextInputType.number,
-                                    decoration: InputDecoration(
-                                      isDense: true, // Reduces vertical spacing
-                                      contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
-                                      border: InputBorder.none,
-                                      label: RichText(
-                                        text: TextSpan(
-                                          text: 'Received Amount ',
-                                          style:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
-                                          children: [
-                                            TextSpan(
-                                              text: '*',
-                                              style: TextStyle(color: Colors.red, fontSize: 16),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),),
                         const SizedBox(width: 16),
-
                         Expanded(
                             child: DottedBorder(
                               color: clCCCCCC,
@@ -599,8 +662,11 @@ class AddSalesScreen extends StatelessWidget {
                                 ),
                               ),
                             ))
+
+
                       ],
                     ),
+
                     const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -636,7 +702,7 @@ class AddSalesScreen extends StatelessWidget {
                           height: 40,
                           child: ElevatedButton(
                             onPressed: () {
-                              // Save action
+                              showConfirmPaymentDialog(context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: cl8F1A3F,
@@ -668,4 +734,242 @@ class AddSalesScreen extends StatelessWidget {
       ),
     );
   }
+
+  void showConfirmPaymentDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: clwhite,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              width: 500, // Web-specific width
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// Title Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Confirm Sales Entry",
+                        style: GoogleFonts.notoSans(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 20),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  /// Details Grid
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildInfoItem("Customer", "Krakow Tech Innovations"),
+                            SizedBox(height: 16,),
+                            _buildInfoItem("Invoice Date", "12-05-2025"),
+                            SizedBox(height: 16,),
+                            _buildInfoItem("Received  Amount ", "zł1,000"),
+                            SizedBox(height: 16,),
+                            _buildInfoItem("Account", "Cash in Hand"),
+                            SizedBox(height: 16,),
+                            _buildInfoItem("Narration ", "Narration"),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 8,),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildInfoItem("Invoice Number ", "INV003"),
+                            SizedBox(height: 16,),
+                            _buildInfoItem("Total Amount ", "zł1,000"),
+                            SizedBox(height: 16,),
+                            _buildInfoItem("Balance", "zł500"),
+                            SizedBox(height: 16,),
+                            _buildInfoItem("Due Date", "12-05-2025"),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+
+
+
+
+
+
+                  const SizedBox(height: 30),
+
+                  /// Buttons Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          width: 150,
+                          height: 40,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // Cancel action
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
+                              side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: SizedBox(
+                          width: 150,
+                          height: 40,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              showSuccessDialog(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: cl8F1A3F,
+                              foregroundColor: Colors.white,
+                              side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: const Text(
+                              "Confirm",
+                              style: TextStyle(
+                                color: clwhite,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildInfoItem(String title, String value) {
+    return SizedBox(
+      width: 260,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: GoogleFonts.notoSans(
+              fontWeight: FontWeight.w400,
+              fontSize: 12,
+              color: cl808080,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: GoogleFonts.notoSans(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  void showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        Future.delayed(const Duration(seconds: 4), () {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => AddSalesScreen(),)
+          );
+        });
+
+        return Dialog(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            decoration: BoxDecoration(
+              color: clwhite, // Light green background
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset('asset/gif/success.gif',scale: 1.5,) ,
+                const SizedBox(height: 18),
+                Flexible(
+                  child: Text(
+                    ' Sales Entry Added',
+                    style: GoogleFonts.notoSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Flexible(
+                  child: Text(
+                    'The invoice has been successfully recorded',
+                    style: GoogleFonts.notoSans(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: cl808080,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+
 }
+
+
+
+

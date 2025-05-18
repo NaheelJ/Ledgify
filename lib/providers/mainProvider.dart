@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
@@ -344,6 +345,160 @@ void setPayable(String value) {
       notifyListeners();
     }
   }
+
+  final focusName = FocusNode();
+  final focusContact = FocusNode();
+  final focusEmail = FocusNode();
+  final focusBilling = FocusNode();
+  final focusPerson = FocusNode();
+  final focusTax = FocusNode();
+  final focusOpening = FocusNode();
+
+  final focusName1 = FocusNode();
+  final focusContact1 = FocusNode();
+  final focusEmail1 = FocusNode();
+  final focusSurname = FocusNode();
+  final focusRole = FocusNode();
+  final focusEmployee = FocusNode();
+  final focusPesel = FocusNode();
+  final focusPassPort = FocusNode();
+  // add company
+   final focusCompanyName = FocusNode();
+  final focusCompanyEmail = FocusNode();
+  final focusCompanyContact = FocusNode();
+  final focusCompanyAddress = FocusNode();
+  final focusCompanyTaxId = FocusNode();
+
+  void disposeFocusNodes() {
+    focusName.dispose();
+    focusContact.dispose();
+    focusEmail.dispose();
+    focusBilling.dispose();
+    focusPerson.dispose();
+    focusTax.dispose();
+    focusOpening.dispose();
+
+    focusName1.dispose();
+    focusSurname.dispose();
+    focusContact1.dispose();
+    focusEmail1.dispose();
+    focusRole.dispose();
+    focusEmployee.dispose();
+    focusPesel.dispose();
+    focusPassPort.dispose();
+    // add company
+    focusCompanyName.dispose();
+    focusCompanyEmail.dispose();
+    focusCompanyContact.dispose();
+    focusCompanyAddress.dispose();
+    focusCompanyTaxId.dispose();
+  }
+
+
+
+  DateTime? _payRollDate;
+  DateTime? get payRollDate => _payRollDate;
+
+  void setPayRollDate(DateTime date) {
+    _payRollDate = date;
+    notifyListeners();
+  }
+
+
+
+  DateTime? _invoiceSalesDate1;
+
+  DateTime? get invoiceSalesDate1=> _invoiceSalesDate1;
+
+  void setInvoiceSalesDate1(DateTime date) {
+    _invoiceSalesDate1 = date;
+    notifyListeners();
+  }
+  DateTime? _dueSalesDate1;
+
+  DateTime? get dueSalesDate1 => _dueSalesDate1;
+
+  void setDueSalesDate1(DateTime date) {
+    _dueSalesDate1 = date;
+    notifyListeners();
+  }
+
+  String _company= 'Company A';
+
+  String get company => _company;
+
+  void setCompany(String value) {
+    _company = value;
+    notifyListeners();
+  }
+
+
+  // upload excel
+
+  File? _selectedFile;
+
+  File? get selectedFile => _selectedFile;
+
+  Future<void> pickExcelFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['xls', 'xlsx'],
+      withData: false,
+    );
+
+    if (result != null && result.files.isNotEmpty && result.files.single.path != null) {
+      _selectedFile = File(result.files.single.path!);
+      notifyListeners();
+    }
+  }
+
+  void clearFile() {
+    _selectedFile = null;
+    notifyListeners();
+  }
+  void clearFile1() {
+    _selectedFile = null;
+    notifyListeners();
+  }
+
+
+  String _company1= 'Company A';
+
+  String get company1 => _company1;
+
+  void setCompany1(String value) {
+    _company1 = value;
+    notifyListeners();
+  }
+
+  String _ledger1= 'Krakow Electronics';
+
+  String get ledger1 => _ledger1;
+
+  void setLedger1(String value) {
+    _ledger1 = value;
+    notifyListeners();
+  }
+
+  String _group= 'Purchase';
+
+  String get group => _group;
+
+  void setGroup(String value) {
+    _group = value;
+    notifyListeners();
+  }
+
+
+  DateTime? _expenseDate;
+
+  DateTime? get expenseDate=> _expenseDate;
+
+  void setExpenseDate(DateTime date) {
+    _expenseDate = date;
+    notifyListeners();
+  }
+
 
 }
 

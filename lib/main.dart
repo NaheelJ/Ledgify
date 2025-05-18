@@ -2,23 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
 
-import 'company/DashBoard/dashBoardScreen.dart';
-import 'company/companySplashScreen.dart';
-import 'company/customers/addCustomersScreen.dart';
-import 'company/finantial operations/journalCategoriesScreen.dart';
-import 'company/finantial operations/ledgersInFinantialOperationsScreen.dart';
-
-import 'company/journal entry/paymentPortalScreen.dart';
-import 'company/loginScreen.dart';
-
-import 'company/reports/dayBookScreen.dart';
-import 'company/reports/ledgersScreenInReports.dart';
-import 'company/sales/salesRecordScreen.dart';
+import 'admin/dashBoard/dashBoardAdmin.dart';
+import 'admin/dashBoard/reports/expenseReportScreen.dart';
+import 'admin/dashBoard/reports/salesReport.dart';
+import 'admin/sideBarForAmnin.dart';
+import 'company/employees management/employeesScreen.dart';
+import 'company/employees management/payRollScreen.dart';
 import 'company/sideBar.dart';
-import 'company/staff purchase/addPurchaseScreen.dart';
-import 'company/staff purchase/invoiceSettlementScreen.dart';
-import 'company/staff purchase/purchaseRecordScreen.dart';
-import 'company/ventors/addVentorScreen.dart';
+import 'company/topBarSwitcher.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -55,7 +47,7 @@ class MyApp extends StatelessWidget {
           // tested with just a hot reload.
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
-        home: DashBoardScreen(),
+        home: ExpenseReportScreen(),
       ),
     );
   }

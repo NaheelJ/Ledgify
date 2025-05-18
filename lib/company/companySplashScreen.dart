@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ledgifi/company/loginScreen.dart';
 
 import 'homeScreen_Company.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,7 @@ class _SplashScreenCompanyState extends State<SplashScreenCompany> with SingleTi
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreenCompany()),
+        MaterialPageRoute(builder: (context) => const LoginScreenCompany()),
       );
     });
   }

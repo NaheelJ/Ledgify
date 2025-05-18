@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ledgifi/company/sideBar.dart';
+import 'package:ledgifi/constants/functions.dart';
 import 'package:ledgifi/constants/myColors.dart';
 
 class LoginScreenCompany extends StatelessWidget {
@@ -156,7 +158,9 @@ class LoginScreenCompany extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            callNextReplacement(SideBarScreenForCompany(), context);
+                          },
                           child: Text(
                             'Login',
                             style: GoogleFonts.notoSans(
