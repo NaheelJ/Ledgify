@@ -61,7 +61,9 @@ TextFieldJornalFocusProvider() {
 }
 
 
-
+///top bar
+int topBarSelectedIndex = -1;
+///
 
 /// purchase records
 String _priority = 'Priority';

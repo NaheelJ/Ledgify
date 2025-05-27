@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ledgifi/company/loginScreen.dart';
 import 'package:ledgifi/company/sideBar.dart';
+import 'package:ledgifi/company/topBarSwitcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/functions.dart';
@@ -42,7 +43,7 @@ class _SplashScreenCompanyState extends State<SplashScreenCompany> with SingleTi
 
       if (email.isNotEmpty) {
         // If email is found, go to Sidebar
-        callNextReplacement(SideBarScreenForCompany(), context);
+        callNextReplacement(CompanySwitcherDemo(), context);
       } else {
         // If email is not found, go to Login
         callNextReplacement(LoginScreenCompany(), context);

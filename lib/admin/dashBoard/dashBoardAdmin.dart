@@ -9,6 +9,7 @@ import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
 
 import '../../company/employees management/addEmployeeScreen.dart';
+import '../../company/topBarSwitcher.dart';
 import 'addCompanyScreen.dart';
 
 class DashBoardScreenAdmin  extends StatelessWidget {
@@ -177,7 +178,27 @@ class DashBoardScreenAdminHome extends StatelessWidget {
           return CompanyCard(
             title: companies[index],
             onClick: () {
-
+              print("Clicked on ${companies[index]}");
+             if( companies[index] == "Company A") {
+               mainProvider.topBarSelectedIndex = 0;
+                callNext(CompanySwitcherDemo(), context);
+              } else if (companies[index] == "Company B") {
+               mainProvider.topBarSelectedIndex = 1;
+               callNext(CompanySwitcherDemo(), context);
+                //mainProvider.clickAddButton('companyB');
+              } else if (companies[index] == "Company C") {
+               mainProvider.topBarSelectedIndex = 2;
+               callNext(CompanySwitcherDemo(), context);
+                //mainProvider.clickAddButton('companyC');
+              } else if (companies[index] == "Company D") {
+               mainProvider.topBarSelectedIndex = 3;
+               callNext(CompanySwitcherDemo(), context);
+                //mainProvider.clickAddButton('companyD');
+              } else if (companies[index] == "Company E") {
+               mainProvider.topBarSelectedIndex = 4;
+               callNext(CompanySwitcherDemo(), context);
+                //mainProvider.clickAddButton('companyE');
+              }
             },
           );
         },

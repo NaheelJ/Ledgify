@@ -344,6 +344,7 @@ class AddCompanyScreen extends StatelessWidget {
       builder: (context) {
         Future.delayed(const Duration(seconds: 4), () {
           Provider.of<MainProvider>(context, listen: false).clickAddButton('dashBoard');
+          Navigator.pop(context); // Close the dialog after 4 seconds
         });
 
         return Dialog(
