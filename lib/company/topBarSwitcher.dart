@@ -32,69 +32,71 @@ class _CompanySwitcherDemoState extends State<CompanySwitcherDemo> {
       body: Column(
         children: [
           // Top bar with company switcher
-          Container(
-            color: cl333333,
-            child: Column(
-              children: [
-                Container(
-                  height: 50,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      // Admin button
-                      _buildAdminButton(),
+          Consumer<MainProvider>(builder: (context, pro, child) {
+            return Container(
+              color: cl333333,
+              child: Column(
+                children: [
+                  Container(
+                    height: 50,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        // Admin button
+                        _buildAdminButton(),
 
-                      // Company buttons
-                      Expanded(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: List.generate(
-                              _companies.length,
-                                  (index) => _buildCompanyButton(index),
+                        // Company buttons
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: List.generate(
+                                _companies.length,
+                                    (index) => _buildCompanyButton(index),
+                              ),
                             ),
                           ),
                         ),
-                      ),
 
-                      // User profile button
-                      Container(
-                        margin: const EdgeInsets.only(left: 16),
-                        child: Row(
-                          children: [
-                            Image.asset('asset/icons/userIcon.png',scale: 4,),
-                            const SizedBox(width: 8),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                 Text(
-                                  'Tomasz Tomaszewski',
-                                  style:GoogleFonts.notoSans(textStyle: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),)
-                                ),
-                                Text(
-                                  'tomasz@gmail.com',
-                                  style: GoogleFonts.notoSans(textStyle: TextStyle(
-                                    color: clCCCCCC,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w400,
-                                  ),)
-                                ),
-                              ],
-                            ),
-                          ],
+                        // User profile button
+                        Container(
+                          margin: const EdgeInsets.only(left: 16),
+                          child: Row(
+                            children: [
+                              Image.asset('asset/icons/userIcon.png',scale: 4,),
+                              const SizedBox(width: 8),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      'Tomasz Tomaszewski',
+                                      style:GoogleFonts.notoSans(textStyle: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),)
+                                  ),
+                                  Text(
+                                      'tomasz@gmail.com',
+                                      style: GoogleFonts.notoSans(textStyle: TextStyle(
+                                        color: clCCCCCC,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w400,
+                                      ),)
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
+                ],
+              ),
+            );
+          },),
 
           // Content area - loads different pages based on selection
           Expanded(

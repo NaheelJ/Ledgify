@@ -182,26 +182,77 @@ class DashBoardScreenAdminHome extends StatelessWidget {
              if( companies[index] == "Company A") {
                // mainProvider.selectedIndex==0;
                mainProvider.topBarSelectedIndex = 0;
-                callNext(CompanySwitcherDemo(), context);
+               Navigator.pushAndRemoveUntil(
+                 context,
+                 PageRouteBuilder(
+                   pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
+                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                     return child; // No animation, just return the page
+                   },
+                   transitionDuration: Duration.zero, // Zero duration for instant transition
+                 ),
+                     (route) => false, // Removes all previous routes
+               );
+
               } else if (companies[index] == "Company B") {
                // mainProvider.selectedIndex==1;
                mainProvider.topBarSelectedIndex = 1;
-               callNext(CompanySwitcherDemo(), context);
+               Navigator.pushAndRemoveUntil(
+                 context,
+                 PageRouteBuilder(
+                   pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
+                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                     return child; // No animation, just return the page
+                   },
+                   transitionDuration: Duration.zero, // Zero duration for instant transition
+                 ),
+                     (route) => false, // Removes all previous routes
+               );
                 //mainProvider.clickAddButton('companyB');
               } else if (companies[index] == "Company C") {
                // mainProvider.selectedIndex==2;
                mainProvider.topBarSelectedIndex = 2;
-               callNext(CompanySwitcherDemo(), context);
+               Navigator.pushAndRemoveUntil(
+                 context,
+                 PageRouteBuilder(
+                   pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
+                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                     return child; // No animation, just return the page
+                   },
+                   transitionDuration: Duration.zero, // Zero duration for instant transition
+                 ),
+                     (route) => false, // Removes all previous routes
+               );
                 //mainProvider.clickAddButton('companyC');
               } else if (companies[index] == "Company D") {
                // mainProvider.selectedIndex==3;
                mainProvider.topBarSelectedIndex = 3;
-               callNext(CompanySwitcherDemo(), context);
+               Navigator.pushAndRemoveUntil(
+                 context,
+                 PageRouteBuilder(
+                   pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
+                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                     return child; // No animation, just return the page
+                   },
+                   transitionDuration: Duration.zero, // Zero duration for instant transition
+                 ),
+                     (route) => false, // Removes all previous routes
+               );
                 //mainProvider.clickAddButton('companyD');
               } else if (companies[index] == "Company E") {
                // mainProvider.selectedIndex==5;
                mainProvider.topBarSelectedIndex = 5;
-               callNext(CompanySwitcherDemo(), context);
+               Navigator.pushAndRemoveUntil(
+                 context,
+                 PageRouteBuilder(
+                   pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
+                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                     return child; // No animation, just return the page
+                   },
+                   transitionDuration: Duration.zero, // Zero duration for instant transition
+                 ),
+                     (route) => false, // Removes all previous routes
+               );
                 //mainProvider.clickAddButton('companyE');
               }
             },
