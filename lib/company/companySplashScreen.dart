@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:ledgifi/company/loginScreen.dart';
-import 'package:ledgifi/company/sideBar.dart';
+import 'package:ledgifi/providers/loginProvider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/functions.dart';
-import 'homeScreen_Company.dart';
-import 'package:flutter/material.dart';
 
 class SplashScreenCompany extends StatefulWidget {
   const SplashScreenCompany({super.key});
@@ -35,26 +34,22 @@ class _SplashScreenCompanyState extends State<SplashScreenCompany> with SingleTi
   }
 
   Future<void> _loadUserData() async {
+    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
     try {
-      // Retrieve email from SharedPreferences
-      SharedPreferences pref = await SharedPreferences.getInstance();
-      String email = pref.getString('EMAIL') ?? '';
+      final pref = await SharedPreferences.getInstance();
+      final userId = pref.getString('USER_ID') ?? '';
+      final role = pref.getString('ROLE') ?? '';
 
-      if (email.isNotEmpty) {
-        // If email is found, go to Sidebar
-        callNextReplacement(SideBarScreenForCompany(), context);
-      } else {
-        // If email is not found, go to Login
+      if (userId.isEmpty) {
         callNextReplacement(LoginScreenCompany(), context);
+        return;
       }
 
+      await loginProvider.userAuthorized(userId, role, context);
     } catch (e) {
-      print('Error loading user data: $e');
       callNextReplacement(LoginScreenCompany(), context);
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +60,7 @@ class _SplashScreenCompanyState extends State<SplashScreenCompany> with SingleTi
           scale: _scale,
           duration: const Duration(milliseconds: 500), // scale animation duration
           curve: Curves.easeOutBack,
-          child: Image.asset(
-            'asset/icons/logoLidgifi.png',
-            scale: 4,
-          ),
+          child: Image.asset('asset/icons/logoLidgifi.png', scale: 4),
         ),
       ),
     );

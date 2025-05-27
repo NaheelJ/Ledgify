@@ -1,86 +1,87 @@
+import 'dart:async' show StreamSubscription;
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ledgifi/model/company_model.dart';
 
 import '../constants/myColors.dart';
 
 class MainProvider with ChangeNotifier {
-int selectedIndex = 0;
-int? expandedTileIndex;
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  int selectedIndex = 0;
+  int? expandedTileIndex;
 
-void setSelectedIndex(int index) {
-  selectedIndex = index;
-  notifyListeners();
-}
+  void setSelectedIndex(int index) {
+    selectedIndex = index;
+    notifyListeners();
+  }
 
-void setExpandedTileIndex(int? index) {
-  expandedTileIndex = index;
-  notifyListeners();
-}
+  void setExpandedTileIndex(int? index) {
+    expandedTileIndex = index;
+    notifyListeners();
+  }
 
-final FocusNode focusNode = FocusNode();
-final FocusNode amountFocusNode = FocusNode();
-final FocusNode invoiceFocusNode = FocusNode();
-final FocusNode invoiceDateFocusNode = FocusNode();
-final FocusNode billAmountFocusNode = FocusNode();
-final FocusNode paidAmountFocusNode = FocusNode();
+  final FocusNode focusNode = FocusNode();
+  final FocusNode amountFocusNode = FocusNode();
+  final FocusNode invoiceFocusNode = FocusNode();
+  final FocusNode invoiceDateFocusNode = FocusNode();
+  final FocusNode billAmountFocusNode = FocusNode();
+  final FocusNode paidAmountFocusNode = FocusNode();
 
-Color _borderColor = clD5D7DA;
+  Color _borderColor = clD5D7DA;
 
-Color get borderColor => _borderColor;
+  Color get borderColor => _borderColor;
 
-TextFieldFocusProvider() {
-  focusNode.addListener(_onFocusChange);
-}
+  TextFieldFocusProvider() {
+    focusNode.addListener(_onFocusChange);
+  }
 
-void _onFocusChange() {
-  _borderColor = focusNode.hasFocus ? Colors.orange : Colors.grey;
-  notifyListeners();
-}
+  void _onFocusChange() {
+    _borderColor = focusNode.hasFocus ? Colors.orange : Colors.grey;
+    notifyListeners();
+  }
 
-@override
-void dispose() {
-  amountFocusNode.dispose();
-  invoiceFocusNode.dispose();
-  invoiceDateFocusNode.dispose();
-  billAmountFocusNode.dispose();
-  paidAmountFocusNode.dispose();
-  createJournalNode.dispose();
-  super.dispose();
-}
+  @override
+  void dispose() {
+    amountFocusNode.dispose();
+    invoiceFocusNode.dispose();
+    invoiceDateFocusNode.dispose();
+    billAmountFocusNode.dispose();
+    paidAmountFocusNode.dispose();
+    createJournalNode.dispose();
+    super.dispose();
+  }
 
-final FocusNode createJournalNode = FocusNode();
+  final FocusNode createJournalNode = FocusNode();
 
-TextFieldJornalFocusProvider() {
-  createJournalNode.addListener(_onFocusChange);
-}
+  TextFieldJornalFocusProvider() {
+    createJournalNode.addListener(_onFocusChange);
+  }
 
+  /// purchase records
+  String _priority = 'Priority';
+  String _payable = 'Payable';
 
+  String get priority => _priority;
+  String get payable => _payable;
 
+  void setPriority(String value) {
+    _priority = value;
+    notifyListeners();
+  }
 
-/// purchase records
-String _priority = 'Priority';
-String _payable = 'Payable';
+  void setPayable(String value) {
+    _payable = value;
+    notifyListeners();
+  }
 
-String get priority => _priority;
-String get payable => _payable;
-
-void setPriority(String value) {
-  _priority = value;
-  notifyListeners();
-}
-
-void setPayable(String value) {
-  _payable = value;
-  notifyListeners();
-}
-
-// date
+  // date
   DateTime? _invoiceDate;
 
   DateTime? get invoiceDate => _invoiceDate;
@@ -89,7 +90,8 @@ void setPayable(String value) {
     _invoiceDate = date;
     notifyListeners();
   }
-   DateTime? _dueDate;
+
+  DateTime? _dueDate;
 
   DateTime? get dueDate => _dueDate;
 
@@ -98,8 +100,8 @@ void setPayable(String value) {
     notifyListeners();
   }
 
-// daybook
- DateTime? _dayBookDate;
+  // daybook
+  DateTime? _dayBookDate;
 
   DateTime? get dayBookDate => _dayBookDate;
 
@@ -124,7 +126,7 @@ void setPayable(String value) {
     notifyListeners();
   }
 
-// ledger
+  // ledger
 
   String _type = 'Select Type';
 
@@ -134,7 +136,6 @@ void setPayable(String value) {
     _type = value;
     notifyListeners();
   }
-
 
   // internal transfer
 
@@ -147,7 +148,6 @@ void setPayable(String value) {
     notifyListeners();
   }
 
-
   String _sourceAccount = 'Source Account';
 
   String get sourceAccount => _sourceAccount;
@@ -156,18 +156,16 @@ void setPayable(String value) {
     _sourceAccount = value;
     notifyListeners();
   }
+
   String _desigAccount = 'Destination Account';
   String get desigAccount => _desigAccount;
-
 
   void setDesignAccount(String value) {
     _desigAccount = value;
     notifyListeners();
   }
 
-
   /// add purchase
-
 
   String _selectedCurrency = 'zł';
 
@@ -182,7 +180,6 @@ void setPayable(String value) {
   final FocusNode billAmount2FocusNode = FocusNode();
   final Color borderColor2 = Colors.grey;
 
-
   // date
   TextEditingController dueDateController = TextEditingController();
 
@@ -194,6 +191,7 @@ void setPayable(String value) {
     _invoiceAddDate = date;
     notifyListeners();
   }
+
   DateTime? _dueAddDate;
 
   DateTime? get dueAddDate => _dueAddDate;
@@ -229,13 +227,12 @@ void setPayable(String value) {
           child: Wrap(
             children: [
               ListTile(
-                leading: const Icon(Icons.camera_alt,color: cl8F1A3F,),
+                leading: const Icon(Icons.camera_alt, color: cl8F1A3F),
                 title: const Text('Take Photo'),
                 onTap: () async {
-                  final XFile? picked =
-                  await picker.pickImage(source: ImageSource.camera);
+                  final XFile? picked = await picker.pickImage(source: ImageSource.camera);
                   if (picked != null) {
-                  /*  if(from=='expatriateIssueReporting'){
+                    /*  if(from=='expatriateIssueReporting'){
                       setImageInExpatriateIssueReporting(File(picked.path));
                     }else if(from=='generalIssueReporting'){
                       setImage(File(picked.path));
@@ -243,17 +240,15 @@ void setPayable(String value) {
                       setImageInUploadImage(File(picked.path));
                     }*/
                     setImageInInvoiceImage(File(picked.path));
-
                   }
                   Navigator.of(bottomSheetContext).pop();
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.photo_library,color: cl8F1A3F,),
+                leading: const Icon(Icons.photo_library, color: cl8F1A3F),
                 title: const Text('Choose from Gallery'),
                 onTap: () async {
-                  final XFile? picked =
-                  await picker.pickImage(source: ImageSource.gallery);
+                  final XFile? picked = await picker.pickImage(source: ImageSource.gallery);
                   if (picked != null) {
                     /*if(from=='expatriateIssueReporting'){
                       setImageInExpatriateIssueReporting(File(picked.path));
@@ -274,7 +269,7 @@ void setPayable(String value) {
     );
   }
 
-// sales records date
+  // sales records date
 
   DateTime? _invoiceSalesDate;
 
@@ -284,6 +279,7 @@ void setPayable(String value) {
     _invoiceSalesDate = date;
     notifyListeners();
   }
+
   DateTime? _dueSalesDate;
 
   DateTime? get dueSalesDate => _dueSalesDate;
@@ -293,7 +289,7 @@ void setPayable(String value) {
     notifyListeners();
   }
 
-  String _receivables= 'Receivables';
+  String _receivables = 'Receivables';
 
   String get receivables => _receivables;
 
@@ -302,7 +298,7 @@ void setPayable(String value) {
     notifyListeners();
   }
 
-// dash Board Expense chart
+  // dash Board Expense chart
 
   final List<Expense> _expenses = [
     Expense(category: 'Purchase', amount: 980254),
@@ -363,7 +359,7 @@ void setPayable(String value) {
   final focusPesel = FocusNode();
   final focusPassPort = FocusNode();
   // add company
-   final focusCompanyName = FocusNode();
+  final focusCompanyName = FocusNode();
   final focusCompanyEmail = FocusNode();
   final focusCompanyContact = FocusNode();
   final focusCompanyAddress = FocusNode();
@@ -401,18 +397,12 @@ void setPayable(String value) {
     focusCompanyAddress.dispose();
     focusCompanyTaxId.dispose();
 
-
     focusInvoiceNumber.dispose();
     focusBillAmount.dispose();
     focusBalance.dispose();
     focusPaidAmount.dispose();
     focusPaymentDate.dispose();
-
-
-
   }
-
-
 
   DateTime? _payRollDate;
   DateTime? get payRollDate => _payRollDate;
@@ -422,16 +412,15 @@ void setPayable(String value) {
     notifyListeners();
   }
 
-
-
   DateTime? _invoiceSalesDate1;
 
-  DateTime? get invoiceSalesDate1=> _invoiceSalesDate1;
+  DateTime? get invoiceSalesDate1 => _invoiceSalesDate1;
 
   void setInvoiceSalesDate1(DateTime date) {
     _invoiceSalesDate1 = date;
     notifyListeners();
   }
+
   DateTime? _dueSalesDate1;
 
   DateTime? get dueSalesDate1 => _dueSalesDate1;
@@ -441,7 +430,7 @@ void setPayable(String value) {
     notifyListeners();
   }
 
-  String _company= 'Company A';
+  String _company = 'Company A';
 
   String get company => _company;
 
@@ -450,7 +439,6 @@ void setPayable(String value) {
     notifyListeners();
   }
 
-
   // upload excel
 
   File? _selectedFile;
@@ -458,11 +446,7 @@ void setPayable(String value) {
   File? get selectedFile => _selectedFile;
 
   Future<void> pickExcelFile() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['xls', 'xlsx'],
-      withData: false,
-    );
+    final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['xls', 'xlsx'], withData: false);
 
     if (result != null && result.files.isNotEmpty && result.files.single.path != null) {
       _selectedFile = File(result.files.single.path!);
@@ -474,13 +458,13 @@ void setPayable(String value) {
     _selectedFile = null;
     notifyListeners();
   }
+
   void clearFile1() {
     _selectedFile = null;
     notifyListeners();
   }
 
-
-  String _company1= 'Company A';
+  String _company1 = 'Company A';
 
   String get company1 => _company1;
 
@@ -489,7 +473,7 @@ void setPayable(String value) {
     notifyListeners();
   }
 
-  String _ledger1= 'Krakow Electronics';
+  String _ledger1 = 'Krakow Electronics';
 
   String get ledger1 => _ledger1;
 
@@ -498,7 +482,7 @@ void setPayable(String value) {
     notifyListeners();
   }
 
-  String _group= 'Purchase';
+  String _group = 'Purchase';
 
   String get group => _group;
 
@@ -507,10 +491,9 @@ void setPayable(String value) {
     notifyListeners();
   }
 
-
   DateTime? _expenseDate;
 
-  DateTime? get expenseDate=> _expenseDate;
+  DateTime? get expenseDate => _expenseDate;
 
   void setExpenseDate(DateTime date) {
     _expenseDate = date;
@@ -519,14 +502,13 @@ void setPayable(String value) {
 
   // access for users
 
-
   String _access = 'Admin';
 
   String get access => _access;
 
   void setAccess(String value) {
-  _access = value;
-  notifyListeners();
+    _access = value;
+    notifyListeners();
   }
 
   int _selectedYear = 2025;
@@ -552,16 +534,103 @@ void setPayable(String value) {
     notifyListeners();
   }
 
-
   ValueNotifier<String> changeScreenWidgets = ValueNotifier("");
-  void clickAddButton(String page,) {
+  void clickAddButton(String page) {
     changeScreenWidgets.value = page;
     notifyListeners();
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+  /// ADDED BY NAHEEL ////////////////////////////////////////////////////////////////////
+  /// THIS SECTION IS FOR ADDING A NEW COMPANY AND MANAGING COMPANY DATA /////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  bool _isLoadingAddCompany = false;
+  bool get isLoadingAddCompany => _isLoadingAddCompany;
+
+  final TextEditingController companyNameController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController taxIdController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController contactNumberController = TextEditingController();
+
+  void setLoadingAddCompany(bool value) {
+    _isLoadingAddCompany = value;
+    notifyListeners();
+  }
+
+  Future<bool> addNewCompany({required BuildContext context, required String companyId, required String userId}) async {
+    final String companyName = companyNameController.text.trim();
+    final String address = addressController.text.trim();
+    final String taxId = taxIdController.text.trim();
+    final String email = emailController.text.trim();
+    final String contactNumber = contactNumberController.text.trim();
+
+    setLoadingAddCompany(true);
+
+    try {
+      // Reference to the 'COMPANY' collection in Firestore
+      DocumentReference companies = db.collection('COMPANY').doc(companyId);
+
+      // Add the company data to Firestore
+      await companies.set({
+        'ID': companyId,
+        'COMPANY_NAME': companyName,
+        'ADDRESS': address,
+        'TAX_ID': taxId,
+        'EMAIL': email,
+        'CONTACT_NUMBER': contactNumber,
+        'ADDED_DATE': FieldValue.serverTimestamp(),
+        'ADDED_BY': userId,
+        'STATUS': 'ACTIVE',
+      }, SetOptions(merge: true));
+
+      return true;
+    } catch (e) {
+      // Show error snack bar
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error adding company: $e'), backgroundColor: Colors.red, duration: const Duration(seconds: 3)));
+
+      return false;
+    } finally {
+      setLoadingAddCompany(false);
+    }
+  }
+
+  StreamSubscription? _companySubscription;
+
+  List<CompanyModel> _companies = [];
+  List<CompanyModel> get companies => _companies;
+
+  void startListeningToCompanies() {
+    _companySubscription = db
+        .collection('COMPANY')
+        .snapshots()
+        .listen(
+          (querySnapshot) {
+            _companies =
+                querySnapshot.docs.map((doc) {
+                  return CompanyModel.fromMap(doc.data());
+                }).toList();
+            notifyListeners();
+          },
+          onError: (e) {
+            print('Error listening to companies: $e');
+          },
+        );
+  }
+
+  void disposeListener() {
+    _companySubscription?.cancel();
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+  /// THE SECTION ENDED BY NAHEEL CREATIONS //////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
 }
-
-
-
 
 class Expense {
   final String category;

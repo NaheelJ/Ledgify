@@ -32,13 +32,7 @@ class LoginScreenCompany extends StatelessWidget {
                   stops: [0.0, 0.8479, 1.0],
                 ),
               ),
-              child: Center(
-                child: Image.asset(
-                  'asset/icons/logoLidgifi.png',
-                  scale: 6,
-                  color: Colors.white,
-                ),
-              ),
+              child: Center(child: Image.asset('asset/icons/logoLidgifi.png', scale: 6, color: Colors.white)),
             ),
           ),
 
@@ -65,99 +59,63 @@ class LoginScreenCompany extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Login',
-                      style: GoogleFonts.notoSans(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    Text('Login', style: GoogleFonts.notoSans(fontSize: 36, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
-                    Text(
-                      'Welcome back! Please enter your details.',
-                      style: GoogleFonts.notoSans(
-                        color: cl666666,
-                        fontWeight: FontWeight.w400,
-                          fontSize: 16
-                      ),
-                    ),
+                    Text('Welcome back! Please enter your details.', style: GoogleFonts.notoSans(color: cl666666, fontWeight: FontWeight.w400, fontSize: 16)),
                     const SizedBox(height: 25),
 
                     // Email Field
-                    Text('Email', style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16,fontWeight: FontWeight.w500))),
+                    Text('Email', style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500))),
                     const SizedBox(height: 6),
                     Consumer<LoginProvider>(
-                      builder: (context,loginProvider,child) {
+                      builder: (context, loginProvider, child) {
                         return TextFormField(
                           controller: loginProvider.emailController,
                           decoration: InputDecoration(
                             hintText: 'Enter your email',
-                            hintStyle: GoogleFonts.notoSans(
-                              textStyle: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: cl666666)
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
-                              borderSide: BorderSide(color: clD5D7DA),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
-                              borderSide: BorderSide(color: clD5D7DA),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
-                              borderSide: BorderSide(color: clFD23F6D),
-                            ),
+                            hintStyle: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: cl666666)),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide(color: clD5D7DA)),
+                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide(color: clD5D7DA)),
+                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide(color: clFD23F6D)),
 
                             contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
                           ),
                         );
-                      }
+                      },
                     ),
                     const SizedBox(height: 20),
 
                     // Password Field
-                    Text('Password',style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16,fontWeight: FontWeight.w500))),
+                    Text('Password', style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500))),
                     const SizedBox(height: 6),
                     Consumer<LoginProvider>(
-                        builder: (context,loginProvider,child) {
+                      builder: (context, loginProvider, child) {
                         return TextFormField(
                           controller: loginProvider.passwordController,
                           obscureText: true,
                           decoration: InputDecoration(
                             hintText: 'Enter your password',
-                            hintStyle: GoogleFonts.notoSans(
-                                textStyle: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: cl666666)
-
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
-                              borderSide: BorderSide(color: clD5D7DA),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
-                              borderSide: BorderSide(color: clD5D7DA),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
-                              borderSide: BorderSide(color: clFD23F6D),
-                            ),
+                            hintStyle: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: cl666666)),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide(color: clD5D7DA)),
+                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide(color: clD5D7DA)),
+                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide(color: clFD23F6D)),
                             contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
                           ),
                         );
-                      }
+                      },
                     ),
                     const SizedBox(height: 24),
 
                     // Login Button
                     Consumer<LoginProvider>(
-                        builder: (context,loginProvider,child) {
+                      builder: (context, loginProvider, child) {
                         return Container(
                           decoration: const BoxDecoration(
                             boxShadow: [
                               BoxShadow(
                                 color: Color(0x0D0A0D12), // #0A0D120D in Flutter (with 0D = ~5% opacity)
-                                offset: Offset(0, 1),     // x = 0px, y = 1px
-                                blurRadius: 2,           // blur = 2px
+                                offset: Offset(0, 1), // x = 0px, y = 1px
+                                blurRadius: 2, // blur = 2px
                               ),
                             ],
                           ),
@@ -169,52 +127,26 @@ class LoginScreenCompany extends StatelessWidget {
                                 backgroundColor: cl8F1A3F,
                                 elevation: 0, // Remove default shadow to only use custom shadow
                                 padding: const EdgeInsets.symmetric(vertical: 14),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                               ),
                               onPressed: () async {
-                                //loginProvider.addUser();
-
-                                String result = await loginProvider.login(loginProvider.emailController.text.trim(),
-                                    loginProvider.passwordController.text.trim());
-                               if( result == 'success' ) {
-                                 ScaffoldMessenger.of(context).showSnackBar(
-                                   SnackBar(content: Text('Login Successful'),backgroundColor: Colors.green,),
-                                 );
-                                 callNextReplacement(
-                                     SideBarScreenForCompany(), context);
-                               }else {
-                                 ScaffoldMessenger.of(context).showSnackBar(
-                                   SnackBar(content: Text(result),backgroundColor: Colors.red,),
-                                 );
-                               }
-/*
-                                await loginProvider.login(
-                                  loginProvider.passwordController.text.trim(),
-                                  loginProvider.emailController.text.trim(),
-                                );
-
-                                if (loginProvider.user != null) {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (_) => SideBarScreenForCompany()),
-                                  );
-                              }*/},
-                              child: Text(
-                                'Login',
-                                style: GoogleFonts.notoSans(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                                await loginProvider.login(context);
+                              },
+                              child: Consumer<LoginProvider>(
+                                builder:
+                                    (context, person, child) =>
+                                        person.isLoading
+                                            ? SizedBox(
+                                                height: 24,
+                                                width: 24,
+                                              child: const Center(child: CircularProgressIndicator(color: Colors.white)))
+                                            : Text('Login', style: GoogleFonts.notoSans(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
                               ),
                             ),
                           ),
                         );
-                      }
+                      },
                     ),
-
                   ],
                 ),
               ),

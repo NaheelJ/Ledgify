@@ -1,120 +1,101 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:ledgifi/admin/dashBoard/dashBoardAdmin.dart';
+import 'package:ledgifi/company/DashBoard/dashBoardScreen.dart';
+import 'package:ledgifi/company/loginScreen.dart';
+import 'package:ledgifi/constants/functions.dart';
+import 'package:ledgifi/model/user_model.dart';
+import 'package:ledgifi/providers/mainProvider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginProvider with ChangeNotifier{
+class LoginProvider with ChangeNotifier {
+  final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore db = FirebaseFirestore.instance;
-/// login provider manually
-  String? _userId;
-
-  String? get userId => _userId;
-
-  // ✅ Step 1: Basic format validation
-  bool _isValidEmailFormat(String email) {
-    final trimmedEmail = email.trim();
-    final regex = RegExp(
-      r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
-    );
-    return regex.hasMatch(trimmedEmail);
-  }
-  // ✅ Step 2: Very basic fake domain check
-  bool _isValidDomain(String email) {
-    final domain = email.split('@').last;
-    return domain.contains('.') && domain.length >= 5;
-  }
-
-  Future<String> login(String email, String password) async {
-    if (!_isValidEmailFormat(email)) {
-      return 'Invalid email format';
-    }
-    if (!_isValidDomain(email)) {
-      return 'Invalid email domain';
-    }
-    try {
-      // ✅ Step 3: Check Firestore USERS collection
-      final snapshot = await db.collection('USERS')
-          .where('EMAIL', isEqualTo: email).get();
-
-      if (snapshot.docs.isEmpty) {
-        return 'Email not found';
-      }
-
-      final userData = snapshot.docs.first.data() as Map<String, dynamic>;
-
-      // ✅ Step 4: Match password
-      if (userData['PASSWORD'] == password) {
-        _userId = snapshot.docs.first.id;
-        notifyListeners();
-        final SharedPreferences pref = await SharedPreferences.getInstance();
-        await pref.setString("EMAIL",emailController.text.trim());
-        await pref.setString("PASSWORD",passwordController.text.trim());
-        return 'success';
-      } else {
-        return 'Incorrect password';
-      }
-    } catch (e) {
-      print('Login error: $e');
-      return 'Login failed';
-    }
-  }
-  ///
-  /*final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  User? _user;
-  User? get user => _user;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
-
-  AuthProvider() {
-    _auth.authStateChanges().listen(_onAuthStateChanged);
-  }
-
-  Future<void> _onAuthStateChanged(User? user) async {
-    _user = user;
+  void setLoading(bool value) {
+    _isLoading = value;
     notifyListeners();
   }
 
-  Future<void> login(String email, String password) async {
-    try {
-      _isLoading = true;
-      _errorMessage = null;
-      notifyListeners();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+  Future<void> login(BuildContext context) async {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    try {
+      setLoading(true);
+
+      final userCredential = await auth.signInWithEmailAndPassword(email: email, password: password);
+
+      final uid = userCredential.user?.uid;
+      final userDoc = await db.collection('USERS').doc(uid).get();
+
+      if (!userDoc.exists) {
+        _showError(context, "User not found. Please check your credentials.");
+        return;
+      }
+
+      final data = userDoc.data() as Map<String, dynamic>;
+      final role = data['ROLE'] ?? ''; // fallback if ROLE is null
+
+      // Store user email in SharedPreferences
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      await pref.setString('USER_ID', uid!);
+      await pref.setString('ROLE', role);
+
+      if (role == 'admin') {
+        callNextReplacement(DashBoardScreenAdmin(), context);
+      } else {
+        callNextReplacement(DashBoardScreen(), context);
+      }
     } on FirebaseAuthException catch (e) {
-      _errorMessage = e.message;
+      _showError(context, e.message ?? "Login failed. Please try again.");
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      setLoading(false);
     }
   }
 
-  Future<void> logout() async {
-    await _auth.signOut();
-  }*/
+  void _showError(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
 
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  Future<void> userAuthorized(String userId, String role, context) async {
+    MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
+    await fetchUserData(userId);
+    mainProvider.startListeningToCompanies();
 
+    String role = usermodel!.role.toString();
 
+    switch (role) {
+      case 'admin':
+        callNextReplacement(DashBoardScreenAdmin(), context);
+        break;
+      case 'accounts':
+        callNextReplacement(DashBoardScreen(), context);
+        break;
+      default:
+        callNextReplacement(LoginScreenCompany(), context);
+    }
+  }
 
+  UserModel? usermodel;
 
-  Future<void> addUser() async {
+  Future<void> fetchUserData(String userId) async {
     try {
-      await FirebaseFirestore.instance.collection('USERS').add({
-        'EMAIL': emailController.text,
-        'PASSWORD': passwordController.text,
-        'created_at': FieldValue.serverTimestamp(), // optional timestamp
-      });
-      print('✅ User added successfully');
+      final doc = await db.collection('USERS').doc(userId).get();
+      if (doc.exists && doc.data() != null) {
+        usermodel = UserModel.from(doc.data()!, doc.id);
+        notifyListeners();
+      }
     } catch (e) {
-      print('❌ Failed to add user: $e');
+      print('Error fetching user data: $e');
     }
   }
-
 }
