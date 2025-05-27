@@ -11,9 +11,42 @@ import 'package:provider/provider.dart';
 import '../../company/employees management/addEmployeeScreen.dart';
 import 'addCompanyScreen.dart';
 
+class DashBoardScreenAdmin  extends StatelessWidget {
+  const DashBoardScreenAdmin({super.key});
 
-class DashBoardScreenAdmin extends StatelessWidget {
-  DashBoardScreenAdmin({super.key});
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: clwhite,
+        body: Consumer<MainProvider>(
+          builder: (ctx, adminRetailerPro, _) {
+            String id = DateTime.now().millisecondsSinceEpoch.toString();
+            switch (adminRetailerPro.changeScreenWidgets.value) {
+              case "addCompany":
+                return AddCompanyScreen();
+              /*case "settlement":
+                return InvoiceSettlementScreen();
+              case "addVendor":
+                return AddVentorScreen();*/
+              case "dashBoard":
+              default:
+                return DashBoardScreenAdminHome();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class DashBoardScreenAdminHome extends StatelessWidget {
+  DashBoardScreenAdminHome({super.key});
 
   final List<String> companies = [
     "Company A",
@@ -26,6 +59,7 @@ class DashBoardScreenAdmin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mainProvider = Provider.of<MainProvider>(context, listen: false);
     // Define controllers outside of the build method but inside the class
     final TextEditingController controllerNew = TextEditingController();
     var height = MediaQuery
@@ -79,7 +113,7 @@ class DashBoardScreenAdmin extends StatelessWidget {
                       height: 45,
                       child: ElevatedButton(
                         onPressed: () {
-                          callNext(AddCompanyScreen(), context);
+                          mainProvider.clickAddButton('addCompany');
 
                         },
                         style: ElevatedButton.styleFrom(
@@ -143,7 +177,7 @@ class DashBoardScreenAdmin extends StatelessWidget {
           return CompanyCard(
             title: companies[index],
             onClick: () {
-              // your logic
+
             },
           );
         },

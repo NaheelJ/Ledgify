@@ -15,7 +15,7 @@ class AddCompanyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    final mainProvider = Provider.of<MainProvider>(context, listen: false);
     var width = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -35,7 +35,7 @@ class AddCompanyScreen extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
-                    back(context);
+                    mainProvider.clickAddButton('dashBoard');
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -305,6 +305,7 @@ class AddCompanyScreen extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: () {
                               showSuccessDialog(context);
+                              mainProvider.clickAddButton('dashBoard');
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: cl8F1A3F,

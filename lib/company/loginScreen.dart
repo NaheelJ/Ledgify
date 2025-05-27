@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ledgifi/company/sideBar.dart';
+import 'package:ledgifi/company/topBarSwitcher.dart';
 import 'package:ledgifi/constants/functions.dart';
 import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/loginProvider.dart';
@@ -183,7 +184,9 @@ class LoginScreenCompany extends StatelessWidget {
                                    SnackBar(content: Text('Login Successful'),backgroundColor: Colors.green,),
                                  );
                                  callNextReplacement(
-                                     SideBarScreenForCompany(), context);
+                                     CompanySwitcherDemo(), context);
+                                 // callNextReplacement(
+                                 //     SideBarScreenForCompany(), context);
                                }else {
                                  ScaffoldMessenger.of(context).showSnackBar(
                                    SnackBar(content: Text(result),backgroundColor: Colors.red,),
