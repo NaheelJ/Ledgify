@@ -180,22 +180,27 @@ class DashBoardScreenAdminHome extends StatelessWidget {
             onClick: () {
               print("Clicked on ${companies[index]}");
              if( companies[index] == "Company A") {
+               // mainProvider.selectedIndex==0;
                mainProvider.topBarSelectedIndex = 0;
                 callNext(CompanySwitcherDemo(), context);
               } else if (companies[index] == "Company B") {
+               // mainProvider.selectedIndex==1;
                mainProvider.topBarSelectedIndex = 1;
                callNext(CompanySwitcherDemo(), context);
                 //mainProvider.clickAddButton('companyB');
               } else if (companies[index] == "Company C") {
+               // mainProvider.selectedIndex==2;
                mainProvider.topBarSelectedIndex = 2;
                callNext(CompanySwitcherDemo(), context);
                 //mainProvider.clickAddButton('companyC');
               } else if (companies[index] == "Company D") {
+               // mainProvider.selectedIndex==3;
                mainProvider.topBarSelectedIndex = 3;
                callNext(CompanySwitcherDemo(), context);
                 //mainProvider.clickAddButton('companyD');
               } else if (companies[index] == "Company E") {
-               mainProvider.topBarSelectedIndex = 4;
+               // mainProvider.selectedIndex==5;
+               mainProvider.topBarSelectedIndex = 5;
                callNext(CompanySwitcherDemo(), context);
                 //mainProvider.clickAddButton('companyE');
               }

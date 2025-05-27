@@ -10,8 +10,41 @@ import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
 
 import 'addUserScreen.dart';
-class UsersScreen extends StatelessWidget {
+class  UsersScreen extends StatelessWidget {
   const UsersScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: clwhite,
+        body: Consumer<MainProvider>(
+          builder: (ctx, adminRetailerPro, _) {
+            String id = DateTime.now().millisecondsSinceEpoch.toString();
+            switch (adminRetailerPro.changeScreenWidgets.value) {
+              case "addUser":
+                return AddUsersScreen();
+            /*case "settlement":
+                return InvoiceSettlementScreen();
+              case "addVendor":
+                return AddVentorScreen();*/
+              case "userScreen":
+              default:
+                return UsersScreenHome();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+class UsersScreenHome extends StatelessWidget {
+  const UsersScreenHome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -68,10 +101,7 @@ class UsersScreen extends StatelessWidget {
                       height: 45,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) {
-                            return
-                              AddUsersScreen();
-                          },));
+                        Provider.of<MainProvider>(context, listen: false).clickAddButton('addUser');
 
                         },
                         style: ElevatedButton.styleFrom(

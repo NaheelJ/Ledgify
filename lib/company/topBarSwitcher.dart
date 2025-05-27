@@ -157,6 +157,7 @@ class _CompanySwitcherDemoState extends State<CompanySwitcherDemo> {
       onTap: () {
         setState(() {
           mainProvider.topBarSelectedIndex = index;
+          mainProvider.selectedIndex==0;
         });
       },
       child: Container(
@@ -196,15 +197,25 @@ class _CompanySwitcherDemoState extends State<CompanySwitcherDemo> {
   Widget _buildSelectedPage() {
     final mainProvider = Provider.of<MainProvider>(context, listen: false);
     switch (mainProvider.topBarSelectedIndex) {
-      case -1: // Admin view
+      case -1:
+        print("printtttttttttttttttttttttttttttttt 1111111111");
+        mainProvider.setSelectedIndex(0);// Admin view
         return SideBarScreenForAdmin();
-      case 0: // Company A
+      case 0:
+        print("printtttttttttttttttttttttttttttttt 22222222222");
+        mainProvider.setSelectedIndex(0);// Company A
         return SideBarScreenForCompany();
-      case 1: // Company B
+      case 1:
+        print("printtttttttttttttttttttttttttttttt 33333333333");
+        mainProvider.setSelectedIndex(0);// Company B
         return SideBarScreenForCompany();
-      case 2: // Company D
+      case 2:
+        print("printtttttttttttttttttttttttttttttt 44444444444");
+        mainProvider.setSelectedIndex(0);// Company D
         return SideBarScreenForCompany();
-      case 3: // Company E
+      case 3:
+        print("printtttttttttttttttttttttttttttttt 555555555555");
+        mainProvider.setSelectedIndex(0);// Company E
         return SideBarScreenForAdmin();
       default:
       // Default to admin if somehow we get an invalid index

@@ -327,7 +327,6 @@ class AddVentorScreen extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: () {
                               mainProvider.clickAddButton('addPurchase');
-
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: cl8F1A3F,

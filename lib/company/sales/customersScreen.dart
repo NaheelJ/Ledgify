@@ -7,8 +7,38 @@ import 'package:ledgifi/constants/functions.dart';
 import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
-class CustomersInSalesScreen extends StatelessWidget {
+class CustomersInSalesScreen  extends StatelessWidget {
   const CustomersInSalesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: clwhite,
+        body: Consumer<MainProvider>(
+          builder: (ctx, adminRetailerPro, _) {
+            String id = DateTime.now().millisecondsSinceEpoch.toString();
+            switch (adminRetailerPro.changeScreenWidgets.value) {
+              case "customer_addCustomer":
+                return AddCustomersScreen(from: 'customer',);
+              case "customer_default":
+                return CustomersInSalesScreenHome();
+              default:
+                return CustomersInSalesScreenHome();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+class CustomersInSalesScreenHome extends StatelessWidget {
+  const CustomersInSalesScreenHome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +95,7 @@ class CustomersInSalesScreen extends StatelessWidget {
                       height: 45,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) {
-                            return
-                            AddCustomersScreen();
-                          },));
-
+                          Provider.of<MainProvider>(context, listen: false).clickAddButton('customer_addCustomer');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: cl8F1A3F,

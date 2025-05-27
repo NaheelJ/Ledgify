@@ -34,7 +34,7 @@ class AddEmployeeScreen extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
-                    back(context);
+                    Provider.of<MainProvider>(context, listen: false).clickAddButton('employeeManagement_default');
                   },
                   child: Container(
                     decoration: BoxDecoration(

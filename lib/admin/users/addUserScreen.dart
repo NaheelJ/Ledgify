@@ -375,11 +375,9 @@ class AddUsersScreen extends StatelessWidget {
       barrierDismissible: false,
       builder: (context) {
         Future.delayed(const Duration(seconds: 4), () {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => EmployeesScreen(),)
-          );
+          Provider.of<MainProvider>(context, listen: false).clickAddButton('userScreen');
+          Navigator.pop(context);
         });
-
         return Dialog(
           elevation: 0,
           backgroundColor: Colors.transparent,

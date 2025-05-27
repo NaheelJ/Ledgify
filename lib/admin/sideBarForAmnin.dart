@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ledgifi/admin/dashBoard/dashBoardAdmin.dart';
+import 'package:ledgifi/admin/reports/expenseReportScreen.dart';
+import 'package:ledgifi/admin/reports/salesReport.dart';
 import 'package:ledgifi/admin/users/usersScreen.dart';
 import 'package:ledgifi/company/DashBoard/dashBoardScreen.dart';
 import 'package:ledgifi/company/finantial%20operations/GroupScreen.dart';
@@ -27,8 +29,10 @@ class SideBarScreenForAdmin extends StatelessWidget {
   final List<Widget> sections = [
     DashBoardScreenAdmin(),
     PurchaseRecordScreen(),
-    VendorsInPurchaseScreen(),
-    SalesRecordScreen(),
+    // VendorsInPurchaseScreen(),
+    SalesReportScreen(),
+    // SalesRecordScreen(),
+    ExpenseReportScreen(),
     CustomersInSalesScreen(),
     DayBookScreenInReport(),
     UsersScreen(),
