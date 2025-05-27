@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ledgifi/company/sideBar.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants/myColors.dart';
@@ -30,28 +31,38 @@ class InvoiceSettlementScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: clwhite, // or Colors.white
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFFEBEBEB),
-                      width: 0.8,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0x14000000),
-                        blurRadius: 16,
-                        offset: Offset(0, 0),
+                Consumer<MainProvider>(
+                  builder: (context,mainProvider,child) {
+                    return InkWell(
+                      onTap: () {
+                        mainProvider.clickAddButton('purchaseScreen');
+
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: clwhite, // or Colors.white
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color(0xFFEBEBEB),
+                            width: 0.8,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0x14000000),
+                              blurRadius: 16,
+                              offset: Offset(0, 0),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(8),
+                        child:  Icon(
+                          CupertinoIcons.back,
+                          size: 24,
+                          color: Colors.black, // optional
+                        ),
                       ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child:  Icon(
-                    CupertinoIcons.back,
-                    size: 24,
-                    color: Colors.black, // optional
-                  ),
+                    );
+                  }
                 ),
                 SizedBox(width: 12,),
 
@@ -91,7 +102,7 @@ class InvoiceSettlementScreen extends StatelessWidget {
                             ),
                             child: TextField(
                               readOnly: true,
-                              focusNode: mainProvider.focusNode,
+                              focusNode: mainProvider.focusInvoiceNumber,
                               style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
@@ -130,7 +141,7 @@ class InvoiceSettlementScreen extends StatelessWidget {
                                   ),
                                   child: TextField(
                                     readOnly: true,
-                                    focusNode: mainProvider.focusNode,
+                                    focusNode: mainProvider.focusBillAmount,
                                     style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
                                     keyboardType: TextInputType.number,
                                     decoration: InputDecoration(
@@ -155,7 +166,7 @@ class InvoiceSettlementScreen extends StatelessWidget {
                                   ),
                                   child: TextField(
                                     readOnly: true,
-                                    focusNode: mainProvider.focusNode,
+                                    focusNode: mainProvider.focusBalance,
                                     style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
                                     keyboardType: TextInputType.number,
                                     decoration: InputDecoration(
@@ -187,7 +198,7 @@ class InvoiceSettlementScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: TextField(
-                              focusNode: mainProvider.focusNode,
+                              focusNode: mainProvider.focusPaidAmount,
                               style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
@@ -227,7 +238,7 @@ class InvoiceSettlementScreen extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: TextField(
-                                    focusNode: mainProvider.focusNode,
+                                    focusNode: mainProvider.focusPaymentDate,
                                     style: GoogleFonts.notoSans(
                                       textStyle: TextStyle(color: Colors.black),
                                     ),
@@ -588,7 +599,7 @@ class InvoiceSettlementScreen extends StatelessWidget {
       builder: (context) {
         Future.delayed(const Duration(seconds: 3), () {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => InvoiceSettlementScreen(),)
+            MaterialPageRoute(builder: (context) => SideBarScreenForCompany(),)
           );
         });
 

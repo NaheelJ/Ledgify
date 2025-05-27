@@ -369,6 +369,14 @@ void setPayable(String value) {
   final focusCompanyAddress = FocusNode();
   final focusCompanyTaxId = FocusNode();
 
+  //invoiceSettlement
+
+  final focusInvoiceNumber = FocusNode();
+  final focusBillAmount = FocusNode();
+  final focusBalance = FocusNode();
+  final focusPaidAmount = FocusNode();
+  final focusPaymentDate = FocusNode();
+
   void disposeFocusNodes() {
     focusName.dispose();
     focusContact.dispose();
@@ -392,6 +400,16 @@ void setPayable(String value) {
     focusCompanyContact.dispose();
     focusCompanyAddress.dispose();
     focusCompanyTaxId.dispose();
+
+
+    focusInvoiceNumber.dispose();
+    focusBillAmount.dispose();
+    focusBalance.dispose();
+    focusPaidAmount.dispose();
+    focusPaymentDate.dispose();
+
+
+
   }
 
 
@@ -499,7 +517,47 @@ void setPayable(String value) {
     notifyListeners();
   }
 
+  // access for users
 
+
+  String _access = 'Admin';
+
+  String get access => _access;
+
+  void setAccess(String value) {
+  _access = value;
+  notifyListeners();
+  }
+
+  int _selectedYear = 2025;
+  String _selectedMonth = 'May';
+  double _totalExpenseDate = 0.0; // Assuming this exists based on your usage
+
+  int get selectedYear => _selectedYear;
+  String get selectedMonth => _selectedMonth;
+  double get totalExpenseDateExpense => _totalExpenseDate;
+
+  void setYear(int year) {
+    _selectedYear = year;
+    notifyListeners();
+  }
+
+  void setMonth(String month) {
+    _selectedMonth = month;
+    notifyListeners();
+  }
+
+  void setTotalExpenses(double expenses) {
+    _totalExpenseDate = expenses;
+    notifyListeners();
+  }
+
+
+  ValueNotifier<String> changeScreenWidgets = ValueNotifier("");
+  void clickAddButton(String page,) {
+    changeScreenWidgets.value = page;
+    notifyListeners();
+  }
 }
 
 

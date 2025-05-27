@@ -780,7 +780,7 @@ Widget _buildRow({
             style: GoogleFonts.notoSans(
               textStyle: TextStyle(
                 fontSize: 16,
-                fontWeight: isTotal || isGrandTotal ? FontWeight.w600 : FontWeight.w400,
+                fontWeight: isTotal || isGrandTotal ? FontWeight.w400 : FontWeight.w400,
                 color: Colors.black,
               ),
             ),
@@ -832,7 +832,7 @@ Widget _buildRow({
             style: GoogleFonts.notoSans(
               textStyle: TextStyle(
                 fontSize: 16,
-                fontWeight: isTotal || isGrandTotal ? FontWeight.w600 : FontWeight.w400,
+                fontWeight: isTotal || isGrandTotal ? FontWeight.w400 : FontWeight.w400,
                 color: clblack,
               ),
             ),
@@ -848,7 +848,7 @@ Widget _buildRow({
               style: GoogleFonts.notoSans(
                 textStyle: TextStyle(
                   fontSize: 16,
-                  fontWeight: isTotal || isGrandTotal ? FontWeight.w600 : FontWeight.w400,
+                  fontWeight: isTotal || isGrandTotal ? FontWeight.w400 : FontWeight.w400,
                   color: clblack,
                 ),
               ),

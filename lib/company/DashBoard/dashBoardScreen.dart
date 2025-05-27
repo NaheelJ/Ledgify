@@ -35,7 +35,7 @@ class DashBoardScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: clwhite,
-      appBar: PreferredSize(
+  /*    appBar: PreferredSize(
         preferredSize: const Size.fromHeight(180),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -59,7 +59,7 @@ class DashBoardScreen extends StatelessWidget {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         alignment: WrapAlignment.start,
                         children: [
-                         /* Container(
+                         *//* Container(
                             decoration: BoxDecoration(
                               color: clwhite, // or Colors.white
                               shape: BoxShape.circle,
@@ -83,7 +83,7 @@ class DashBoardScreen extends StatelessWidget {
                             ),
                           ),
                           //  SizedBox(width: 12,),
-*/
+*//*
                           // Title
                           Text(
                             'DashBoard',
@@ -104,11 +104,11 @@ class DashBoardScreen extends StatelessWidget {
             ),
           ),
         ),
-      ),
+      ),*/
 
 
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -152,29 +152,57 @@ class DashBoardScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Expenses : zł${NumberFormat('#,###').format(mainProvider.totalExpenses)}',
+                      'Expenses: zł${NumberFormat('#,###').format(mainProvider.totalExpenses)}',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: clFAFAFA,
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            DateFormat('MMMM, yyyy').format(DateTime.now()),
-                            style: const TextStyle(fontWeight: FontWeight.w500),
-                          ),
-                          const SizedBox(width: 8),
-                          Image.asset('asset/icons/calenderIcon.png',scale: 4,)
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        // Show the calendar in a dialog
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return Padding(
+                              padding: const EdgeInsets.all(50),
+                              child: Dialog(
+                                backgroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    CalendarWidget(),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Color(0xFFFAFAFA), // clFAFAFA as a hex color
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              '${mainProvider.selectedMonth}, ${mainProvider.selectedYear}',
+                              style: const TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                            const SizedBox(width: 8),
+                            Image.asset(
+                              'asset/icons/calenderIcon.png',
+                              scale: 4,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -182,6 +210,12 @@ class DashBoardScreen extends StatelessWidget {
               },
             ),
             SizedBox(height: 30,),
+            Container(
+              color: clE5E5E5,
+              height: 1,
+              width: width,
+            ),
+            SizedBox(height: 12,),
             Expanded(
               child: SizedBox(
                   height: height/5,
@@ -275,6 +309,94 @@ class AccountCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+
+
+
+class CalendarWidget extends StatelessWidget {
+  final List<String> months = [
+    'Jan', 'Feb', 'Mar',
+    'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep',
+    'Oct', 'Nov', 'Dec'
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<MainProvider>(
+      builder: (context, mainProvider, child) {
+        return Container(
+          height: 300,
+          width: 250,
+          child: Column(
+            children: [
+              // Year Picker
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_left),
+                    onPressed: () {
+                      mainProvider.setYear(mainProvider.selectedYear - 1);
+                    },
+                  ),
+                  Text(
+                    '${mainProvider.selectedYear}',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.arrow_right),
+                    onPressed: () {
+                      mainProvider.setYear(mainProvider.selectedYear + 1);
+                    },
+                  ),
+                ],
+              ),
+              // Months Grid
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 1.5,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                  ),
+                  itemCount: months.length,
+                  itemBuilder: (context, index) {
+                    final month = months[index];
+                    final isSelected = month == mainProvider.selectedMonth;
+                    return GestureDetector(
+                      onTap: () {
+                        mainProvider.setMonth(month);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isSelected ? cl8F1A3F : Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: Text(
+                            month,
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

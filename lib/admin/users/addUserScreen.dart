@@ -1,21 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ledgifi/company/employees%20management/employeesScreen.dart';
+import 'package:ledgifi/company/sales/customersScreen.dart';
 import 'package:provider/provider.dart';
 
-import '../../../constants/myColors.dart';
-import '../../../providers/mainProvider.dart';
+import '../../constants/functions.dart';
+import '../../constants/myColors.dart';
+import '../../providers/mainProvider.dart';
 
-
-
-class AddVentorScreen extends StatelessWidget {
-  const AddVentorScreen({super.key});
+class AddUsersScreen extends StatelessWidget {
+  const AddUsersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
 
     var width = MediaQuery.of(context).size.width;
-    String selectedAccount = 'Cash in Hand';
 
     return Scaffold(
       backgroundColor: clwhite,
@@ -32,42 +32,38 @@ class AddVentorScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Consumer<MainProvider>(
-                  builder: (context,mainProvider,child) {
-                    return InkWell(
-                      onTap: () {
-                        mainProvider.clickAddButton('addPurchase');
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: clwhite, // or Colors.white
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFFEBEBEB),
-                            width: 0.8,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0x14000000),
-                              blurRadius: 16,
-                              offset: Offset(0, 0),
-                            ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.all(8),
-                        child:  Icon(
-                          CupertinoIcons.back,
-                          size: 24,
-                          color: Colors.black, // optional
-                        ),
+                InkWell(
+                  onTap: () {
+                    back(context);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: clwhite, // or Colors.white
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFFEBEBEB),
+                        width: 0.8,
                       ),
-                    );
-                  }
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0x14000000),
+                          blurRadius: 16,
+                          offset: Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(8),
+                    child:  Icon(
+                      CupertinoIcons.back,
+                      size: 24,
+                      color: Colors.black, // optional
+                    ),
+                  ),
                 ),
                 SizedBox(width: 12,),
 
                 Text(
-                  'Add Vendor',
+                  'Add User',
                   style: GoogleFonts.notoSans(
                     fontWeight: FontWeight.w600,
                     fontSize: 19,
@@ -98,16 +94,16 @@ class AddVentorScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: TextField(
-                              focusNode: mainProvider.focusNode,
+                              focusNode: mainProvider.focusName1,
                               style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               decoration: InputDecoration(
                                 isDense: true, // Reduces vertical spacing
                                 contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
                                 border: InputBorder.none,
                                 label: RichText(
                                   text: TextSpan(
-                                    text: 'Krakow Electronics ',
+                                    text: 'Name ',
                                     style:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
                                     children: [
                                       TextSpan(
@@ -134,16 +130,16 @@ class AddVentorScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: TextField(
-                              focusNode: mainProvider.focusNode,
+                              focusNode: mainProvider.focusSurname,
                               style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               decoration: InputDecoration(
                                 isDense: true, // Reduces vertical spacing
                                 contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
                                 border: InputBorder.none,
                                 label: RichText(
                                   text: TextSpan(
-                                    text: 'Contact Number   ',
+                                    text: 'Surname ',
                                     style:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
                                     children: [
                                       TextSpan(
@@ -173,16 +169,16 @@ class AddVentorScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: TextField(
-                              focusNode: mainProvider.focusNode,
+                              focusNode: mainProvider.focusEmployee,
                               style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                 isDense: true, // Reduces vertical spacing
                                 contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
                                 border: InputBorder.none,
                                 label: RichText(
                                   text: TextSpan(
-                                    text: 'Email  ',
+                                    text: 'Email',
                                     style:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
                                     children: [
                                       TextSpan(
@@ -206,16 +202,16 @@ class AddVentorScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: TextField(
-                              focusNode: mainProvider.focusNode,
+                              focusNode: mainProvider.focusRole,
                               style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               decoration: InputDecoration(
                                 isDense: true, // Reduces vertical spacing
                                 contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
                                 border: InputBorder.none,
                                 label: RichText(
                                   text: TextSpan(
-                                    text: 'Address   ',
+                                    text: 'Password',
                                     style:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
                                     children: [
                                       TextSpan(
@@ -243,16 +239,16 @@ class AddVentorScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: TextField(
-                              focusNode: mainProvider.focusNode,
+                              focusNode: mainProvider.focusContact1,
                               style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.phone,
                               decoration: InputDecoration(
                                 isDense: true, // Reduces vertical spacing
                                 contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
                                 border: InputBorder.none,
                                 label: RichText(
                                   text: TextSpan(
-                                    text: 'Contact Person ',
+                                    text: 'Contact Number ',
                                     style:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
                                     children: [
                                       TextSpan(
@@ -268,29 +264,43 @@ class AddVentorScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 16),
                         Expanded(
-                          child: Container(
-                            // Optional: reduce outer padding if not needed
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: mainProvider.borderColor),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: TextField(
-                              focusNode: mainProvider.focusNode,
-                              style:GoogleFonts.notoSans(textStyle:  TextStyle(color: clblack)),
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                isDense: true, // Reduces vertical spacing
-                                contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
-                                border: InputBorder.none,
-                                labelText: 'Opening Balance ',
-                                labelStyle:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
-                              ),
-                            ),
-                          ),
+                          child: SizedBox(),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 16),
+                     Align(
+                       alignment: Alignment.centerLeft,
+                       child: RichText(
+                        text: TextSpan(
+                          text: 'Access ',
+                          style:GoogleFonts.notoSans(textStyle:TextStyle(color: Colors.grey, fontSize: 16) ) ,
+                          children: [
+                            TextSpan(
+                              text: '*',
+                              style: TextStyle(color: Colors.red, fontSize: 16),
+                            ),
+                          ],
+                        ),
+                                           ),
+                     ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Expanded(child: accessOption('Admin',context)),
+                              const SizedBox(width: 16),
+                              Expanded(child: accessOption('Accounts',context)),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(child: SizedBox()),
+                      ],
+                    ),
+
                     const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -300,7 +310,7 @@ class AddVentorScreen extends StatelessWidget {
                           height: 40,
                           child: ElevatedButton(
                             onPressed: () {
-                              // Cancel action
+
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
@@ -326,8 +336,7 @@ class AddVentorScreen extends StatelessWidget {
                           height: 40,
                           child: ElevatedButton(
                             onPressed: () {
-                              mainProvider.clickAddButton('addPurchase');
-
+                              showSuccessDialog(context);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: cl8F1A3F,
@@ -359,4 +368,102 @@ class AddVentorScreen extends StatelessWidget {
       ),
     );
   }
-}
+
+  void showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        Future.delayed(const Duration(seconds: 4), () {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => EmployeesScreen(),)
+          );
+        });
+
+        return Dialog(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            decoration: BoxDecoration(
+              color: clwhite, // Light green background
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset('asset/gif/success.gif',scale: 1.5,) ,
+                const SizedBox(height: 18),
+                Flexible(
+                  child: Text(
+                    'Added New Employee',
+                    style: GoogleFonts.notoSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Flexible(
+                  child: Text(
+                    'The employee has been successfully added.',
+                    style: GoogleFonts.notoSans(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: cl808080,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+
+
+    Widget accessOption(String title,BuildContext context) {
+      final mainProvider = Provider.of<MainProvider>(context);
+      final selectedAccess = mainProvider.access;
+
+      final isSelected = selectedAccess == title;
+      return Expanded(
+        child: GestureDetector(
+          onTap: () => mainProvider.setAccess(title),
+          child: Container(
+           height: 48,
+            decoration: BoxDecoration(
+              color: isSelected ? clF4E8EC : clF2F2F2,
+              border: Border.all(
+                color: isSelected ?cl8F1A3F : clD5D7DA,
+              ),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: isSelected ? cl8F1A3F :cl666666,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(
+                  isSelected ? Icons.radio_button_checked : Icons
+                      .radio_button_unchecked,
+                  color: isSelected ? cl8F1A3F : cl666666,
+                  size: 18,
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+  }
+

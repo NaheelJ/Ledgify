@@ -1,30 +1,68 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:ledgifi/company/companySplashScreen.dart';
+import 'package:ledgifi/company/sales/customersScreen.dart';
+import 'package:ledgifi/providers/loginProvider.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
 
 import 'admin/dashBoard/dashBoardAdmin.dart';
-import 'admin/dashBoard/reports/expenseReportScreen.dart';
-import 'admin/dashBoard/reports/salesReport.dart';
+import 'admin/reports/expenseReportScreen.dart';
 import 'admin/sideBarForAmnin.dart';
+import 'admin/users/usersScreen.dart';
 import 'company/employees management/employeesScreen.dart';
 import 'company/employees management/payRollScreen.dart';
 import 'company/sideBar.dart';
 import 'company/topBarSwitcher.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (!kIsWeb) {
+    await Firebase.initializeApp();
+  } else {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          apiKey: "AIzaSyBUsVb8Be0EzZFfo2TpPyi1ts4J31HPaLo",
+          authDomain: "ledgifi-68391.firebaseapp.com",
+          projectId: "ledgifi-68391",
+          storageBucket: "ledgifi-68391.firebasestorage.app",
+          messagingSenderId: "690836165499",
+          appId: "1:690836165499:web:5d18ac91cb3e31b67e63de",
+          measurementId: "G-4NXQG2DTH1"
+      ),
+    );
+  }
+
+  runApp(MyApp());
+}
 
 
-void main() {
-  runApp(const MyApp());
+void testFirestoreConnection() async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('test')
+        .doc('connection_check')
+        .set({'connected': true, 'time': DateTime.now()});
+    print('✅ Firestore write successful – Firebase is connected.');
+  } catch (e) {
+    print('❌ Firebase connection failed: $e');
+  }
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+   // testFirestoreConnection();
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => MainProvider(),),
+        ChangeNotifierProvider(create: (context) => LoginProvider(),),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -47,7 +85,7 @@ class MyApp extends StatelessWidget {
           // tested with just a hot reload.
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
-        home: ExpenseReportScreen(),
+        home: SplashScreenCompany(),
       ),
     );
   }

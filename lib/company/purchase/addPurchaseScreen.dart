@@ -34,28 +34,37 @@ class AddPurchaseScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: clwhite, // or Colors.white
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: const Color(0xFFEBEBEB),
-                          width: 0.8,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0x14000000),
-                            blurRadius: 16,
-                            offset: Offset(0, 0),
+                    Consumer<MainProvider>(
+                      builder: (context,mainProvider,child) {
+                        return InkWell(
+                          onTap: () {
+                            mainProvider.clickAddButton('purchaseScreen');
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: clwhite, // or Colors.white
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFFEBEBEB),
+                                width: 0.8,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0x14000000),
+                                  blurRadius: 16,
+                                  offset: Offset(0, 0),
+                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            child:  Icon(
+                              CupertinoIcons.back,
+                              size: 24,
+                              color: Colors.black, // optional
+                            ),
                           ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      child:  Icon(
-                        CupertinoIcons.back,
-                        size: 24,
-                        color: Colors.black, // optional
-                      ),
+                        );
+                      }
                     ),
                     SizedBox(width: 12,),
 
@@ -158,7 +167,8 @@ class AddPurchaseScreen extends StatelessWidget {
                               SizedBox(width: 8),
                               GestureDetector(
                                 onTap: () {
-                                  // Handle tap
+                                  mainProvider.clickAddButton('addVendor');
+
                                 },
                                 child: Container(
                                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 19.6),

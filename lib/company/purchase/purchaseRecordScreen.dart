@@ -1,12 +1,51 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ledgifi/company/purchase/addPurchaseScreen.dart';
+import 'package:ledgifi/company/purchase/invoiceSettlementScreen.dart';
+import 'package:ledgifi/company/purchase/ventors/addVentorScreen.dart';
+import 'package:ledgifi/constants/functions.dart';
 import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
 
-class PurchaseRecordScreen extends StatelessWidget {
+
+class PurchaseRecordScreen  extends StatelessWidget {
   const PurchaseRecordScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Scaffold(
+            backgroundColor: clwhite,
+            body: Consumer<MainProvider>(
+              builder: (ctx, adminRetailerPro, _) {
+                String id = DateTime.now().millisecondsSinceEpoch.toString();
+                switch (adminRetailerPro.changeScreenWidgets.value) {
+                  case "addPurchase":
+                    return AddPurchaseScreen();
+                  case "settlement":
+                    return InvoiceSettlementScreen();
+                    case "addVendor":
+                    return AddVentorScreen();
+                  case "purchaseScreen":
+                  default:
+                    return PurchaseRecordScreenHome();
+                }
+              },
+            ),
+        ),
+      );
+    }
+}
+
+class PurchaseRecordScreenHome extends StatelessWidget {
+  const PurchaseRecordScreenHome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +61,7 @@ class PurchaseRecordScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(14 ),
             decoration: BoxDecoration(
               border: Border.all(color: const Color(0xFFD5D7DA)),
               borderRadius: BorderRadius.circular(8),
@@ -36,7 +75,7 @@ class PurchaseRecordScreen extends StatelessWidget {
                     constraints: BoxConstraints(minWidth: constraints.maxWidth),
                     child: IntrinsicWidth(
                       child: Wrap(
-                        spacing: 16,
+                        spacing: 10 ,
                         runSpacing: 12,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         alignment: WrapAlignment.start,
@@ -75,7 +114,7 @@ class PurchaseRecordScreen extends StatelessWidget {
                               color: Colors.black,
                             ),
                           ),
-                          SizedBox(width: 10,),
+                          SizedBox(width: 8,),
 
                           // Search Field
                           SizedBox(
@@ -85,7 +124,7 @@ class PurchaseRecordScreen extends StatelessWidget {
 
                           // Invoice Date
                           SizedBox(
-                            width: 180,
+                            width: 150,
                             child: Consumer<MainProvider>(
                               builder: (context, mainProvider, child) {
                                 return _buildDateBox(
@@ -101,7 +140,7 @@ class PurchaseRecordScreen extends StatelessWidget {
 
                           // Due Date
                           SizedBox(
-                            width: 180,
+                            width: 160,
                             child: Consumer<MainProvider>(
                               builder: (context, mainProvider, child) {
                                 return _buildDateBox(
@@ -117,7 +156,7 @@ class PurchaseRecordScreen extends StatelessWidget {
 
                           // Priority Dropdown
                           SizedBox(
-                            width: 150,
+                            width: 160,
                             child: Consumer<MainProvider>(
                               builder: (context, mainProvider, child) {
                                 return _buildDropdown(
@@ -182,48 +221,53 @@ class PurchaseRecordScreen extends StatelessWidget {
                           Image.asset('asset/icons/pdfIcon.png', scale: 3.7),
 
                           // Add Invoice Button
-                          SizedBox(
-                            width: 180,
-                            height: 45,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Add Invoice action
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: cl8F1A3F,
-                                foregroundColor: Colors.white,
-                                side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                          Consumer<MainProvider>(
+                            builder: (context,mainProvider,child) {
+                              return SizedBox(
+                                width: 180,
+                                height: 45,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    mainProvider.clickAddButton('addPurchase');
+
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: cl8F1A3F,
+                                    foregroundColor: Colors.white,
+                                    side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "+ ",
+                                        style: GoogleFonts.notoSans(
+                                          textStyle: TextStyle(
+                                            color: clwhite,
+                                            fontSize: 19,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        "Add Purchase",
+                                        style: GoogleFonts.notoSans(
+                                          textStyle: TextStyle(
+                                            color: clwhite,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                elevation: 0,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "+ ",
-                                    style: GoogleFonts.notoSans(
-                                      textStyle: TextStyle(
-                                        color: clwhite,
-                                        fontSize: 19,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    "Add Purchase",
-                                    style: GoogleFonts.notoSans(
-                                      textStyle: TextStyle(
-                                        color: clwhite,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                              );
+                            }
                           ),
                         ],
                       ),
@@ -830,7 +874,7 @@ class PurchaseRecordScreen extends StatelessWidget {
       return Container(
         width: 2500,
         height: 40,
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 4),
         decoration: BoxDecoration(
           color: index.isEven ? clwhite : clFAFAFA,
           border: const Border(
@@ -945,6 +989,7 @@ class PurchaseRecordScreen extends StatelessWidget {
             SizedBox(
               width: 100,
               child: !isTotal ? Container(
+                margin: EdgeInsets.symmetric(vertical: 3,horizontal: 2),
                 height: 30,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
@@ -965,40 +1010,41 @@ class PurchaseRecordScreen extends StatelessWidget {
                 ),
               ) : SizedBox(),
             ),
-            SizedBox(
-              width: 190,
-              child: !isTotal ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal:12),
-                child: Center(
-                  child: SizedBox(
-                    width: 150,
-                    height: 32,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          // Settlement action
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF8F1A3F), // Maroon color from the image
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+            Consumer<MainProvider>(
+              builder: (context,mainProvider,child) {
+                return SizedBox(
+                  width: 190,
+                  child: !isTotal ? Center(
+                    child: SizedBox(
+                      width: 130,
+                      height: 40,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            mainProvider.clickAddButton('settlement');
+                            },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF8F1A3F), // Maroon color from the image
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            elevation: 0,
                           ),
-                          elevation: 0,
-                        ),
-                        child: Text(
-                            "Settlement",
-                            style: GoogleFonts.notoSans(
-                              textStyle: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            )
-                        )
+                          child: Text(
+                              "Settlement",
+                              style: GoogleFonts.notoSans(
+                                textStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              )
+                          )
+                      ),
                     ),
-                  ),
-                ),
-              ) : SizedBox(),
+                  ) : SizedBox(),
+                );
+              }
             ),
             SizedBox(
               width: 190,
