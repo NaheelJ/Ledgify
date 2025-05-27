@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ledgifi/company/loginScreen.dart';
+import 'package:ledgifi/company/sideBar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../constants/functions.dart';
 import 'homeScreen_Company.dart';
 import 'package:flutter/material.dart';
 
@@ -27,12 +30,31 @@ class _SplashScreenCompanyState extends State<SplashScreenCompany> with SingleTi
 
     // Navigate after 2 seconds
     Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreenCompany()),
-      );
+      _loadUserData();
     });
   }
+
+  Future<void> _loadUserData() async {
+    try {
+      // Retrieve email from SharedPreferences
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      String email = pref.getString('EMAIL') ?? '';
+
+      if (email.isNotEmpty) {
+        // If email is found, go to Sidebar
+        callNextReplacement(SideBarScreenForCompany(), context);
+      } else {
+        // If email is not found, go to Login
+        callNextReplacement(LoginScreenCompany(), context);
+      }
+
+    } catch (e) {
+      print('Error loading user data: $e');
+      callNextReplacement(LoginScreenCompany(), context);
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
