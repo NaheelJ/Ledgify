@@ -305,7 +305,6 @@ class AddCompanyScreen extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: () {
                               showSuccessDialog(context);
-                              mainProvider.clickAddButton('dashBoard');
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: cl8F1A3F,
@@ -344,9 +343,7 @@ class AddCompanyScreen extends StatelessWidget {
       barrierDismissible: false,
       builder: (context) {
         Future.delayed(const Duration(seconds: 4), () {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => DashBoardScreenAdmin(),)
-          );
+          Provider.of<MainProvider>(context, listen: false).clickAddButton('dashBoard');
         });
 
         return Dialog(
