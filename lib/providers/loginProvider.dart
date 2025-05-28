@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ledgifi/admin/dashBoard/dashBoardAdmin.dart';
-import 'package:ledgifi/company/DashBoard/dashBoardScreen.dart';
 import 'package:ledgifi/company/loginScreen.dart';
+import 'package:ledgifi/company/topBarSwitcher.dart';
 import 'package:ledgifi/constants/functions.dart';
 import 'package:ledgifi/model/user_model.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
@@ -50,11 +49,7 @@ class LoginProvider with ChangeNotifier {
       await pref.setString('USER_ID', uid!);
       await pref.setString('ROLE', role);
 
-      if (role == 'admin') {
-        callNextReplacement(DashBoardScreenAdmin(), context);
-      } else {
-        callNextReplacement(DashBoardScreen(), context);
-      }
+      userAuthorized(uid, context);
     } on FirebaseAuthException catch (e) {
       _showError(context, e.message ?? "Login failed. Please try again.");
     } finally {
@@ -93,25 +88,28 @@ class LoginProvider with ChangeNotifier {
     return true;
   }
 
+  String role = '';
+
   Future<void> userAuthorized(String userId, context) async {
     MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
 
     await fetchUserData(userId);
     await mainProvider.fetchInitialCompaniesAndListen();
 
-    String role = usermodel!.role.toString();
-    print('User role: $role');
+    role = usermodel!.role.toString();
 
-    switch (role) {
-      case 'admin':
-        callNextReplacement(DashBoardScreenAdmin(), context);
-        break;
-      case 'accounts':
-        callNextReplacement(DashBoardScreen(), context);
-        break;
-      default:
-        callNextReplacement(LoginScreenCompany(), context);
-    }
+    Navigator.pushAndRemoveUntil(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return child; // No animation, just return the page
+        },
+        transitionDuration: Duration.zero, // Zero duration for instant transition
+      ),
+      (route) => false, // Removes all previous routes
+    );
+
     notifyListeners();
   }
 

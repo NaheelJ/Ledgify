@@ -488,6 +488,4 @@ class AddEmployeeScreen extends StatelessWidget {
     );
   }
 
-
-
 }
