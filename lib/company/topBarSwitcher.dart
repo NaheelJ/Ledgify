@@ -3,6 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ledgifi/admin/sideBarForAmnin.dart';
 import 'package:ledgifi/company/sideBar.dart';
 import 'package:ledgifi/constants/myColors.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/mainProvider.dart';
 
 
 class CompanySwitcherDemo extends StatefulWidget {
@@ -13,7 +16,7 @@ class CompanySwitcherDemo extends StatefulWidget {
 }
 
 class _CompanySwitcherDemoState extends State<CompanySwitcherDemo> {
-  int _selectedIndex = -1; // -1 represents admin view, 0 and above for companies
+  // int _selectedIndex = -1; // -1 represents admin view, 0 and above for companies
 
   final List<String> _companies = [
     'Company A',
@@ -24,6 +27,7 @@ class _CompanySwitcherDemoState extends State<CompanySwitcherDemo> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Column(
         children: [
@@ -102,12 +106,13 @@ class _CompanySwitcherDemoState extends State<CompanySwitcherDemo> {
   }
 
   Widget _buildAdminButton() {
-    bool isSelected = _selectedIndex == -1;
+    final mainProvider = Provider.of<MainProvider>(context,listen: false);
+    bool isSelected = mainProvider.topBarSelectedIndex == -1;
 
     return InkWell(
       onTap: () {
         setState(() {
-          _selectedIndex = -1; // Set to admin view
+          mainProvider.topBarSelectedIndex = -1; // Set to admin view
         });
       },
       child: Container(
@@ -145,12 +150,14 @@ class _CompanySwitcherDemoState extends State<CompanySwitcherDemo> {
   }
 
   Widget _buildCompanyButton(int index) {
-    bool isSelected = _selectedIndex == index;
+    final mainProvider = Provider.of<MainProvider>(context, listen: false);
+    bool isSelected = mainProvider.topBarSelectedIndex == index;
 
     return InkWell(
       onTap: () {
         setState(() {
-          _selectedIndex = index;
+          mainProvider.topBarSelectedIndex = index;
+          mainProvider.selectedIndex==0;
         });
       },
       child: Container(
@@ -188,16 +195,27 @@ class _CompanySwitcherDemoState extends State<CompanySwitcherDemo> {
 
   // Function to return the appropriate page based on selected index
   Widget _buildSelectedPage() {
-    switch (_selectedIndex) {
-      case -1: // Admin view
+    final mainProvider = Provider.of<MainProvider>(context, listen: false);
+    switch (mainProvider.topBarSelectedIndex) {
+      case -1:
+        print("printtttttttttttttttttttttttttttttt 1111111111");
+        mainProvider.setSelectedIndex(0);// Admin view
         return SideBarScreenForAdmin();
-      case 0: // Company A
+      case 0:
+        print("printtttttttttttttttttttttttttttttt 22222222222");
+        mainProvider.setSelectedIndex(0);// Company A
         return SideBarScreenForCompany();
-      case 1: // Company B
+      case 1:
+        print("printtttttttttttttttttttttttttttttt 33333333333");
+        mainProvider.setSelectedIndex(0);// Company B
         return SideBarScreenForCompany();
-      case 2: // Company D
+      case 2:
+        print("printtttttttttttttttttttttttttttttt 44444444444");
+        mainProvider.setSelectedIndex(0);// Company D
         return SideBarScreenForCompany();
-      case 3: // Company E
+      case 3:
+        print("printtttttttttttttttttttttttttttttt 555555555555");
+        mainProvider.setSelectedIndex(0);// Company E
         return SideBarScreenForAdmin();
       default:
       // Default to admin if somehow we get an invalid index

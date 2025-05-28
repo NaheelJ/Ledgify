@@ -9,8 +9,41 @@ import 'package:ledgifi/constants/functions.dart';
 import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
-class GroupScreen extends StatelessWidget {
+class GroupScreen  extends StatelessWidget {
   const GroupScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: clwhite,
+        body: Consumer<MainProvider>(
+          builder: (ctx, adminRetailerPro, _) {
+            String id = DateTime.now().millisecondsSinceEpoch.toString();
+            switch (adminRetailerPro.changeScreenWidgets.value) {
+              case "financialOperations_viewLedgers":
+                return ViewLedgersScreen();
+            /*case "settlement":
+                return InvoiceSettlementScreen();
+              case "addVendor":
+                return AddVentorScreen();*/
+              case "financialOperations_defaults":
+              default:
+                return GroupScreenHome();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+class GroupScreenHome extends StatelessWidget {
+  const GroupScreenHome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -811,7 +844,7 @@ List<Widget> _buildGroupListRows(BuildContext context) {
             width: 165,
             child: InkWell(
               onTap: () {
-                callNext(ViewLedgersScreen(), context);
+                Provider.of<MainProvider>(context, listen: false).clickAddButton('financialOperations_viewLedgers');
               },
               child: Text(
                 'View Ledgers',

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../constants/myColors.dart';
 import '../../providers/mainProvider.dart';
+import '../finantial operations/ledgersInFinantialOperationsScreen.dart';
 
 
 
@@ -127,6 +128,7 @@ class ReceiptPortalScreen extends StatelessWidget {
                               GestureDetector(
                                 onTap: () {
                                   // Handle tap
+                                  showCreateLedgerDialog(context);
                                 },
                                 child: Container(
                                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 19.6),

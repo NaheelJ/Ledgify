@@ -2,14 +2,41 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ledgifi/company/employees%20management/addEmployeeScreen.dart';
-import 'package:ledgifi/company/sales/addCustomersScreen.dart';
-import 'package:ledgifi/company/sales/salesRecordScreen.dart';
-import 'package:ledgifi/constants/functions.dart';
 import 'package:ledgifi/constants/myColors.dart';
-import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
-class EmployeesScreen extends StatelessWidget {
+
+import '../../providers/mainProvider.dart';
+class EmployeesScreen  extends StatelessWidget {
   const EmployeesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: clwhite,
+        body: Consumer<MainProvider>(
+          builder: (ctx, adminRetailerPro, _) {
+            String id = DateTime.now().millisecondsSinceEpoch.toString();
+            switch (adminRetailerPro.changeScreenWidgets.value) {
+              case "employeeManagement_addEmployee":
+                return AddEmployeeScreen();
+              case "employeeManagement_default":
+              default:
+                return EmployeesScreenHome();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+class EmployeesScreenHome extends StatelessWidget {
+  const EmployeesScreenHome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +93,7 @@ class EmployeesScreen extends StatelessWidget {
                       height: 45,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) {
-                            return
-                              AddEmployeeScreen();
-                          },));
+                          Provider.of<MainProvider>(context, listen: false).clickAddButton('employeeManagement_addEmployee');
 
                         },
                         style: ElevatedButton.styleFrom(

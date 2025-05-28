@@ -5,8 +5,48 @@ import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
 
-class SalesRecordScreen extends StatelessWidget {
+import '../purchase/invoiceSettlementScreen.dart';
+import 'addCustomersScreen.dart';
+import 'addSalesScreen.dart';
+
+class SalesRecordScreen  extends StatelessWidget {
   const SalesRecordScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: clwhite,
+        body: Consumer<MainProvider>(
+          builder: (ctx, adminRetailerPro, _) {
+            String id = DateTime.now().millisecondsSinceEpoch.toString();
+            switch (adminRetailerPro.changeScreenWidgets.value) {
+              case "sales_settlement":
+                return InvoiceSettlementScreen();
+              case "sales_addSales":
+                return AddSalesScreen();
+              case "sales_addCustomer":
+                return AddCustomersScreen(from: 'sales',);
+              case "sales_default":
+                return SalesRecordScreenHome();
+              default:
+                return SalesRecordScreenHome();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+
+
+class SalesRecordScreenHome extends StatelessWidget {
+  const SalesRecordScreenHome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -173,6 +213,7 @@ class SalesRecordScreen extends StatelessWidget {
                             child: ElevatedButton(
                               onPressed: () {
                                 // Add Invoice action
+                                Provider.of<MainProvider>(context, listen: false).clickAddButton('sales_addSales');
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: cl8F1A3F,
@@ -871,6 +912,7 @@ List<Widget> _buildPurchaseRecordRows(BuildContext context) {
                   child: ElevatedButton(
                       onPressed: () {
                         // Settlement action
+                        Provider.of<MainProvider>(context, listen: false).clickAddButton('sales_settlement');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF8F1A3F), // Maroon color from the image

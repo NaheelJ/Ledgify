@@ -66,12 +66,41 @@ class LoginProvider with ChangeNotifier {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  Future<void> userAuthorized(String userId, String role, context) async {
+  bool validateEmailAndPassword(BuildContext context) {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (email.isEmpty) {
+      _showError(context, 'Please enter your email');
+      return false;
+    }
+
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
+      _showError(context, 'Please enter a valid email address');
+      return false;
+    }
+
+    if (password.isEmpty) {
+      _showError(context, 'Please enter your password');
+      return false;
+    }
+
+    if (password.length < 6) {
+      _showError(context, 'Password must be at least 6 characters long');
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<void> userAuthorized(String userId, context) async {
     MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
+
     await fetchUserData(userId);
-    mainProvider.startListeningToCompanies();
+    await mainProvider.fetchInitialCompaniesAndListen();
 
     String role = usermodel!.role.toString();
+    print('User role: $role');
 
     switch (role) {
       case 'admin':
@@ -83,6 +112,7 @@ class LoginProvider with ChangeNotifier {
       default:
         callNextReplacement(LoginScreenCompany(), context);
     }
+    notifyListeners();
   }
 
   UserModel? usermodel;

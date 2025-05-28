@@ -9,15 +9,51 @@ import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
 
 import '../../company/employees management/addEmployeeScreen.dart';
+import '../../company/topBarSwitcher.dart';
 import 'addCompanyScreen.dart';
 
 class DashBoardScreenAdmin extends StatelessWidget {
-  DashBoardScreenAdmin({super.key});
+  const DashBoardScreenAdmin({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: clwhite,
+        body: Consumer<MainProvider>(
+          builder: (ctx, adminRetailerPro, _) {
+            String id = DateTime.now().millisecondsSinceEpoch.toString();
+            switch (adminRetailerPro.changeScreenWidgets.value) {
+              case "addCompany":
+                return AddCompanyScreen();
+              /*case "settlement":
+                return InvoiceSettlementScreen();
+              case "addVendor":
+                return AddVentorScreen();*/
+              case "dashBoard":
+              default:
+                return DashBoardScreenAdminHome();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class DashBoardScreenAdminHome extends StatelessWidget {
+  DashBoardScreenAdminHome({super.key});
 
   final List<String> companies = ["Company A", "Company B", "Company C", "Company D", "Company E"];
 
   @override
   Widget build(BuildContext context) {
+    final mainProvider = Provider.of<MainProvider>(context, listen: false);
     // Define controllers outside of the build method but inside the class
     final TextEditingController controllerNew = TextEditingController();
     var height = MediaQuery.of(context).size.height;
@@ -52,8 +88,7 @@ class DashBoardScreenAdmin extends StatelessWidget {
                       height: 45,
                       child: ElevatedButton(
                         onPressed: () {
-                          String companyId = DateTime.now().millisecondsSinceEpoch.toString();
-                          callNext(AddCompanyScreen(companyId: companyId), context);
+                          mainProvider.clickAddButton('addCompany');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: cl8F1A3F,
@@ -82,30 +117,101 @@ class DashBoardScreenAdmin extends StatelessWidget {
 
       body: Consumer<MainProvider>(
         builder:
-            (context, person, child) => GridView.builder(
-              shrinkWrap: true,
-              itemCount: person.companies.length,
+            (context, person, child) => Padding(
               padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 340, // max width of each card
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 3, // adjust based on your layout
+              child: Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children:
+                    person.companies.map((company) {
+                      return SizedBox(
+                        child: CompanyCard(
+                          title: company.companyName,
+                          companyId: company.id,
+                          companyAddress: company.address,
+                          companyContactNumber: company.contactNumber,
+                          companyEmail: company.email,
+                          taxId: company.taxId,
+                          onClick: () {
+                            print("Clicked on ${company.companyName}");
+
+                            final name = company.companyName;
+                            if (name == "Company A") {
+                              mainProvider.topBarSelectedIndex = 0;
+                              // callNext(CompanySwitcherDemo(), context);
+                            } else if (name == "Company B") {
+                              mainProvider.topBarSelectedIndex = 1;
+                              // callNext(CompanySwitcherDemo(), context);
+                              mainProvider.clickAddButton('companyB');
+                            } else if (name == "Company C") {
+                              mainProvider.topBarSelectedIndex = 2;
+                              // callNext(CompanySwitcherDemo(), context);
+                              mainProvider.clickAddButton('companyC');
+                            } else if (name == "Company D") {
+                              mainProvider.topBarSelectedIndex = 3;
+                              // callNext(CompanySwitcherDemo(), context);
+                              mainProvider.clickAddButton('companyD');
+                            } else if (name == "Company E") {
+                              mainProvider.topBarSelectedIndex = 5;
+                              // callNext(CompanySwitcherDemo(), context);
+                              mainProvider.clickAddButton('companyE');
+                            }
+                          },
+                        ),
+                      );
+                    }).toList(),
               ),
-              itemBuilder: (context, index) {
-                final company = person.companies[index];
-                return CompanyCard(
-                  title: company.companyName,
-                  companyId: company.id,
-                  companyAddress: company.address,
-                  companyContactNumber: company.contactNumber,
-                  companyEmail: company.email,
-                  taxId: company.taxId,
-                  onClick: () {
-                  },
-                );
-              },
             ),
+        // GridView.builder(
+        //   shrinkWrap: true,
+        //   itemCount: person.companies.length,
+        //   padding: const EdgeInsets.all(16),
+        //   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        //     maxCrossAxisExtent: 340, // max width of each card
+        //     mainAxisSpacing: 16,
+        //     crossAxisSpacing: 16,
+        //     childAspectRatio: 3, // adjust based on your layout
+        //   ),
+        //   itemBuilder: (context, index) {
+        //     final company = person.companies[index];
+        //     return CompanyCard(
+        //       title: company.companyName,
+        //       companyId: company.id,
+        //       companyAddress: company.address,
+        //       companyContactNumber: company.contactNumber,
+        //       companyEmail: company.email,
+        //       taxId: company.taxId,
+        //       onClick: () {
+        //         print("Clicked on ${companies[index]}");
+        //         if (companies[index] == "Company A") {
+        //           // mainProvider.selectedIndex==0;
+        //           mainProvider.topBarSelectedIndex = 0;
+        //           callNext(CompanySwitcherDemo(), context);
+        //         } else if (companies[index] == "Company B") {
+        //           // mainProvider.selectedIndex==1;
+        //           mainProvider.topBarSelectedIndex = 1;
+        //           callNext(CompanySwitcherDemo(), context);
+        //           //mainProvider.clickAddButton('companyB');
+        //         } else if (companies[index] == "Company C") {
+        //           // mainProvider.selectedIndex==2;
+        //           mainProvider.topBarSelectedIndex = 2;
+        //           callNext(CompanySwitcherDemo(), context);
+        //           //mainProvider.clickAddButton('companyC');
+        //         } else if (companies[index] == "Company D") {
+        //           // mainProvider.selectedIndex==3;
+        //           mainProvider.topBarSelectedIndex = 3;
+        //           callNext(CompanySwitcherDemo(), context);
+        //           //mainProvider.clickAddButton('companyD');
+        //         } else if (companies[index] == "Company E") {
+        //           // mainProvider.selectedIndex==5;
+        //           mainProvider.topBarSelectedIndex = 5;
+        //           callNext(CompanySwitcherDemo(), context);
+        //           //mainProvider.clickAddButton('companyE');
+        //         }
+        //       },
+        //     );
+        //   },
+        // ),
       ),
     );
   }
@@ -133,7 +239,7 @@ class CompanyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 300,
+      constraints: BoxConstraints(minWidth: 360, maxWidth: 400),
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 25),
       decoration: BoxDecoration(color: clwhite, border: Border.all(color: clD5D7DA), borderRadius: BorderRadius.circular(12)),
       child: Row(
@@ -172,7 +278,7 @@ class CompanyCard extends StatelessWidget {
               ],
             ),
           ),
-
+          SizedBox(width: 5),
           InkWell(onTap: onClick, child: Image.asset('asset/icons/nextIcon.png', scale: 4)),
         ],
       ),

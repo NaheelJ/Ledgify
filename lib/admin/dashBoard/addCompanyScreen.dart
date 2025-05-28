@@ -12,13 +12,12 @@ import '../../constants/myColors.dart';
 import '../../providers/mainProvider.dart';
 
 class AddCompanyScreen extends StatelessWidget {
-  final String companyId;
-  AddCompanyScreen({super.key, required this.companyId});
+  AddCompanyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     LoginProvider loginProvider = Provider.of<LoginProvider>(context, listen: false);
-
+    final mainProvider = Provider.of<MainProvider>(context, listen: false);
     var width = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -34,7 +33,7 @@ class AddCompanyScreen extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
-                    back(context);
+                    mainProvider.clickAddButton('dashBoard');
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -189,7 +188,7 @@ class AddCompanyScreen extends StatelessWidget {
                           decoration: BoxDecoration(border: Border.all(color: mainProvider.borderColor), borderRadius: BorderRadius.circular(6)),
                           child: TextField(
                             controller: mainProvider.taxIdController,
-                            focusNode: mainProvider.focusCompanyTaxId,
+                            focusNode: mainProvider.focusCompanyPassword,
                             style: GoogleFonts.notoSans(textStyle: TextStyle(color: clblack)),
                             keyboardType: TextInputType.phone,
                             decoration: InputDecoration(
@@ -208,7 +207,31 @@ class AddCompanyScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      Expanded(child: SizedBox()),
+                      Expanded(
+                        child: Container(
+                          // Optional: reduce outer padding if not needed
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(border: Border.all(color: mainProvider.borderColor), borderRadius: BorderRadius.circular(6)),
+                          child: TextField(
+                            controller: mainProvider.passwordController,
+                            focusNode: mainProvider.focusCompanyTaxId,
+                            style: GoogleFonts.notoSans(textStyle: TextStyle(color: clblack)),
+                            keyboardType: TextInputType.phone,
+                            decoration: InputDecoration(
+                              isDense: true, // Reduces vertical spacing
+                              contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
+                              border: InputBorder.none,
+                              label: RichText(
+                                text: TextSpan(
+                                  text: 'Password',
+                                  style: GoogleFonts.notoSans(textStyle: TextStyle(color: Colors.grey, fontSize: 16)),
+                                  children: [TextSpan(text: '*', style: TextStyle(color: Colors.red, fontSize: 16))],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -234,27 +257,32 @@ class AddCompanyScreen extends StatelessWidget {
                       SizedBox(
                         width: 150,
                         height: 40,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            bool success = await mainProvider.addNewCompany(context: context, companyId: companyId, userId: loginProvider.usermodel!.id!);
-                            if (success) {
-                              showSuccessDialog(context);
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: cl8F1A3F,
-                            foregroundColor: Colors.white,
-                            side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                            elevation: 0,
-                          ),
-                          child: Consumer<MainProvider>(
-                            builder:
-                                (context, person, child) =>
-                                    person.isLoadingAddCompany
+                        child: Consumer<MainProvider>(
+                          builder:
+                              (context, mainPro, child) => ElevatedButton(
+                                onPressed: () async {
+                                  if (mainPro.isLoadingAddCompany) return;
+
+                                  if (!mainPro.validateCompanyInputs(context)) return;
+
+                                  String newCompanyId = DateTime.now().millisecondsSinceEpoch.toString();
+                                  bool success = await mainProvider.addNewCompany(context: context, userId: loginProvider.usermodel!.id!);
+                                  if (success) {
+                                    showSuccessDialog(context);
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: cl8F1A3F,
+                                  foregroundColor: Colors.white,
+                                  side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                                  elevation: 0,
+                                ),
+                                child:
+                                    mainPro.isLoadingAddCompany
                                         ? SizedBox(height: 24, width: 24, child: const Center(child: CircularProgressIndicator(color: Colors.white)))
                                         : Text("Save", style: TextStyle(color: clwhite, fontSize: 16, fontWeight: FontWeight.w500)),
-                          ),
+                              ),
                         ),
                       ),
                     ],
@@ -273,8 +301,9 @@ class AddCompanyScreen extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        Future.delayed(const Duration(seconds: 3), () {
-          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => DashBoardScreenAdmin()));
+        Future.delayed(const Duration(seconds: 4), () {
+          Provider.of<MainProvider>(context, listen: false).clickAddButton('dashBoard');
+          Navigator.pop(context); // Close the dialog after 4 seconds
         });
 
         return Dialog(

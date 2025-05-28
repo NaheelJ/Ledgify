@@ -1,8 +1,9 @@
-import 'dart:async' show StreamSubscription;
+import 'dart:async' show Completer, StreamSubscription;
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
@@ -71,13 +72,18 @@ class MainProvider with ChangeNotifier {
   String get priority => _priority;
   String get payable => _payable;
 
-  void setPriority(String value) {
-    _priority = value;
-    notifyListeners();
-  }
+  ///top bar
+  int topBarSelectedIndex = -1;
+
+  ///
 
   void setPayable(String value) {
     _payable = value;
+    notifyListeners();
+  }
+
+  void setPriority(String value) {
+    _priority = value;
     notifyListeners();
   }
 
@@ -364,6 +370,7 @@ class MainProvider with ChangeNotifier {
   final focusCompanyContact = FocusNode();
   final focusCompanyAddress = FocusNode();
   final focusCompanyTaxId = FocusNode();
+  final focusCompanyPassword = FocusNode();
 
   //invoiceSettlement
 
@@ -555,28 +562,38 @@ class MainProvider with ChangeNotifier {
   final TextEditingController taxIdController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController contactNumberController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   void setLoadingAddCompany(bool value) {
     _isLoadingAddCompany = value;
     notifyListeners();
   }
 
-  Future<bool> addNewCompany({required BuildContext context, required String companyId, required String userId}) async {
+  Future<bool> addNewCompany({required BuildContext context, required String userId}) async {
     final String companyName = companyNameController.text.trim();
     final String address = addressController.text.trim();
     final String taxId = taxIdController.text.trim();
-    final String email = emailController.text.trim();
     final String contactNumber = contactNumberController.text.trim();
+    final String password = passwordController.text.trim();
+    final String email = emailController.text.trim();
 
     setLoadingAddCompany(true);
 
     try {
-      // Reference to the 'COMPANY' collection in Firestore
-      DocumentReference companies = db.collection('COMPANY').doc(companyId);
+      // 🔐 Step 1: Register email in Firebase Authentication
+      final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
 
-      // Add the company data to Firestore
-      await companies.set({
-        'ID': companyId,
+      final newCompanyId = userCredential.user?.uid;
+
+      if (newCompanyId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Account creation failed. Please try again later.'), backgroundColor: Colors.red, duration: Duration(seconds: 3)));
+        throw Exception('FirebaseAuth returned null UID after account creation');
+      }
+
+      // ✅ Step 2: Add company data to Firestore
+      DocumentReference companyRef = db.collection('COMPANY').doc(newCompanyId);
+
+      await companyRef.set({
         'COMPANY_NAME': companyName,
         'ADDRESS': address,
         'TAX_ID': taxId,
@@ -585,13 +602,16 @@ class MainProvider with ChangeNotifier {
         'ADDED_DATE': FieldValue.serverTimestamp(),
         'ADDED_BY': userId,
         'STATUS': 'ACTIVE',
+        'ROLE': 'COMPANY',
+        'PASSWORD': password,
       }, SetOptions(merge: true));
 
       return true;
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Auth Error: ${e.message}'), backgroundColor: Colors.red));
+      return false;
     } catch (e) {
-      // Show error snack bar
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error adding company: $e'), backgroundColor: Colors.red, duration: const Duration(seconds: 3)));
-
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error adding company: $e. Please try again'), backgroundColor: Colors.red));
       return false;
     } finally {
       setLoadingAddCompany(false);
@@ -603,26 +623,102 @@ class MainProvider with ChangeNotifier {
   List<CompanyModel> _companies = [];
   List<CompanyModel> get companies => _companies;
 
-  void startListeningToCompanies() {
-    _companySubscription = db
-        .collection('COMPANY')
-        .snapshots()
-        .listen(
-          (querySnapshot) {
-            _companies =
-                querySnapshot.docs.map((doc) {
-                  return CompanyModel.fromMap(doc.data());
-                }).toList();
-            notifyListeners();
-          },
-          onError: (e) {
-            print('Error listening to companies: $e');
-          },
-        );
+  Future<void> fetchInitialCompaniesAndListen() async {
+    try {
+
+      // Step 1: Immediate fetch
+      final querySnapshot = await db.collection('COMPANY').get();
+      _companies = querySnapshot.docs.map((doc) {
+            return CompanyModel.fromMap(doc.data());
+      }).toList();
+
+      debugPrint('✅ First fetch: ${_companies.length} companies');
+
+      // Step 2: Realtime updates
+      _companySubscription = db.collection('COMPANY').snapshots().listen((querySnapshot) {
+        _companies = querySnapshot.docs.map((doc) {
+              return CompanyModel.fromMap(doc.data());
+      }).toList();
+
+        debugPrint('🔄 Realtime update: ${_companies.length} companies');
+        notifyListeners();
+      }, onError: (e) => debugPrint('❌ Realtime error: $e'));
+    } catch (e) {
+      debugPrint('❌ Initial fetch error: $e');
+      notifyListeners();
+    }
   }
+
+  // Future<void> startListeningToCompanies() async {
+  //   _companySubscription = db
+  //       .collection('COMPANY')
+  //       .snapshots()
+  //       .listen(
+  //         (QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+  //           _companies =
+  //               querySnapshot.docs.map((doc) {
+  //                 final data = doc.data();
+  //                 return CompanyModel.fromMap(data);
+  //               }).toList();
+
+  //           print('🔥 Companies updated: ${_companies.length} companies found');
+
+  //           notifyListeners();
+  //         },
+  //         onError: (error) {
+  //           debugPrint('🔥 Error listening to companies: $error');
+  //         },
+  //         cancelOnError: false, // Optional: decide whether to stop listening on error
+  //       );
+  // }
 
   void disposeListener() {
     _companySubscription?.cancel();
+  }
+
+  bool validateCompanyInputs(BuildContext context) {
+    if (companyNameController.text.trim().isEmpty) {
+      _showError(context, 'Please enter the company name');
+      return false;
+    }
+    if (addressController.text.trim().isEmpty) {
+      _showError(context, 'Please enter the company address');
+      return false;
+    }
+    if (taxIdController.text.trim().isEmpty) {
+      _showError(context, 'Please enter the tax ID');
+      return false;
+    }
+    if (emailController.text.trim().isEmpty) {
+      _showError(context, 'Please enter the email');
+      return false;
+    }
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(emailController.text.trim())) {
+      _showError(context, 'Please enter a valid email address');
+      return false;
+    }
+    if (contactNumberController.text.trim().isEmpty) {
+      _showError(context, 'Please enter the contact number');
+      return false;
+    }
+    if (!RegExp(r'^[0-9]{10,}$').hasMatch(contactNumberController.text.trim())) {
+      _showError(context, 'Please enter a valid contact number');
+      return false;
+    }
+    if (passwordController.text.trim().isEmpty) {
+      _showError(context, 'Please enter a password');
+      return false;
+    }
+    if (passwordController.text.trim().length < 6) {
+      _showError(context, 'Password should be at least 6 characters');
+      return false;
+    }
+
+    return true;
+  }
+
+  void _showError(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red));
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////

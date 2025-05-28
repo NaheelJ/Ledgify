@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ledgifi/admin/dashBoard/dashBoardAdmin.dart';
+import 'package:ledgifi/admin/reports/expenseReportScreen.dart';
+import 'package:ledgifi/admin/reports/salesReport.dart';
+import 'package:ledgifi/admin/users/usersScreen.dart';
 import 'package:ledgifi/company/DashBoard/dashBoardScreen.dart';
 import 'package:ledgifi/company/finantial%20operations/GroupScreen.dart';
 import 'package:ledgifi/company/finantial%20operations/journalCategoriesScreen.dart';
@@ -26,10 +29,13 @@ class SideBarScreenForAdmin extends StatelessWidget {
   final List<Widget> sections = [
     DashBoardScreenAdmin(),
     PurchaseRecordScreen(),
-    VendorsInPurchaseScreen(),
-    SalesRecordScreen(),
+    // VendorsInPurchaseScreen(),
+    SalesReportScreen(),
+    // SalesRecordScreen(),
+    ExpenseReportScreen(),
     CustomersInSalesScreen(),
     DayBookScreenInReport(),
+    UsersScreen(),
   ];
 
   @override
@@ -98,25 +104,21 @@ class SidebarForCompany extends StatelessWidget {
               imagePath: 'asset/icons/reportsIcon.png',
               subItems: [
                 SidebarSubItem(
-                    label: 'Sales Report',
+                    label: 'Purchase Report',
                     index: 1,
-                    imagePath: 'asset/icons/purchaseRecordIcon.png'),
+                    imagePath: 'asset/icons/purchaseReportAd.png'),
                 SidebarSubItem(
-                    label: 'Vendors',
+                    label: 'Sales Report ',
                     index: 2,
-                    imagePath: 'asset/icons/vendor.png'),
+                    imagePath: 'asset/icons/salesReportAd.png'),
                 SidebarSubItem(
-                    label: 'Sales Records',
+                    label: 'Expenses Report ',
                     index: 3,
-                    imagePath: 'asset/icons/salesIcon.png'),
+                    imagePath: 'asset/icons/expenseReportAd.png'),
                 SidebarSubItem(
-                    label: 'Customers',
+                    label: 'Salary Report',
                     index: 4,
-                    imagePath: 'asset/icons/customersIcon.png'),
-                SidebarSubItem(
-                    label: 'Day Book',
-                    index: 5,
-                    imagePath: 'asset/icons/daybookIcon.png'),
+                    imagePath: 'asset/icons/salaryReport.png'),
               ],
             ),
 

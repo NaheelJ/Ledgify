@@ -9,7 +9,8 @@ import '../../constants/myColors.dart';
 import '../../providers/mainProvider.dart';
 
 class AddCustomersScreen extends StatelessWidget {
-  const AddCustomersScreen({super.key});
+  final String from;// Default selected company
+  const AddCustomersScreen({super.key, required this.from});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,7 @@ class AddCustomersScreen extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
-                    back(context);
+                    Provider.of<MainProvider>(context, listen: false).clickAddButton('sales_addSales');
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -354,7 +355,7 @@ class AddCustomersScreen extends StatelessWidget {
                           height: 40,
                           child: ElevatedButton(
                             onPressed: () {
-                              showSuccessDialog(context);
+                              showSuccessDialog(context,from);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: cl8F1A3F,
@@ -387,15 +388,19 @@ class AddCustomersScreen extends StatelessWidget {
     );
   }
 
-  void showSuccessDialog(BuildContext context) {
+  void showSuccessDialog(BuildContext context,String from) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
         Future.delayed(const Duration(seconds: 4), () {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => CustomersInSalesScreen(),)
-          );
+          if(from=='sales'){
+            Provider.of<MainProvider>(context, listen: false).clickAddButton('sales_addSales');
+            Navigator.pop(context);
+          }else{
+            Provider.of<MainProvider>(context, listen: false).clickAddButton('customer_default');
+            Navigator.pop(context);
+          }
         });
 
         return Dialog(

@@ -1,11 +1,43 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ledgifi/company/purchase/ventors/addVentorScreen.dart';
 import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
-class VendorsInPurchaseScreen extends StatelessWidget {
+
+class VendorsInPurchaseScreen  extends StatelessWidget {
   const VendorsInPurchaseScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: clwhite,
+        body: Consumer<MainProvider>(
+          builder: (ctx, adminRetailerPro, _) {
+            String id = DateTime.now().millisecondsSinceEpoch.toString();
+            switch (adminRetailerPro.changeScreenWidgets.value) {
+              case "vendor_addVendor":
+                return AddVentorScreen();
+              case "vendor_vendorScreen":
+              default:
+                return VendorsInPurchaseScreenHome();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class VendorsInPurchaseScreenHome extends StatelessWidget {
+  const VendorsInPurchaseScreenHome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +83,7 @@ class VendorsInPurchaseScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       // Save action
+                      Provider.of<MainProvider>(context, listen: false).clickAddButton('vendor_addVendor');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: cl8F1A3F,

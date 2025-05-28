@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ledgifi/company/sideBar.dart';
+import 'package:ledgifi/company/topBarSwitcher.dart';
 import 'package:ledgifi/constants/functions.dart';
 import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/loginProvider.dart';
@@ -122,26 +123,31 @@ class LoginScreenCompany extends StatelessWidget {
                           child: SizedBox(
                             height: 44,
                             width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: cl8F1A3F,
-                                elevation: 0, // Remove default shadow to only use custom shadow
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                              ),
-                              onPressed: () async {
-                                await loginProvider.login(context);
-                              },
-                              child: Consumer<LoginProvider>(
-                                builder:
-                                    (context, person, child) =>
-                                        person.isLoading
-                                            ? SizedBox(
-                                                height: 24,
-                                                width: 24,
-                                              child: const Center(child: CircularProgressIndicator(color: Colors.white)))
-                                            : Text('Login', style: GoogleFonts.notoSans(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
-                              ),
+                            child: Consumer<LoginProvider>(
+                              builder:
+                                  (context, person, child) => ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: cl8F1A3F,
+                                      elevation: 0, // Remove default shadow to only use custom shadow
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                    ),
+                                    onPressed: () async {
+                                      if (person.isLoading) return;
+
+                                      if (!person.validateEmailAndPassword(context)) return;
+
+                                      await loginProvider.login(context);
+                                    },
+                                    child: Consumer<LoginProvider>(
+                                      builder:
+                                          (context, person, child) =>
+                                              person.isLoading
+                                                  ? SizedBox(height: 24, width: 24, child: const Center(child: CircularProgressIndicator(color: Colors.white)))
+                                                  : Text('Login', style: GoogleFonts.notoSans(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
+                                      child: Text('Login', style: GoogleFonts.notoSans(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
+                                    ),
+                                  ),
                             ),
                           ),
                         );

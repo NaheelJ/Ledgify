@@ -19,6 +19,8 @@ import 'package:ledgifi/constants/myColors.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/mainProvider.dart';
+import 'employees management/employeesScreen.dart';
+import 'employees management/payRollScreen.dart';
 import 'journal entry/internal transfer/internalTransferScreen.dart';
 import 'journal entry/paymentPortalScreen.dart';
 import 'journal entry/receiptPortalScreen.dart';
@@ -39,7 +41,9 @@ class SideBarScreenForCompany extends StatelessWidget {
     BalanceSheetScreen(),
     LedgersInFinantialOperationsScreen(),
     GroupScreen(),
-    JournalCategoriesScreen(),
+    // JournalCategoriesScreen(),
+    EmployeesScreen(),
+    PayRollScreen()
   ];
 
   @override
@@ -96,7 +100,7 @@ class SidebarForCompany extends StatelessWidget {
                     imagePath: 'asset/icons/dashBoardIcon.png',
                   ),
                   SidebarExpandable(
-                    label: 'Staff Purchase',
+                    label: 'Purchase',
                     imagePath: 'asset/icons/purchaseIcon.png',
                     subItems: [
                       SidebarSubItem(label: 'Purchase Records', index: 1, imagePath: 'asset/icons/purchaseRecordIcon.png'),

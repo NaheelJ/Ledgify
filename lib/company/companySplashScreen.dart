@@ -38,14 +38,13 @@ class _SplashScreenCompanyState extends State<SplashScreenCompany> with SingleTi
     try {
       final pref = await SharedPreferences.getInstance();
       final userId = pref.getString('USER_ID') ?? '';
-      final role = pref.getString('ROLE') ?? '';
 
       if (userId.isEmpty) {
         callNextReplacement(LoginScreenCompany(), context);
         return;
       }
 
-      await loginProvider.userAuthorized(userId, role, context);
+      await loginProvider.userAuthorized(userId, context);
     } catch (e) {
       callNextReplacement(LoginScreenCompany(), context);
     }

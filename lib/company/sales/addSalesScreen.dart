@@ -159,6 +159,7 @@ class AddSalesScreen extends StatelessWidget {
                               GestureDetector(
                                 onTap: () {
                                   // Handle tap
+                                  Provider.of<MainProvider>(context, listen: false).clickAddButton('sales_addCustomer');
                                 },
                                 child: Container(
                                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 19.6),
@@ -919,9 +920,9 @@ class AddSalesScreen extends StatelessWidget {
       barrierDismissible: false,
       builder: (context) {
         Future.delayed(const Duration(seconds: 4), () {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => AddSalesScreen(),)
-          );
+          Provider.of<MainProvider>(context, listen: false).clickAddButton('sales_default');
+          Navigator.pop(context);
+          Navigator.pop(context);
         });
 
         return Dialog(

@@ -1,11 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ledgifi/company/finantial%20operations/ledgersInFinantialOperationsScreen.dart';
 import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
-
-class PaymentPortalScreen extends StatelessWidget {
+class PaymentPortalScreen  extends StatelessWidget {
   const PaymentPortalScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: clwhite,
+        body: Consumer<MainProvider>(
+          builder: (ctx, adminRetailerPro, _) {
+            String id = DateTime.now().millisecondsSinceEpoch.toString();
+            switch (adminRetailerPro.changeScreenWidgets.value) {
+              case "journal_createLedger":
+                // return AddCompanyScreen();
+              case "journal_paymentPortal":
+                return PaymentPortalScreenHome();
+              default:
+                return PaymentPortalScreenHome();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+class PaymentPortalScreenHome extends StatelessWidget {
+  const PaymentPortalScreenHome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +153,7 @@ var width = MediaQuery.of(context).size.width;
                             GestureDetector(
                               onTap: () {
                                 // Handle tap
+                                showCreateLedgerDialog(context);
                               },
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 19.6),
