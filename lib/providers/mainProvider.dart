@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ledgifi/model/company_model.dart';
+import 'package:ledgifi/model/user_model.dart';
+import 'package:ledgifi/model/vendor_model.dart';
 
 import '../constants/myColors.dart';
 
@@ -507,17 +509,6 @@ class MainProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // access for users
-
-  String _access = 'Admin';
-
-  String get access => _access;
-
-  void setAccess(String value) {
-    _access = value;
-    notifyListeners();
-  }
-
   int _selectedYear = 2025;
   String _selectedMonth = 'May';
   double _totalExpenseDate = 0.0; // Assuming this exists based on your usage
@@ -554,6 +545,10 @@ class MainProvider with ChangeNotifier {
   ////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////
 
+  void showError(BuildContext context, String message, {Color backgroundColor = Colors.red}) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: backgroundColor));
+  }
+
   bool _isLoadingAddCompany = false;
   bool get isLoadingAddCompany => _isLoadingAddCompany;
 
@@ -562,56 +557,41 @@ class MainProvider with ChangeNotifier {
   final TextEditingController taxIdController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController contactNumberController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
 
   void setLoadingAddCompany(bool value) {
     _isLoadingAddCompany = value;
     notifyListeners();
   }
 
-  Future<bool> addNewCompany({required BuildContext context, required String userId}) async {
+  Future<bool> addNewCompany({required BuildContext context, required String userId, required String userName, required String companyId}) async {
     final String companyName = companyNameController.text.trim();
     final String address = addressController.text.trim();
     final String taxId = taxIdController.text.trim();
     final String contactNumber = contactNumberController.text.trim();
-    final String password = passwordController.text.trim();
     final String email = emailController.text.trim();
 
     setLoadingAddCompany(true);
 
     try {
-      // 🔐 Step 1: Register email in Firebase Authentication
-      final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-
-      final newCompanyId = userCredential.user?.uid;
-
-      if (newCompanyId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Account creation failed. Please try again later.'), backgroundColor: Colors.red, duration: Duration(seconds: 3)));
-        throw Exception('FirebaseAuth returned null UID after account creation');
-      }
-
-      // ✅ Step 2: Add company data to Firestore
-      DocumentReference companyRef = db.collection('COMPANY').doc(newCompanyId);
-
-      await companyRef.set({
+      final Map<String, dynamic> data = {
+        'COMPANY_ID': companyId,
         'COMPANY_NAME': companyName,
-        'ADDRESS': address,
-        'TAX_ID': taxId,
         'EMAIL': email,
-        'CONTACT_NUMBER': contactNumber,
-        'ADDED_DATE': FieldValue.serverTimestamp(),
-        'ADDED_BY': userId,
-        'STATUS': 'ACTIVE',
-        'ROLE': 'COMPANY',
-        'PASSWORD': password,
-      }, SetOptions(merge: true));
+        'ADDRESS': address,
+        'PHONE': contactNumber,
+        'TAX_ID': taxId,
+        'ADDED_BY_ID': userId,
+        'ADDED_BY_NAME': userName,
+        'ADDED_ON': FieldValue.serverTimestamp(),
+      };
 
+      final DocumentReference companyRef = FirebaseFirestore.instance.collection('COMPANIES').doc(companyId);
+
+      await companyRef.set(data, SetOptions(merge: true));
+      clearCompanyControllers();
       return true;
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Auth Error: ${e.message}'), backgroundColor: Colors.red));
-      return false;
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error adding company: $e. Please try again'), backgroundColor: Colors.red));
+      showError(context, 'Failed to add company: $e');
       return false;
     } finally {
       setLoadingAddCompany(false);
@@ -623,102 +603,483 @@ class MainProvider with ChangeNotifier {
   List<CompanyModel> _companies = [];
   List<CompanyModel> get companies => _companies;
 
-  Future<void> fetchInitialCompaniesAndListen() async {
+  Future<void> fetchCompanies() async {
     try {
+      final querySnapshot = await db.collection('COMPANIES').get();
 
-      // Step 1: Immediate fetch
-      final querySnapshot = await db.collection('COMPANY').get();
-      _companies = querySnapshot.docs.map((doc) {
-            return CompanyModel.fromMap(doc.data());
-      }).toList();
+      _companies = querySnapshot.docs.map((doc) => CompanyModel.fromJson(doc.data())).toList();
 
-      debugPrint('✅ First fetch: ${_companies.length} companies');
-
-      // Step 2: Realtime updates
-      _companySubscription = db.collection('COMPANY').snapshots().listen((querySnapshot) {
-        _companies = querySnapshot.docs.map((doc) {
-              return CompanyModel.fromMap(doc.data());
-      }).toList();
-
-        debugPrint('🔄 Realtime update: ${_companies.length} companies');
-        notifyListeners();
-      }, onError: (e) => debugPrint('❌ Realtime error: $e'));
-    } catch (e) {
-      debugPrint('❌ Initial fetch error: $e');
+      debugPrint('✅ Fetched ${_companies.length} companies');
       notifyListeners();
+    } catch (e) {
+      debugPrint('❌ Error fetching companies: $e');
     }
-  }
-
-  // Future<void> startListeningToCompanies() async {
-  //   _companySubscription = db
-  //       .collection('COMPANY')
-  //       .snapshots()
-  //       .listen(
-  //         (QuerySnapshot<Map<String, dynamic>> querySnapshot) {
-  //           _companies =
-  //               querySnapshot.docs.map((doc) {
-  //                 final data = doc.data();
-  //                 return CompanyModel.fromMap(data);
-  //               }).toList();
-
-  //           print('🔥 Companies updated: ${_companies.length} companies found');
-
-  //           notifyListeners();
-  //         },
-  //         onError: (error) {
-  //           debugPrint('🔥 Error listening to companies: $error');
-  //         },
-  //         cancelOnError: false, // Optional: decide whether to stop listening on error
-  //       );
-  // }
-
-  void disposeListener() {
-    _companySubscription?.cancel();
   }
 
   bool validateCompanyInputs(BuildContext context) {
     if (companyNameController.text.trim().isEmpty) {
-      _showError(context, 'Please enter the company name');
+      showError(context, 'Please enter the company name');
       return false;
     }
     if (addressController.text.trim().isEmpty) {
-      _showError(context, 'Please enter the company address');
+      showError(context, 'Please enter the company address');
       return false;
     }
     if (taxIdController.text.trim().isEmpty) {
-      _showError(context, 'Please enter the tax ID');
+      showError(context, 'Please enter the tax ID');
       return false;
     }
     if (emailController.text.trim().isEmpty) {
-      _showError(context, 'Please enter the email');
+      showError(context, 'Please enter the email');
       return false;
     }
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(emailController.text.trim())) {
-      _showError(context, 'Please enter a valid email address');
+      showError(context, 'Please enter a valid email address');
       return false;
     }
     if (contactNumberController.text.trim().isEmpty) {
-      _showError(context, 'Please enter the contact number');
+      showError(context, 'Please enter the contact number');
       return false;
     }
-    if (!RegExp(r'^[0-9]{10,}$').hasMatch(contactNumberController.text.trim())) {
-      _showError(context, 'Please enter a valid contact number');
-      return false;
-    }
-    if (passwordController.text.trim().isEmpty) {
-      _showError(context, 'Please enter a password');
-      return false;
-    }
-    if (passwordController.text.trim().length < 6) {
-      _showError(context, 'Password should be at least 6 characters');
+    if (contactNumberController.text.isEmpty) {
+      showError(context, 'Please enter a Contact number');
       return false;
     }
 
     return true;
   }
 
-  void _showError(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red));
+  void clearCompanyControllers() {
+    userNameController.clear();
+    userSurnameController.clear();
+    userEmailController.clear();
+    userPasswordController.clear();
+    userContactNumberController.clear();
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //// USER ADDING PROCCESS /////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  final TextEditingController userNameController = TextEditingController();
+  final TextEditingController userSurnameController = TextEditingController();
+  final TextEditingController userEmailController = TextEditingController();
+  final TextEditingController userPasswordController = TextEditingController();
+  final TextEditingController userContactNumberController = TextEditingController();
+
+  String userSelectedRole = 'Accounts';
+
+  String? userNameError = '';
+  String? userSurnameError = '';
+  String? userEmailError = '';
+  String? userPasswordError = '';
+  String? userContactNumberError = '';
+
+  bool isLoadingUserAdding = false;
+
+  void setUserSelectedAccess(value) {
+    userSelectedRole = value;
+    notifyListeners();
+  }
+
+  void setLoadingUser(bool value) {
+    isLoadingUserAdding = value;
+    notifyListeners();
+  }
+
+  bool isUserEditing = false;
+
+  void setIsUserEditing(bool value) {
+    isUserEditing = value;
+    notifyListeners();
+  }
+
+  Future<bool> addUser({required BuildContext context, required String addedById, required String addedByName}) async {
+    try {
+      setLoadingUser(true);
+      final FirebaseAuth auth = FirebaseAuth.instance;
+
+      // Trim input
+      final String name = userNameController.text.trim();
+      final String surName = userSurnameController.text.trim();
+      final String phone = userContactNumberController.text.trim();
+      final String email = userEmailController.text.trim();
+      final String password = userPasswordController.text.trim();
+
+      // Date Time Now
+      final DateTime now = DateTime.now();
+
+      // Meta Data
+      final Map<String, dynamic> metaData = {};
+      String userId;
+
+      if (isUserEditing && selectedUserId.isNotEmpty) {
+        /// EDIT MODE
+
+        final existingUserData = selectedUser;
+        final String existingEmail = existingUserData!.email;
+        final String existingPassword = existingUserData.password;
+
+        // Check if email or password changed
+        if (existingEmail != email || existingPassword != password) {
+          showError(context, "You can't change the email and password. Only after deleting the user and recreating the user.");
+          return false;
+        }
+
+        userId = selectedUserId;
+        metaData['EDITED_BY_ID'] = addedById;
+        metaData['EDITED_BY_NAME'] = addedByName;
+        metaData['EDITED_ON'] = FieldValue.serverTimestamp();
+      } else {
+        /// ADD MODE
+
+        UserCredential userCredential = await auth.createUserWithEmailAndPassword(email: email, password: password);
+
+        userId = userCredential.user!.uid;
+        metaData['ADDED_BY_ID'] = addedById;
+        metaData['ADDED_BY_NAME'] = addedByName;
+        metaData['ADDED_ON'] = FieldValue.serverTimestamp();
+      }
+
+      final userData = {'USER_ID': userId, 'NAME': name, 'SUR_NAME': surName, 'PHONE': phone, 'EMAIL': email, 'PASSWORD': password, 'ROLE': userSelectedRole, 'STATUS': 'Active', ...metaData};
+
+      // Upload to Firestore
+      await db.collection('USERS').doc(userId).set(userData, SetOptions(merge: true));
+
+      // Local timestamp for model/UI
+      if (isUserEditing) {
+        userData['EDITED_ON'] = Timestamp.fromDate(now);
+      } else {
+        userData['ADDED_ON'] = Timestamp.fromDate(now);
+      }
+
+      // Update local user list
+      final int index = _usersList.indexWhere((u) => u.userId == userId);
+      if (index >= 0) {
+        _usersList[index] = UserModel.from(userData);
+      } else {
+        _usersList.add(UserModel.from(userData));
+      }
+
+      clearUserControllers();
+      return true;
+    } catch (e) {
+      showError(context, 'Failed to save user: $e');
+      return false;
+    } finally {
+      setLoadingUser(false);
+    }
+  }
+
+  List<UserModel> _usersList = [];
+  List<UserModel> get usersList => _usersList;
+
+  Future<void> fetchUsersList() async {
+    try {
+      final snapshot = await db.collection('USERS').orderBy('ADDED_ON', descending: true).get();
+
+      _usersList = snapshot.docs.map((doc) => UserModel.from(doc.data())).toList();
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching users: $e');
+    }
+  }
+
+  bool validateUserForm() {
+    bool isValid = true;
+
+    // Validate Name
+    if (userNameController.text.trim().isEmpty) {
+      userNameError = 'Name is required';
+    } else {
+      userNameError = '';
+    }
+
+    // Validate Surname
+    if (userSurnameController.text.trim().isEmpty) {
+      userSurnameError = 'Surname is Optional';
+      isValid = false;
+    } else {
+      userSurnameError = '';
+    }
+
+    // Validate Email
+    String email = userEmailController.text.trim();
+    if (email.isEmpty) {
+      userEmailError = 'Email is required';
+      isValid = false;
+    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$').hasMatch(email)) {
+      userEmailError = 'Enter a valid email';
+      isValid = false;
+    } else {
+      userEmailError = '';
+    }
+
+    // Validate Password
+    String password = userPasswordController.text;
+    if (password.isEmpty) {
+      userPasswordError = 'Password is required';
+      isValid = false;
+    } else if (password.length < 6) {
+      userPasswordError = 'Password must be at least 6 characters';
+      isValid = false;
+    } else {
+      userPasswordError = '';
+    }
+
+    // Validate Contact Number
+    String contact = userContactNumberController.text.trim();
+    if (contact.isEmpty) {
+      userContactNumberError = 'Contact number is required';
+      isValid = false;
+    } else {
+      userContactNumberError = '';
+    }
+
+    notifyListeners();
+
+    return isValid;
+  }
+
+  String selectedUserId = '';
+  UserModel? selectedUser;
+
+  void setUserControllers({required UserModel user, required String userId, required String name, required String surName, required String email, required String password, required String phone}) {
+    selectedUser = user;
+    selectedUserId = user.userId;
+    userNameController.text = name;
+    userSurnameController.text = surName;
+    userEmailController.text = email;
+    userPasswordController.text = password;
+    userContactNumberController.text = phone;
+  }
+
+  void clearUserControllers() {
+    userNameController.clear();
+    userSurnameController.clear();
+    userEmailController.clear();
+    userPasswordController.clear();
+    userContactNumberController.clear();
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //// VENDOR ADDING PROCESS ////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  final TextEditingController vendorNameController = TextEditingController();
+  final TextEditingController vendorEmailController = TextEditingController();
+  final TextEditingController vendorAddressController = TextEditingController();
+  final TextEditingController vendorPhoneController = TextEditingController();
+  final TextEditingController vendorContactPersonController = TextEditingController();
+  final TextEditingController vendorOpeningBalanceController = TextEditingController();
+  final TextEditingController vendorBalanceAmountController = TextEditingController();
+
+  // Matching FocusNodes
+  final FocusNode vendorNameFocus = FocusNode();
+  final FocusNode vendorEmailFocus = FocusNode();
+  final FocusNode vendorAddressFocus = FocusNode();
+  final FocusNode vendorPhoneFocus = FocusNode();
+  final FocusNode vendorContactPersonFocus = FocusNode();
+  final FocusNode vendorOpeningBalanceFocus = FocusNode();
+
+  String? vendorNameError = '';
+  String? vendorEmailError = '';
+  String? vendorAddressError = '';
+  String? vendorPhoneError = '';
+  String? vendorContactPersonError = '';
+  String? vendorOpeningBalanceError = '';
+  String? vendorBalanceAmountError = '';
+
+  bool isLoadingVendorAdding = false;
+
+  bool isVendorEditing = false;
+  String vendorId = '';
+
+  void setVendorIsEditing(bool value, String newVendorId) {
+    isVendorEditing = value;
+    vendorId = newVendorId;
+    notifyListeners();
+  }
+
+  void setLoadingVendor(bool value) {
+    isLoadingVendorAdding = value;
+    notifyListeners();
+  }
+
+  Future<bool> addVendor({required BuildContext context, required String addedById, required String addedByName}) async {
+    try {
+      setLoadingVendor(true);
+
+      // Trim and extract input
+      final String name = vendorNameController.text.trim();
+      final String email = vendorEmailController.text.trim();
+      final String address = vendorAddressController.text.trim();
+      final String phone = vendorPhoneController.text.trim();
+      final String contactPerson = vendorContactPersonController.text.trim();
+      final double openingBalance = double.tryParse(vendorOpeningBalanceController.text.trim()) ?? 0.0;
+      final double balanceAmount = double.tryParse(vendorBalanceAmountController.text.trim()) ?? 0.0;
+
+      final DateTime dateTimeNow = DateTime.now();
+
+      // Determine metadata based on edit state
+      final Map<String, dynamic> metaData =
+          isVendorEditing
+              ? {'EDITED_BY_ID': addedById, 'EDITED_BY_NAME': addedByName, 'EDITED_ON': FieldValue.serverTimestamp()}
+              : {'ADDED_BY_ID': addedById, 'ADDED_BY_NAME': addedByName, 'ADDED_ON': FieldValue.serverTimestamp()};
+
+      // Vendor map to be stored
+      final Map<String, dynamic> vendor = {
+        'VENDOR_ID': vendorId,
+        'NAME': name,
+        'EMAIL': email,
+        'ADDRESS': address,
+        'PHONE': phone,
+        'CONTACT_PERSON': contactPerson,
+        'OPENING_BALANCE': openingBalance,
+        'BALANCE_AMOUNT': balanceAmount,
+        ...metaData,
+      };
+
+      // Save vendor to Firestore
+      await db.collection('VENDORS').doc(vendorId).set(vendor, SetOptions(merge: true));
+
+      // Locally add the timestamp for UI or model use
+      if (isVendorEditing) {
+        vendor['EDITED_ON'] = Timestamp.fromDate(dateTimeNow);
+      } else {
+        vendor['ADDED_ON'] = Timestamp.fromDate(dateTimeNow);
+      }
+
+      // Check if vendor already exists in vendorsList
+      final int existingIndex = vendorsList.indexWhere((v) => v.vendorId == vendorId);
+
+      if (existingIndex >= 0) {
+        // Update existing vendor
+        vendorsList[existingIndex] = VendorModel.from(vendor);
+      } else {
+        // Add to local model list
+        vendorsList.add(VendorModel.from(vendor));
+      }
+
+      showError(context, 'Vendor added successfully', backgroundColor: Colors.green);
+
+      clearVendorControllers();
+      return true;
+    } catch (e) {
+      showError(context, 'Failed to add vendor: $e');
+      return false;
+    } finally {
+      setLoadingVendor(false);
+    }
+  }
+
+  List<VendorModel> _vendorsList = [];
+  List<VendorModel> get vendorsList => _vendorsList;
+
+  Future<void> fetchVendorsList() async {
+    try {
+      final snapshot = await db.collection('VENDORS').orderBy('ADDED_ON', descending: true).get();
+
+      _vendorsList = snapshot.docs.map((doc) => VendorModel.from(doc.data())).toList();
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching vendors: $e');
+    }
+  }
+
+  bool validateVendorForm() {
+    bool isValid = true;
+
+    // Validate Name
+    if (vendorNameController.text.trim().isEmpty) {
+      vendorNameError = 'Vendor name is required';
+      isValid = false;
+    } else {
+      vendorNameError = '';
+    }
+
+    // Validate Email
+    String email = vendorEmailController.text.trim();
+    if (email.isEmpty) {
+      vendorEmailError = 'Email is required';
+      isValid = false;
+    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$').hasMatch(email)) {
+      vendorEmailError = 'Enter a valid email';
+      isValid = false;
+    } else {
+      vendorEmailError = '';
+    }
+
+    // Validate Address
+    if (vendorAddressController.text.trim().isEmpty) {
+      vendorAddressError = 'Address is required';
+      isValid = false;
+    } else {
+      vendorAddressError = '';
+    }
+
+    // Validate Phone
+    String phone = vendorPhoneController.text.trim();
+    if (phone.isEmpty) {
+      vendorPhoneError = 'Phone number is required';
+      isValid = false;
+    } else {
+      vendorPhoneError = '';
+    }
+
+    // Validate Contact Person
+    if (vendorContactPersonController.text.trim().isEmpty) {
+      vendorContactPersonError = 'Contact person is required';
+      isValid = false;
+    } else {
+      vendorContactPersonError = '';
+    }
+
+    // Validate Opening Balance
+    String openingBalance = vendorOpeningBalanceController.text.trim();
+    if (openingBalance.isEmpty) {
+      vendorOpeningBalanceError = 'Opening balance is required';
+      isValid = false;
+    } else if (double.tryParse(openingBalance) == null) {
+      vendorOpeningBalanceError = 'Enter a valid number';
+      isValid = false;
+    } else {
+      vendorOpeningBalanceError = '';
+    }
+
+    notifyListeners();
+
+    return isValid;
+  }
+
+  void setVendorControllers({
+    required String name,
+    required String email,
+    required String address,
+    required String phone,
+    required String contactPerson,
+    required double openingBalance,
+    required double balanceAmount,
+  }) {
+    vendorNameController.text = name;
+    vendorEmailController.text = email;
+    vendorAddressController.text = address;
+    vendorPhoneController.text = phone;
+    vendorContactPersonController.text = contactPerson;
+    vendorOpeningBalanceController.text = openingBalance.toString();
+    vendorBalanceAmountController.text = balanceAmount.toString();
+  }
+
+  void clearVendorControllers() {
+    vendorNameController.clear();
+    vendorEmailController.clear();
+    vendorAddressController.clear();
+    vendorPhoneController.clear();
+    vendorContactPersonController.clear();
+    vendorOpeningBalanceController.clear();
+    vendorBalanceAmountController.clear();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////

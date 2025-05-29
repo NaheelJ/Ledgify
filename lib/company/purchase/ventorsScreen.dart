@@ -6,7 +6,7 @@ import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
 
-class VendorsInPurchaseScreen  extends StatelessWidget {
+class VendorsInPurchaseScreen extends StatelessWidget {
   const VendorsInPurchaseScreen({super.key});
 
   @override
@@ -41,6 +41,7 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
     // Define controllers outside of the build method but inside the class
     final TextEditingController controllerNew = TextEditingController();
     var height = MediaQuery.of(context).size.height;
@@ -54,22 +55,10 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFD5D7DA)),
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.white,
-            ),
+            decoration: BoxDecoration(border: Border.all(color: const Color(0xFFD5D7DA)), borderRadius: BorderRadius.circular(8), color: Colors.white),
             child: Row(
               children: [
-
-                Text(
-                  'Vendors',
-                  style: GoogleFonts.notoSans(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 19,
-                    color: Colors.black,
-                  ),
-                ),
+                Text('Vendors', style: GoogleFonts.notoSans(fontWeight: FontWeight.w600, fontSize: 19, color: Colors.black)),
                 const SizedBox(width: 18),
                 // Search Field
                 buildSearchTextField(),
@@ -83,46 +72,28 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       // Save action
+                      String vendorId = DateTime.now().millisecondsSinceEpoch.toString();
+                      mainProvider.setVendorIsEditing(false, vendorId);
                       Provider.of<MainProvider>(context, listen: false).clickAddButton('vendor_addVendor');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: cl8F1A3F,
                       foregroundColor: Colors.white,
                       side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       elevation: 0,
                     ),
-                    child:  FittedBox(
+                    child: FittedBox(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                              "+ ",
-                              style: GoogleFonts.notoSans(
-                                textStyle: TextStyle(
-                                  color: clwhite,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              )
-                          ), Text(
-                              "Add Invoice",
-                              style: GoogleFonts.notoSans(
-                                textStyle: TextStyle(
-                                  color: clwhite,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              )
-                          ),
+                          Text("+ ", style: GoogleFonts.notoSans(textStyle: TextStyle(color: clwhite, fontSize: 22, fontWeight: FontWeight.w800))),
+                          Text("Add Vendors", style: GoogleFonts.notoSans(textStyle: TextStyle(color: clwhite, fontSize: 16, fontWeight: FontWeight.w500))),
                         ],
                       ),
                     ),
                   ),
                 ),
-
               ],
             ),
           ),
@@ -131,7 +102,6 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
 
       body: Column(
         children: [
-
           // Table content
           Expanded(
             child: Padding(
@@ -143,149 +113,49 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
                       width: 1900,
                       decoration: BoxDecoration(
                         border: Border.all(color: clE9EAEB), // Outer border
-                        borderRadius: BorderRadius.circular(10),),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       child: Column(
                         children: [
                           SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,                                child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Table Header
-                              Container(
-                                width: 1900, // Sum of all column widths
-                                height: 44,
-                                padding: const EdgeInsets.symmetric(horizontal: 10,),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                border: Border(bottom: BorderSide(
-                                  color: Color(0xFFE9EAEB),
-                                  width: 1,
-                                ),) ,
-                                  borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10)),
+                            scrollDirection: Axis.horizontal,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Table Header
+                                Container(
+                                  width: 1900, // Sum of all column widths
+                                  height: 44,
+                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border(bottom: BorderSide(color: Color(0xFFE9EAEB), width: 1)),
+                                    borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(width: 80, child: Text("Sl.No", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                      SizedBox(width: 400, child: Text("Vendor Name", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                      SizedBox(width: 250, child: Text("Contact Number", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                      SizedBox(width: 380, child: Text("Email", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                      SizedBox(width: 200, child: Text("Invoices", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                      SizedBox(width: 200, child: Text("View More", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                      SizedBox(width: 180, child: Text("Edit", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                      SizedBox(width: 180, child: Text("Delete", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                    ],
+                                  ),
                                 ),
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 80,
-                                      child: Text(
-                                          "Sl.No",
-                                          style: GoogleFonts.notoSans(
-                                            textStyle: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                                color: clblack
-                                            ),
-                                          )
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 400,
-                                      child: Text(
-                                          "Vendor Name",
-                                          style: GoogleFonts.notoSans(
-                                            textStyle: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                                color: clblack
-                                            ),
-                                          )
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 250,
-                                      child: Text(
-                                          "Contact Number",
-                                          style: GoogleFonts.notoSans(
-                                            textStyle: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                                color: clblack
-                                            ),
-                                          )
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 380,
-                                      child: Text(
-                                          "Email",
-                                          style: GoogleFonts.notoSans(
-                                            textStyle: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                                color: clblack
-                                            ),
-                                          )
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 200,
-                                      child: Text(
-                                          "Invoices",
-                                          style: GoogleFonts.notoSans(
-                                            textStyle: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                                color: clblack
-                                            ),
-                                          )
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 200,
-                                      child: Text(
-                                          "View More",
-                                          style: GoogleFonts.notoSans(
-                                            textStyle: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                                color: clblack
-                                            ),
-                                          )
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 180,
-                                      child: Text(
-                                          "Edit",
-                                          style: GoogleFonts.notoSans(
-                                            textStyle: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                                color: clblack
-                                            ),
-                                          )
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 180,
-                                      child: Text(
-                                          "Delete",
-                                          style: GoogleFonts.notoSans(
-                                            textStyle: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                                color: clblack
-                                            ),
-                                          )
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
 
-                              // Table Rows
-                              Column(
-                                children: _buildVendorListRows(context),
-                              ),
-                            ],
-                          ),
+                                // Table Rows
+                                Column(children: _buildVendorListRows(context)),
+                              ],
+                            ),
                           ),
                           buildPagination(),
                         ],
                       ),
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -307,26 +177,18 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Image.asset('asset/icons/searchIcon.png',scale: 4,),
+          Image.asset('asset/icons/searchIcon.png', scale: 4),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search',
-                hintStyle:  GoogleFonts.notoSans(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                  color: cl666666,
-                ),
+                hintStyle: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 14, color: cl666666),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
               ),
-              style: GoogleFonts.notoSans(
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-                color: cl666666,
-              ),
+              style: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 14, color: cl666666),
             ),
           ),
         ],
@@ -334,56 +196,33 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
     );
   }
 
-// dropdown
-  Widget _buildDropdown(
-      BuildContext context, {
-        required String value,
-        required List<String> items,
-        required ValueChanged<String?> onChanged,
-      }) {
+  // dropdown
+  Widget _buildDropdown(BuildContext context, {required String value, required List<String> items, required ValueChanged<String?> onChanged}) {
     return Container(
       height: 45,
       padding: const EdgeInsets.symmetric(horizontal: 14),
-      decoration: BoxDecoration(
-        color: clFAFAFA,
-        border: Border.all(color: Colors.grey.shade400),
-        borderRadius: BorderRadius.circular(10),
-      ),
+      decoration: BoxDecoration(color: clFAFAFA, border: Border.all(color: Colors.grey.shade400), borderRadius: BorderRadius.circular(10)),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           dropdownColor: clwhite,
           value: value,
-          icon: Image.asset('asset/icons/arrowDown.png',scale: 4,),
-          style: GoogleFonts.notoSans(
-            fontWeight: FontWeight.w400,
-            fontSize: 14,
-            color: cl666666,
-          ),
+          icon: Image.asset('asset/icons/arrowDown.png', scale: 4),
+          style: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 14, color: cl666666),
           onChanged: onChanged,
-          items: items.map((item) {
-            return DropdownMenuItem(value: item, child: Text(item));
-          }).toList(),
+          items:
+              items.map((item) {
+                return DropdownMenuItem(value: item, child: Text(item));
+              }).toList(),
         ),
       ),
     );
   }
 
-  Widget _buildDateBox({
-    required BuildContext context,
-    required String imagePath,
-    required String hint,
-    required DateTime? selectedDate,
-    required Function(DateTime) onDateSelected,
-  }) {
+  Widget _buildDateBox({required BuildContext context, required String imagePath, required String hint, required DateTime? selectedDate, required Function(DateTime) onDateSelected}) {
     return GestureDetector(
       onTap: () async {
         DateTime initialDate = selectedDate ?? DateTime.now();
-        DateTime? picked = await showDatePicker(
-          context: context,
-          initialDate: initialDate,
-          firstDate: DateTime(2000),
-          lastDate: DateTime(2100),
-        );
+        DateTime? picked = await showDatePicker(context: context, initialDate: initialDate, firstDate: DateTime(2000), lastDate: DateTime(2100));
         if (picked != null) {
           onDateSelected(picked);
         }
@@ -391,23 +230,13 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
       child: Container(
         height: 45,
         padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          color: clFAFAFA,
-          border: Border.all(color: Colors.grey.shade400),
-          borderRadius: BorderRadius.circular(10),
-        ),
+        decoration: BoxDecoration(color: clFAFAFA, border: Border.all(color: Colors.grey.shade400), borderRadius: BorderRadius.circular(10)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              selectedDate != null
-                  ? '${selectedDate.day.toString().padLeft(2, '0')}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.year}'
-                  : hint,
-              style: GoogleFonts.notoSans(
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-                color: cl666666,
-              ),
+              selectedDate != null ? '${selectedDate.day.toString().padLeft(2, '0')}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.year}' : hint,
+              style: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 14, color: cl666666),
             ),
             const SizedBox(width: 6),
             Image.asset(imagePath, scale: 3.5),
@@ -417,15 +246,8 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
     );
   }
 
-
   Widget _buildDateField(String label, bool isFromDate) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: clwhite,
-      ),
-
-    );
+    return Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: clwhite));
   }
 
   Widget buildPagination() {
@@ -434,18 +256,13 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
       width: 2200,
       child: Row(
         children: [
-          Align(
-              alignment: Alignment.centerLeft,
-              child: Text('Total : 10',style:  GoogleFonts.inter(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-                color: cl666666,
-              ),)),
+          Align(alignment: Alignment.centerLeft, child: Text('Total : 10', style: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 14, color: cl666666))),
           Expanded(
             child: Align(
               alignment: Alignment.center,
               child: Container(
-                height: 50,width: 500,
+                height: 50,
+                width: 500,
                 /* decoration: const BoxDecoration(
                   boxShadow: [
                     BoxShadow(
@@ -462,13 +279,7 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: clD5D7DA,
-                          width: 0.5,
-                        ),
-                        borderRadius: BorderRadius.circular(7),
-                      ),
+                      decoration: BoxDecoration(border: Border.all(color: clD5D7DA, width: 0.5), borderRadius: BorderRadius.circular(7)),
                       child: Icon(Icons.arrow_back, color: Colors.black, size: 18),
                     ),
 
@@ -486,19 +297,11 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
                                   backgroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
-                                    side:  BorderSide(color:i == 3 ?  Colors.grey:clwhite), // Border color
+                                    side: BorderSide(color: i == 3 ? Colors.grey : clwhite), // Border color
                                   ),
                                   minimumSize: const Size(40, 40),
                                 ),
-                                child: Text(
-                                  '$i',
-                                  style: GoogleFonts.inter(
-                                    textStyle: TextStyle(
-                                      color: clblack,
-                                      fontWeight:i == 3 ? FontWeight.bold : FontWeight.normal,
-                                    ),
-                                  ),
-                                ),
+                                child: Text('$i', style: GoogleFonts.inter(textStyle: TextStyle(color: clblack, fontWeight: i == 3 ? FontWeight.bold : FontWeight.normal))),
                               ),
                             ),
                         ],
@@ -510,13 +313,7 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
 
                       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: clD5D7DA,
-                          width:0.5,
-                        ),
-                        borderRadius: BorderRadius.circular(7),
-                      ),
+                      decoration: BoxDecoration(border: Border.all(color: clD5D7DA, width: 0.5), borderRadius: BorderRadius.circular(7)),
                       child: Icon(Icons.arrow_forward, color: Colors.black, size: 18),
                     ),
                   ],
@@ -527,64 +324,25 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
         ],
       ),
     );
-  }}
+  }
+}
+
 List<Widget> _buildVendorListRows(BuildContext context) {
   var width = MediaQuery.of(context).size.width;
-
-  // Dummy data
-  final List<Map<String, String>> dummyList = [
-    {
-      'slNo': '1',
-      'vendorName': 'Krakow Electronics',
-      'contactNumber': '+48 512345678',
-      'email': 'contact@krakowtech.com',
-      'invoices': 'Invoices',
-      'viewMore': 'View More',
-    },
-    {
-      'slNo': '2',
-      'vendorName': 'Wawel Electronics Services',
-      'contactNumber': '+48 648345678',
-      'email': 'info@waweldigital.com',
-      'invoices': 'Invoices',
-      'viewMore': 'View More',
-    },
-    {
-      'slNo': '3',
-      'vendorName': 'Vistula Electronics',
-      'contactNumber': '+48 785345678',
-      'email': 'support@vistulainnovations.com',
-      'invoices': 'Invoices',
-      'viewMore': 'View More',
-    },
-    {
-      'slNo': '4',
-      'vendorName': 'Polish Electronics Hub',
-      'contactNumber': '+48 586345678',
-      'email': 'hello@polishsoftwarehub.com',
-      'invoices': 'Invoices',
-      'viewMore': 'View More',
-    },
-    {
-      'slNo': '5',
-      'vendorName': 'Warsaw Electronics Agency',
-      'contactNumber': '+48 536345678',
-      'email': 'team@warsawcreative.com',
-      'invoices': 'Invoices',
-      'viewMore': 'View More',
-    },
-    {
-      'slNo': '6',
-      'vendorName': 'Gdansk Electronics',
-      'contactNumber': '+48 512345678',
-      'email': 'connect@gdanskitsolutions.com',
-      'invoices': 'Invoices',
-      'viewMore': 'View More',
-    },
-    // Add more items as needed
-  ];
-
-  return dummyList.asMap().entries.map((entry) {
+  final MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
+  if (mainProvider.vendorsList.isEmpty) {
+    return [
+      Center(
+        child: Container(
+          width: width,
+          height: 40,
+          alignment: Alignment.center,
+          child: Text('No Vendors Found', style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black54))),
+        ),
+      ),
+    ];
+  }
+  return mainProvider.vendorsList.asMap().entries.map((entry) {
     final index = entry.key;
     final item = entry.value;
 
@@ -592,71 +350,15 @@ List<Widget> _buildVendorListRows(BuildContext context) {
       width: 2200,
       height: 40,
       padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: index.isEven ? Colors.white : const Color(0xFFFAFAFA),
-        border: const Border(
-          bottom: BorderSide(
-            color: Color(0xFFE9EAEB),
-            width: 1,
-          ),
-        ),
-      ),
+      decoration: BoxDecoration(color: index.isEven ? Colors.white : const Color(0xFFFAFAFA), border: const Border(bottom: BorderSide(color: Color(0xFFE9EAEB), width: 1))),
       child: Row(
         children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              item['slNo'] ?? '',
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 400,
-            child: Text(
-              item['vendorName'] ?? '',
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 250,
-            child: Text(
-              item['contactNumber'] ?? '',
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-          // Bill Amount column (empty placeholder for now)
+          SizedBox(width: 80, child: Text(index.toString(), style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)))),
+          SizedBox(width: 400, child: Text(item.name, style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)))),
+          SizedBox(width: 250, child: Text(item.phone, style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)))),
 
-          SizedBox(
-            width: 380,
-            child: Text(
-              item['email'] ?? '',
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
+          // Bill Amount column (empty placeholder for now)
+          SizedBox(width: 380, child: Text(item.email, style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)))),
           SizedBox(
             width: 200,
             child: InkWell(
@@ -665,15 +367,7 @@ List<Widget> _buildVendorListRows(BuildContext context) {
               },
               child: Text(
                 'Invoices',
-                style: GoogleFonts.notoSans(
-                  textStyle: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: cl5856D6,
-                    decoration: TextDecoration.underline,
-                    decorationColor: cl5856D6,
-                  ),
-                ),
+                style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: cl5856D6, decoration: TextDecoration.underline, decorationColor: cl5856D6)),
               ),
             ),
           ),
@@ -685,16 +379,7 @@ List<Widget> _buildVendorListRows(BuildContext context) {
               },
               child: Text(
                 'View More',
-                style: GoogleFonts.notoSans(
-                  textStyle: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: cl5856D6,
-                    decoration: TextDecoration.underline,
-                    decorationColor: cl5856D6,
-
-                  ),
-                ),
+                style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: cl5856D6, decoration: TextDecoration.underline, decorationColor: cl5856D6)),
               ),
             ),
           ),
@@ -702,12 +387,20 @@ List<Widget> _buildVendorListRows(BuildContext context) {
             width: 230,
             child: InkWell(
               onTap: () {
-
+                mainProvider.setVendorControllers(
+                  name: item.name,
+                  email: item.email,
+                  address: item.address,
+                  phone: item.phone,
+                  contactPerson: item.contactPerson,
+                  openingBalance: item.openingBalance,
+                  balanceAmount: item.balanceAmount,
+                );
+                
+                mainProvider.setVendorIsEditing(true, item.vendorId);
+                Provider.of<MainProvider>(context, listen: false).clickAddButton('vendor_addVendor');
               },
-              child:Image.asset(
-                'asset/icons/editIcon.png',
-                scale: 5,
-              ),
+              child: Image.asset('asset/icons/editIcon.png', scale: 5),
             ),
           ),
           SizedBox(
@@ -716,21 +409,19 @@ List<Widget> _buildVendorListRows(BuildContext context) {
               onTap: () {
                 showDialog(
                   context: context,
-                  builder: (context) => DeleteVendorDialog(
-                    onDelete: () {
-                      // Delete logic
-                      Navigator.pop(context);
-                    },
-                    onCancel: () {
-                      Navigator.pop(context);
-                    },
-                  ),
+                  builder:
+                      (context) => DeleteVendorDialog(
+                        onDelete: () {
+                          // Delete logic
+                          Navigator.pop(context);
+                        },
+                        onCancel: () {
+                          Navigator.pop(context);
+                        },
+                      ),
                 );
               },
-              child:Image.asset(
-               'asset/icons/deleteIcon.png',
-               scale: 4,
-              ),
+              child: Image.asset('asset/icons/deleteIcon.png', scale: 4),
             ),
           ),
         ],
@@ -741,32 +432,14 @@ List<Widget> _buildVendorListRows(BuildContext context) {
 
 // Reusable text cell builder
 Widget _buildCell(String? text, double width) {
-  return SizedBox(
-    width: width,
-    child: Text(
-      text ?? '',
-      style: GoogleFonts.notoSans(
-        textStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: clblack,
-        ),
-      ),
-    ),
-  );
+  return SizedBox(width: width, child: Text(text ?? '', style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: clblack))));
 }
-
-
 
 class DeleteVendorDialog extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onCancel;
 
-  const DeleteVendorDialog({
-    Key? key,
-    required this.onDelete,
-    required this.onCancel,
-  }) : super(key: key);
+  const DeleteVendorDialog({Key? key, required this.onDelete, required this.onCancel}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -784,26 +457,12 @@ class DeleteVendorDialog extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Expanded(
-                    child: Text(
-                      'Delete Vendor !',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: onCancel,
-                    child: const Icon(Icons.close, size: 18),
-                  ),
+                  const Expanded(child: Text('Delete Vendor !', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
+                  GestureDetector(onTap: onCancel, child: const Icon(Icons.close, size: 18)),
                 ],
               ),
               const SizedBox(height: 15),
-              const Text(
-                'Are you sure you want to delete vendor ?',
-                style: TextStyle(fontSize: 14, color: Colors.black54),
-              ),
+              const Text('Are you sure you want to delete vendor ?', style: TextStyle(fontSize: 14, color: Colors.black54)),
               const SizedBox(height: 25),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -820,18 +479,10 @@ class DeleteVendorDialog extends StatelessWidget {
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.black,
                           side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                           elevation: 0,
                         ),
-                        child: const Text(
-                          "Cancel",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        child: const Text("Cancel", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                       ),
                     ),
                   ),
@@ -848,19 +499,10 @@ class DeleteVendorDialog extends StatelessWidget {
                           backgroundColor: clF34745,
                           foregroundColor: Colors.white,
                           side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                           elevation: 0,
                         ),
-                        child: const Text(
-                          "Delete",
-                          style: TextStyle(
-                            color: clwhite,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        child: const Text("Delete", style: TextStyle(color: clwhite, fontSize: 16, fontWeight: FontWeight.w500)),
                       ),
                     ),
                   ),

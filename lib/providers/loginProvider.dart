@@ -94,22 +94,15 @@ class LoginProvider with ChangeNotifier {
     MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
 
     await fetchUserData(userId);
-    await mainProvider.fetchInitialCompaniesAndListen();
+    await mainProvider.fetchCompanies();
+    await mainProvider.fetchVendorsList();
+    final role = usermodel!.role;
 
-    role = usermodel!.role.toString();
+    if (role == 'Admin') {
+      await mainProvider.fetchUsersList();
+    }
 
-    Navigator.pushAndRemoveUntil(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return child; // No animation, just return the page
-        },
-        transitionDuration: Duration.zero, // Zero duration for instant transition
-      ),
-      (route) => false, // Removes all previous routes
-    );
-
+    callNextReplacement(CompanySwitcherDemo(), context);
     notifyListeners();
   }
 
@@ -119,7 +112,7 @@ class LoginProvider with ChangeNotifier {
     try {
       final doc = await db.collection('USERS').doc(userId).get();
       if (doc.exists && doc.data() != null) {
-        usermodel = UserModel.from(doc.data()!, doc.id);
+        usermodel = UserModel.from(doc.data()!);
         notifyListeners();
       }
     } catch (e) {

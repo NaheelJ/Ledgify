@@ -1,16 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ledgifi/company/employees%20management/addEmployeeScreen.dart';
-import 'package:ledgifi/company/sales/addCustomersScreen.dart';
-import 'package:ledgifi/company/sales/salesRecordScreen.dart';
-import 'package:ledgifi/constants/functions.dart';
 import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
 
 import 'addUserScreen.dart';
-class  UsersScreen extends StatelessWidget {
+
+class UsersScreen extends StatelessWidget {
   const UsersScreen({super.key});
 
   @override
@@ -29,7 +26,7 @@ class  UsersScreen extends StatelessWidget {
             switch (adminRetailerPro.changeScreenWidgets.value) {
               case "addUser":
                 return AddUsersScreen();
-            /*case "settlement":
+              /*case "settlement":
                 return InvoiceSettlementScreen();
               case "addVendor":
                 return AddVentorScreen();*/
@@ -43,11 +40,13 @@ class  UsersScreen extends StatelessWidget {
     );
   }
 }
+
 class UsersScreenHome extends StatelessWidget {
   const UsersScreenHome({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
     // Define controllers outside of the build method but inside the class
     final TextEditingController controllerNew = TextEditingController();
     var height = MediaQuery.of(context).size.height;
@@ -61,11 +60,7 @@ class UsersScreenHome extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFD5D7DA)),
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.white,
-            ),
+            decoration: BoxDecoration(border: Border.all(color: const Color(0xFFD5D7DA)), borderRadius: BorderRadius.circular(8), color: Colors.white),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 return Wrap(
@@ -78,20 +73,8 @@ class UsersScreenHome extends StatelessWidget {
                       spacing: 16,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Text(
-                          'Users',
-                          style: GoogleFonts.notoSans(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 19,
-                            color: Colors.black,
-                          ),
-                        ),
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: constraints.maxWidth < 500 ? constraints.maxWidth * 0.9 : 400,
-                          ),
-                          child: buildSearchTextField(),
-                        ),
+                        Text('Users', style: GoogleFonts.notoSans(fontWeight: FontWeight.w600, fontSize: 19, color: Colors.black)),
+                        ConstrainedBox(constraints: BoxConstraints(maxWidth: constraints.maxWidth < 500 ? constraints.maxWidth * 0.9 : 400), child: buildSearchTextField()),
                       ],
                     ),
 
@@ -101,41 +84,21 @@ class UsersScreenHome extends StatelessWidget {
                       height: 45,
                       child: ElevatedButton(
                         onPressed: () {
-                        Provider.of<MainProvider>(context, listen: false).clickAddButton('addUser');
-
+                          mainProvider.setIsUserEditing(false);
+                          Provider.of<MainProvider>(context, listen: false).clickAddButton('addUser');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: cl8F1A3F,
                           foregroundColor: Colors.white,
                           side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           elevation: 0,
                         ),
                         child: FittedBox(
                           child: Row(
                             children: [
-                              Text(
-                                "+ ",
-                                style: GoogleFonts.notoSans(
-                                  textStyle: TextStyle(
-                                    color: clwhite,
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                "Add User",
-                                style: GoogleFonts.notoSans(
-                                  textStyle: TextStyle(
-                                    color: clwhite,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
+                              Text("+ ", style: GoogleFonts.notoSans(textStyle: TextStyle(color: clwhite, fontSize: 22, fontWeight: FontWeight.w800))),
+                              Text("Add User", style: GoogleFonts.notoSans(textStyle: TextStyle(color: clwhite, fontSize: 16, fontWeight: FontWeight.w500))),
                             ],
                           ),
                         ),
@@ -149,10 +112,8 @@ class UsersScreenHome extends StatelessWidget {
         ),
       ),
 
-
       body: Column(
         children: [
-
           // Table content
           Expanded(
             child: Padding(
@@ -161,136 +122,45 @@ class UsersScreenHome extends StatelessWidget {
                 children: [
                   SingleChildScrollView(
                     child: Container(
-                      width: 1900,
-                      height: height/1.17,
+                      width: 1600,
+                      height: height / 1.5,
                       decoration: BoxDecoration(
                         border: Border.all(color: clE9EAEB), // Outer border
-                        borderRadius: BorderRadius.circular(10),),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       child: Column(
                         children: [
                           Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Table Header
-                                  Container(
-                                    width: 1900, // Sum of all column widths
-                                    height: 44,
-                                    padding: const EdgeInsets.symmetric(horizontal: 10,),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border(bottom: BorderSide(
-                                        color: Color(0xFFE9EAEB),
-                                        width: 1,
-                                      ),) ,
-                                      borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10)),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        SizedBox(
-                                          width: 100,
-                                          child: Text(
-                                              "Sl.No",
-                                              style: GoogleFonts.notoSans(
-                                                textStyle: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: clblack
-                                                ),
-                                              )
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 360,
-                                          child: Text(
-                                              "Name",
-                                              style: GoogleFonts.notoSans(
-                                                textStyle: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: clblack
-                                                ),
-                                              )
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 360,
-                                          child: Text(
-                                              "Surname",
-                                              style: GoogleFonts.notoSans(
-                                                textStyle: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: clblack
-                                                ),
-                                              )
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 210,
-                                          child: Text(
-                                              "Role",
-                                              style: GoogleFonts.notoSans(
-                                                textStyle: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: clblack
-                                                ),
-                                              )
-                                          ),
-                                        ),
-
-                                        SizedBox(
-                                          width: 200,
-                                          child: Text(
-                                              "View More",
-                                              style: GoogleFonts.notoSans(
-                                                textStyle: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: clblack
-                                                ),
-                                              )
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 180,
-                                          child: Text(
-                                              "Edit",
-                                              style: GoogleFonts.notoSans(
-                                                textStyle: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: clblack
-                                                ),
-                                              )
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 180,
-                                          child: Text(
-                                              "Delete",
-                                              style: GoogleFonts.notoSans(
-                                                textStyle: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: clblack
-                                                ),
-                                              )
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Table Header
+                                Container(
+                                  width: 1900, // Sum of all column widths
+                                  height: 44,
+                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border(bottom: BorderSide(color: Color(0xFFE9EAEB), width: 1)),
+                                    borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
                                   ),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(width: 100, child: Text("Sl.No", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                      SizedBox(width: 360, child: Text("Name", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                      SizedBox(width: 360, child: Text("Surname", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                      SizedBox(width: 210, child: Text("Role", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
 
-                                  // Table Rows
-                                  Column(
-                                    children: _buildUsersListRows(context),
+                                      SizedBox(width: 200, child: Text("View More", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                      SizedBox(width: 180, child: Text("Edit", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                      SizedBox(width: 100, child: Text("Delete", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+
+                                // Table Rows
+                                SingleChildScrollView(child: Column(children: _buildUsersListRows(context))),
+                              ],
                             ),
                           ),
                           buildPagination(),
@@ -298,7 +168,6 @@ class UsersScreenHome extends StatelessWidget {
                       ),
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -320,27 +189,19 @@ class UsersScreenHome extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Image.asset('asset/icons/searchIcon.png',scale: 4,),
+          Image.asset('asset/icons/searchIcon.png', scale: 4),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
               decoration: InputDecoration(
                 fillColor: clF2F2F2,
                 hintText: 'Search',
-                hintStyle:  GoogleFonts.notoSans(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                  color: cl666666,
-                ),
+                hintStyle: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 16, color: cl666666),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
               ),
-              style: GoogleFonts.notoSans(
-                fontWeight: FontWeight.w400,
-                fontSize: 16,
-                color: cl666666,
-              ),
+              style: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 16, color: cl666666),
             ),
           ),
         ],
@@ -348,56 +209,33 @@ class UsersScreenHome extends StatelessWidget {
     );
   }
 
-// dropdown
-  Widget _buildDropdown(
-      BuildContext context, {
-        required String value,
-        required List<String> items,
-        required ValueChanged<String?> onChanged,
-      }) {
+  // dropdown
+  Widget _buildDropdown(BuildContext context, {required String value, required List<String> items, required ValueChanged<String?> onChanged}) {
     return Container(
       height: 45,
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: clFAFAFA,
-        border: Border.all(color: Colors.grey.shade400),
-        borderRadius: BorderRadius.circular(10),
-      ),
+      decoration: BoxDecoration(color: clFAFAFA, border: Border.all(color: Colors.grey.shade400), borderRadius: BorderRadius.circular(10)),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           dropdownColor: clwhite,
           value: value,
-          icon: Image.asset('asset/icons/arrowDown.png',scale: 4,),
-          style: GoogleFonts.notoSans(
-            fontWeight: FontWeight.w400,
-            fontSize: 16,
-            color: cl666666,
-          ),
+          icon: Image.asset('asset/icons/arrowDown.png', scale: 4),
+          style: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 16, color: cl666666),
           onChanged: onChanged,
-          items: items.map((item) {
-            return DropdownMenuItem(value: item, child: Text(item));
-          }).toList(),
+          items:
+              items.map((item) {
+                return DropdownMenuItem(value: item, child: Text(item));
+              }).toList(),
         ),
       ),
     );
   }
 
-  Widget _buildDateBox({
-    required BuildContext context,
-    required String imagePath,
-    required String hint,
-    required DateTime? selectedDate,
-    required Function(DateTime) onDateSelected,
-  }) {
+  Widget _buildDateBox({required BuildContext context, required String imagePath, required String hint, required DateTime? selectedDate, required Function(DateTime) onDateSelected}) {
     return GestureDetector(
       onTap: () async {
         DateTime initialDate = selectedDate ?? DateTime.now();
-        DateTime? picked = await showDatePicker(
-          context: context,
-          initialDate: initialDate,
-          firstDate: DateTime(2000),
-          lastDate: DateTime(2100),
-        );
+        DateTime? picked = await showDatePicker(context: context, initialDate: initialDate, firstDate: DateTime(2000), lastDate: DateTime(2100));
         if (picked != null) {
           onDateSelected(picked);
         }
@@ -405,23 +243,13 @@ class UsersScreenHome extends StatelessWidget {
       child: Container(
         height: 45,
         padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          color: clFAFAFA,
-          border: Border.all(color: Colors.grey.shade400),
-          borderRadius: BorderRadius.circular(10),
-        ),
+        decoration: BoxDecoration(color: clFAFAFA, border: Border.all(color: Colors.grey.shade400), borderRadius: BorderRadius.circular(10)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              selectedDate != null
-                  ? '${selectedDate.day.toString().padLeft(2, '0')}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.year}'
-                  : hint,
-              style: GoogleFonts.notoSans(
-                fontWeight: FontWeight.w400,
-                fontSize: 16,
-                color: cl666666,
-              ),
+              selectedDate != null ? '${selectedDate.day.toString().padLeft(2, '0')}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.year}' : hint,
+              style: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 16, color: cl666666),
             ),
             const SizedBox(width: 6),
             Image.asset(imagePath, scale: 3.5),
@@ -431,15 +259,8 @@ class UsersScreenHome extends StatelessWidget {
     );
   }
 
-
   Widget _buildDateField(String label, bool isFromDate) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: clwhite,
-      ),
-
-    );
+    return Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: clwhite));
   }
 
   Widget buildPagination() {
@@ -448,18 +269,13 @@ class UsersScreenHome extends StatelessWidget {
       width: 2200,
       child: Row(
         children: [
-          Align(
-              alignment: Alignment.centerLeft,
-              child: Text('Total : 10',style:  GoogleFonts.inter(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-                color: cl666666,
-              ),)),
+          Align(alignment: Alignment.centerLeft, child: Text('Total : 10', style: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 16, color: cl666666))),
           Expanded(
             child: Align(
               alignment: Alignment.center,
               child: Container(
-                height: 50,width: 500,
+                height: 50,
+                width: 500,
                 /* decoration: const BoxDecoration(
                   boxShadow: [
                     BoxShadow(
@@ -476,13 +292,7 @@ class UsersScreenHome extends StatelessWidget {
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: clD5D7DA,
-                          width: 0.5,
-                        ),
-                        borderRadius: BorderRadius.circular(7),
-                      ),
+                      decoration: BoxDecoration(border: Border.all(color: clD5D7DA, width: 0.5), borderRadius: BorderRadius.circular(7)),
                       child: Icon(Icons.arrow_back, color: Colors.black, size: 18),
                     ),
 
@@ -500,19 +310,11 @@ class UsersScreenHome extends StatelessWidget {
                                   backgroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
-                                    side:  BorderSide(color:i == 3 ?  Colors.grey:clwhite), // Border color
+                                    side: BorderSide(color: i == 3 ? Colors.grey : clwhite), // Border color
                                   ),
                                   minimumSize: const Size(40, 40),
                                 ),
-                                child: Text(
-                                  '$i',
-                                  style: GoogleFonts.inter(
-                                    textStyle: TextStyle(
-                                      color: clblack,
-                                      fontWeight:i == 3 ? FontWeight.w400 : FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
+                                child: Text('$i', style: GoogleFonts.inter(textStyle: TextStyle(color: clblack, fontWeight: i == 3 ? FontWeight.w400 : FontWeight.w400))),
                               ),
                             ),
                         ],
@@ -524,13 +326,7 @@ class UsersScreenHome extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
 
                       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: clD5D7DA,
-                          width:0.5,
-                        ),
-                        borderRadius: BorderRadius.circular(7),
-                      ),
+                      decoration: BoxDecoration(border: Border.all(color: clD5D7DA, width: 0.5), borderRadius: BorderRadius.circular(7)),
                       child: Icon(Icons.arrow_forward, color: Colors.black, size: 18),
                     ),
                   ],
@@ -541,71 +337,13 @@ class UsersScreenHome extends StatelessWidget {
         ],
       ),
     );
-  }}
+  }
+}
+
 List<Widget> _buildUsersListRows(BuildContext context) {
-  var width = MediaQuery.of(context).size.width;
+  final MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
 
-  // Dummy data
-  final List<Map<String, String>> dummyList = [
-    {
-      'Name': 'Kacper',
-      'surname': 'Kacprzak',
-      'role': 'Admin',
-    },
-    {
-      'Name': 'Marek',
-      'surname': 'Maretkowski',
-      'role': 'Admin',
-    },
-    {
-      'Name': 'Tomasz',
-      'surname': 'Tomaszewski',
-      'role': 'Admin',
-    },
-    {
-      'Name': 'Jakub',
-      'surname': 'Jakubowicz',
-      'role': 'Admin',
-    },
-    {
-      'Name': 'Szymon',
-      'surname': 'Szymonowicz',
-      'role': 'Admin',
-    },
-    {
-      'Name': 'Filip',
-      'surname': 'Filipowski',
-      'role': 'Accounts',
-    },
-    {
-      'Name': 'Wojciech',
-      'surname': 'Wojciechowski',
-      'role': 'Accounts',
-    },
-    {
-      'Name': 'Olek',
-      'surname': 'Olekowski',
-      'role': 'Accounts',
-    },
-    {
-      'Name': 'Mikołaj',
-      'surname': 'Mikołajczyk',
-      'role': 'Accounts',
-    },
-    {
-      'Name': 'Dominik',
-      'surname': 'Dominikowicz',
-      'role': 'Accounts',
-    },
-    {
-      'Name': 'Patryk',
-      'surname': 'Patrykowski',
-      'role': 'Accounts',
-    },
-
-  ];
-
-  return dummyList.asMap().entries.map((entry) {
+  return mainProvider.usersList.asMap().entries.map((entry) {
     final index = entry.key;
     final item = entry.value;
 
@@ -613,88 +351,37 @@ List<Widget> _buildUsersListRows(BuildContext context) {
       width: 2200,
       height: 41,
       padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: index.isEven ? Colors.white : const Color(0xFFFAFAFA),
-        border: const Border(
-          bottom: BorderSide(
-            color: Color(0xFFE9EAEB),
-            width: 1,
-          ),
-        ),
-      ),
+      decoration: BoxDecoration(color: index.isEven ? Colors.white : const Color(0xFFFAFAFA), border: const Border(bottom: BorderSide(color: Color(0xFFE9EAEB), width: 1))),
       child: Row(
         children: [
           SizedBox(
             width: 100,
             child: Text(
               '${index + 1}', // Automatically generate Sl.No
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-              ),
+              style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black)),
             ),
           ),
-          SizedBox(
-            width: 360,
-            child: Text(
-              item['Name'] ?? '',
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 360,
-            child: Text(
-              item['surname'] ?? '',
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 210,
-            child: Text(
-              item['role'] ?? '',
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-
+          SizedBox(width: 360, child: Text(item.name, style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black)))),
+          SizedBox(width: 360, child: Text(item.surName, style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black)))),
+          SizedBox(width: 210, child: Text(item.role, style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black)))),
 
           SizedBox(
             width: 100,
             child: InkWell(
               onTap: () {
-                showMoreDialog(context);
+                showMoreDialog(
+                  context,
+                  name: item.name.toString(),
+                  surName: item.surName.toString(),
+                  role: item.role.toString(),
+                  password: item.password.toString(),
+                  email: item.email.toString(),
+                  contactNumber: item.phone.toString(),
+                );
               },
               child: Text(
                 'View More',
-                style: GoogleFonts.notoSans(
-                  textStyle: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: cl5856D6,
-                    decoration: TextDecoration.underline,
-                    decorationColor: cl5856D6,
-                  ),
-                ),
+                style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: cl5856D6, decoration: TextDecoration.underline, decorationColor: cl5856D6)),
               ),
             ),
           ),
@@ -702,12 +389,11 @@ List<Widget> _buildUsersListRows(BuildContext context) {
             width: 230,
             child: InkWell(
               onTap: () {
-                // Edit logic
+                mainProvider.setIsUserEditing(true);
+                mainProvider.setUserControllers(user: item, userId: item.userId, name: item.name, surName: item.surName, email: item.email, password: item.password, phone: item.phone);
+                Provider.of<MainProvider>(context, listen: false).clickAddButton('addUser');
               },
-              child: Image.asset(
-                'asset/icons/editIcon.png',
-                scale: 3.5,
-              ),
+              child: Image.asset('asset/icons/editIcon.png', scale: 3.5),
             ),
           ),
           SizedBox(
@@ -716,21 +402,19 @@ List<Widget> _buildUsersListRows(BuildContext context) {
               onTap: () {
                 showDialog(
                   context: context,
-                  builder: (context) => DeleteEmployeeDialog(
-                    onDelete: () {
-                      // Delete logic
-                      Navigator.pop(context);
-                    },
-                    onCancel: () {
-                      Navigator.pop(context);
-                    },
-                  ),
+                  builder:
+                      (context) => DeleteEmployeeDialog(
+                        onDelete: () {
+                          // Delete logic
+                          Navigator.pop(context);
+                        },
+                        onCancel: () {
+                          Navigator.pop(context);
+                        },
+                      ),
                 );
               },
-              child: Image.asset(
-                'asset/icons/deleteIcon.png',
-                scale: 3.5,
-              ),
+              child: Image.asset('asset/icons/deleteIcon.png', scale: 3.5),
             ),
           ),
         ],
@@ -741,7 +425,7 @@ List<Widget> _buildUsersListRows(BuildContext context) {
 
 // Reusable text cell builder
 
-void showMoreDialog(BuildContext context) {
+void showMoreDialog(BuildContext context, {required String name, required String surName, required String role, required String password, required String email, required String contactNumber}) {
   showDialog(
     context: context,
     builder: (context) {
@@ -760,18 +444,8 @@ void showMoreDialog(BuildContext context) {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "More Details",
-                      style: GoogleFonts.notoSans(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 20),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
+                    Text("More Details", style: GoogleFonts.notoSans(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black)),
+                    IconButton(icon: const Icon(Icons.close, size: 20), onPressed: () => Navigator.of(context).pop()),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -783,34 +457,25 @@ void showMoreDialog(BuildContext context) {
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildInfoItem("Name", "Kacper"),
-                          SizedBox(height: 16,),
-                          _buildInfoItem("Role", "Admin"),
-                          SizedBox(height: 16,),
-                          _buildInfoItem("Password", "admin@009"),
-
-
-                        ],
+                        children: [_buildInfoItem("Name", name), SizedBox(height: 16), _buildInfoItem("Role", role), SizedBox(height: 16), _buildInfoItem("Password", password)],
                       ),
                     ),
-                    SizedBox(width: 8,),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildInfoItem("Surname", "Kacprzak"),
-                          SizedBox(height: 16,),
-                          _buildInfoItem("Email", "john.doe@techhub.com"),
-                          SizedBox(height: 16,),
-                          _buildInfoItem("Contact Number ", "+48 512345678"),
+                          _buildInfoItem("Surname", surName),
+                          SizedBox(height: 16),
+                          _buildInfoItem("Email", email),
+                          SizedBox(height: 16),
+                          _buildInfoItem("Contact Number ", contactNumber),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
-                SizedBox(height: 16,),
-
+                SizedBox(height: 16),
               ],
             ),
           ),
@@ -826,39 +491,19 @@ Widget _buildInfoItem(String title, String value) {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: GoogleFonts.notoSans(
-            fontWeight: FontWeight.w400,
-            fontSize: 12,
-            color: cl808080,
-          ),
-        ),
+        Text(title, style: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 12, color: cl808080)),
         const SizedBox(height: 4),
-        Text(
-          value,
-          style: GoogleFonts.notoSans(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: Colors.black,
-          ),
-        ),
+        Text(value, style: GoogleFonts.notoSans(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)),
       ],
     ),
   );
 }
 
-
-
 class DeleteEmployeeDialog extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onCancel;
 
-  const DeleteEmployeeDialog({
-    Key? key,
-    required this.onDelete,
-    required this.onCancel,
-  }) : super(key: key);
+  const DeleteEmployeeDialog({Key? key, required this.onDelete, required this.onCancel}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -876,26 +521,12 @@ class DeleteEmployeeDialog extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Expanded(
-                    child: Text(
-                      'Delete User',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: onCancel,
-                    child: const Icon(Icons.close, size: 18),
-                  ),
+                  const Expanded(child: Text('Delete User', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
+                  GestureDetector(onTap: onCancel, child: const Icon(Icons.close, size: 18)),
                 ],
               ),
               const SizedBox(height: 15),
-              const Text(
-                'Are you sure you want to delete User ?',
-                style: TextStyle(fontSize: 16, color: cl382E2E,fontWeight: FontWeight.w400),
-              ),
+              const Text('Are you sure you want to delete User ?', style: TextStyle(fontSize: 16, color: cl382E2E, fontWeight: FontWeight.w400)),
               const SizedBox(height: 25),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -912,18 +543,10 @@ class DeleteEmployeeDialog extends StatelessWidget {
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.black,
                           side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                           elevation: 0,
                         ),
-                        child: const Text(
-                          "Cancel",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        child: const Text("Cancel", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                       ),
                     ),
                   ),
@@ -940,19 +563,10 @@ class DeleteEmployeeDialog extends StatelessWidget {
                           backgroundColor: clF34745,
                           foregroundColor: Colors.white,
                           side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                           elevation: 0,
                         ),
-                        child: const Text(
-                          "Delete",
-                          style: TextStyle(
-                            color: clwhite,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        child: const Text("Delete", style: TextStyle(color: clwhite, fontSize: 16, fontWeight: FontWeight.w500)),
                       ),
                     ),
                   ),

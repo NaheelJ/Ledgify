@@ -27,8 +27,9 @@ class _CompanySwitcherDemoState extends State<CompanySwitcherDemo> {
 
   @override
   Widget build(BuildContext context) {
+    
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
-     return Scaffold(
+    return Scaffold(
       body: Column(
         children: [
           // Top bar with company switcher
@@ -44,14 +45,32 @@ class _CompanySwitcherDemoState extends State<CompanySwitcherDemo> {
                       child: Row(
                         children: [
                           // Admin button
-                          if (loginProvider.role == 'Admin')
-                          _buildAdminButton(),
-
+                          
+                          loginProvider.usermodel!.role == 'Admin' ? _buildAdminButton() : SizedBox(width: 100), // Hide admin button if not admin
                           // Company buttons
                           Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Consumer<MainProvider>(builder: (context, person, child) => Row(children: List.generate(person.companies.length, (index) => _buildCompanyButton(index)))),
+                            child: Consumer<MainProvider>(
+                              builder: (context, person, child) {
+                                if (person.companies.isEmpty) {
+                                  return Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: SizedBox(
+                                      height: 50,
+                                      width: 200,
+                                      child: Center(
+                                        child: Text('No companies available', style: GoogleFonts.notoSans(textStyle: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500))),
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  // ✅ Show horizontal company buttons
+                                  return SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    child: Row(children: List.generate(person.companies.length, (index) => _buildCompanyButton(index))),
+                                  );
+                                }
+                              },
                             ),
                           ),
 

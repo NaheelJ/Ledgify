@@ -207,31 +207,7 @@ class AddCompanyScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      Expanded(
-                        child: Container(
-                          // Optional: reduce outer padding if not needed
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(border: Border.all(color: mainProvider.borderColor), borderRadius: BorderRadius.circular(6)),
-                          child: TextField(
-                            controller: mainProvider.passwordController,
-                            focusNode: mainProvider.focusCompanyTaxId,
-                            style: GoogleFonts.notoSans(textStyle: TextStyle(color: clblack)),
-                            keyboardType: TextInputType.phone,
-                            decoration: InputDecoration(
-                              isDense: true, // Reduces vertical spacing
-                              contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
-                              border: InputBorder.none,
-                              label: RichText(
-                                text: TextSpan(
-                                  text: 'Password',
-                                  style: GoogleFonts.notoSans(textStyle: TextStyle(color: Colors.grey, fontSize: 16)),
-                                  children: [TextSpan(text: '*', style: TextStyle(color: Colors.red, fontSize: 16))],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      Expanded(child: SizedBox()),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -266,7 +242,14 @@ class AddCompanyScreen extends StatelessWidget {
                                   if (!mainPro.validateCompanyInputs(context)) return;
 
                                   String newCompanyId = DateTime.now().millisecondsSinceEpoch.toString();
-                                  bool success = await mainProvider.addNewCompany(context: context, userId: loginProvider.usermodel!.id!);
+
+                                  bool success = await mainProvider.addNewCompany(
+                                    context: context,
+                                    userId: loginProvider.usermodel!.userId,
+                                    companyId: newCompanyId,
+                                    userName: loginProvider.usermodel!.name,
+                                  );
+
                                   if (success) {
                                     showSuccessDialog(context);
                                   }

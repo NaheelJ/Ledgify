@@ -1,57 +1,55 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CompanyModel {
-  final String id;
-  final String companyName;
-  final String address;
-  final String taxId;
-  final String email;
-  final String contactNumber;
-  final DateTime? addedDate;
-  final String addedBy;
-  final String status;
-  final String role;
+  String companyId;
+  String companyName;
+  String email;
+  String address;
+  String phone;
+  String taxId;
+  String addedById;
+  DateTime? addedOn;
+  String addedByName;
 
   CompanyModel({
-    required this.id,
+    required this.companyId,
     required this.companyName,
-    required this.address,
-    required this.taxId,
     required this.email,
-    required this.contactNumber,
-    required this.addedBy,
-    required this.status,
-    required this.role,
-    this.addedDate,
+    required this.address,
+    required this.phone,
+    required this.taxId,
+    required this.addedById,
+    this.addedOn,
+    required this.addedByName,
   });
 
-  factory CompanyModel.fromMap(Map<String, dynamic> data) {
-    return CompanyModel(
-      id: data['ID'] ?? '',
-      companyName: data['COMPANY_NAME'] ?? '',
-      address: data['ADDRESS'] ?? '',
-      taxId: data['TAX_ID'] ?? '',
-      email: data['EMAIL'] ?? '',
-      contactNumber: data['CONTACT_NUMBER'] ?? '',
-      addedDate: data['ADDED_DATE'] != null ? (data['ADDED_DATE'] as Timestamp).toDate() : null,
-      addedBy: data['ADDED_BY'] ?? '',
-      status: data['STATUS'] ?? '',
-      role: data['ROLE'] ?? '',
-    );
+  // Convert a Company object to a Map (for JSON serialization)
+  Map<String, dynamic> toJson() {
+    return {
+      'COMPANY_ID': companyId,
+      'COMPANY_NAME': companyName,
+      'EMAIL': email,
+      'ADDRESS': address,
+      'PHONE': phone,
+      'TAX_ID': taxId,
+      'ADDED_BY_ID': addedById,
+      'ADDED_ON': addedOn,
+      'ADDED_BY_NAME': addedByName,
+    };
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'ID': id,
-      'COMPANY_NAME': companyName,
-      'ADDRESS': address,
-      'TAX_ID': taxId,
-      'EMAIL': email,
-      'CONTACT_NUMBER': contactNumber,
-      'ADDED_DATE': addedDate,
-      'ADDED_BY': addedBy,
-      'STATUS': status,
-      'ROLE': role,
-    };
+  // Create a Company object from a Map (for JSON deserialization)
+  factory CompanyModel.fromJson(Map<String, dynamic> json) {
+    return CompanyModel(
+      companyId: json['COMPANY_ID'] as String,
+      companyName: json['COMPANY_NAME'] as String,
+      email: json['EMAIL'] as String,
+      address: json['ADDRESS'] as String,
+      phone: json['PHONE'] as String,
+      taxId: json['TAX_ID'] as String,
+      addedById: json['ADDED_BY_ID'] as String,
+      addedOn: json['ADDED_ON'] != null ? (json['ADDED_ON'] as Timestamp).toDate() : null,
+      addedByName: json['ADDED_BY_NAME'] as String,
+    );
   }
 }

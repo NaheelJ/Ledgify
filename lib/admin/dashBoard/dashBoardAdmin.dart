@@ -110,118 +110,134 @@ class DashBoardScreenAdminHome extends StatelessWidget {
       ),
 
       body: Consumer<MainProvider>(
-        builder:
-            (context, person, child) => GridView.builder(
-              shrinkWrap: true,
-              itemCount: person.companies.length,
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 340, // max width of each card
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 3, // adjust based on your layout
+        builder: (context, person, child) {
+          if (person.isLoadingAddCompany) {
+            // While loading (you can add a loading flag in provider if needed)
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [CircularProgressIndicator(color: cl8F1A3F), const SizedBox(height: 16), const Text("Loading companies...", style: TextStyle(fontSize: 16, color: Colors.black))],
               ),
-              itemBuilder: (context, index) {
-                final company = person.companies[index];
-                return CompanyCard(
-                  title: company.companyName,
-                  companyId: company.id,
-                  companyAddress: company.address,
-                  companyContactNumber: company.contactNumber,
-                  companyEmail: company.email,
-                  taxId: company.taxId,
-                  onClick: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
-                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                          return child; // No animation, just return the page
-                        },
-                        transitionDuration: Duration.zero, // Zero duration for instant transition
-                      ),
-                      (route) => false, // Removes all previous routes
-                    );
-                    // if (company == "Company A") {
-                    //   // mainProvider.selectedIndex==0;
-                    //   mainProvider.topBarSelectedIndex = 0;
-                    //   Navigator.pushAndRemoveUntil(
-                    //     context,
-                    //     PageRouteBuilder(
-                    //       pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
-                    //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    //         return child; // No animation, just return the page
-                    //       },
-                    //       transitionDuration: Duration.zero, // Zero duration for instant transition
-                    //     ),
-                    //     (route) => false, // Removes all previous routes
-                    //   );
-                    // } else if (companies[index] == "Company B") {
-                    //   // mainProvider.selectedIndex==1;
-                    //   mainProvider.topBarSelectedIndex = 1;
-                    //   Navigator.pushAndRemoveUntil(
-                    //     context,
-                    //     PageRouteBuilder(
-                    //       pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
-                    //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    //         return child; // No animation, just return the page
-                    //       },
-                    //       transitionDuration: Duration.zero, // Zero duration for instant transition
-                    //     ),
-                    //     (route) => false, // Removes all previous routes
-                    //   );
-                    //   //mainProvider.clickAddButton('companyB');
-                    // } else if (companies[index] == "Company C") {
-                    //   // mainProvider.selectedIndex==2;
-                    //   mainProvider.topBarSelectedIndex = 2;
-                    //   Navigator.pushAndRemoveUntil(
-                    //     context,
-                    //     PageRouteBuilder(
-                    //       pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
-                    //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    //         return child; // No animation, just return the page
-                    //       },
-                    //       transitionDuration: Duration.zero, // Zero duration for instant transition
-                    //     ),
-                    //     (route) => false, // Removes all previous routes
-                    //   );
-                    //   //mainProvider.clickAddButton('companyC');
-                    // } else if (companies[index] == "Company D") {
-                    //   // mainProvider.selectedIndex==3;
-                    //   mainProvider.topBarSelectedIndex = 3;
-                    //   Navigator.pushAndRemoveUntil(
-                    //     context,
-                    //     PageRouteBuilder(
-                    //       pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
-                    //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    //         return child; // No animation, just return the page
-                    //       },
-                    //       transitionDuration: Duration.zero, // Zero duration for instant transition
-                    //     ),
-                    //     (route) => false, // Removes all previous routes
-                    //   );
-                    //   //mainProvider.clickAddButton('companyD');
-                    // } else if (companies[index] == "Company E") {
-                    //   // mainProvider.selectedIndex==5;
-                    //   mainProvider.topBarSelectedIndex = 5;
-                    //   Navigator.pushAndRemoveUntil(
-                    //     context,
-                    //     PageRouteBuilder(
-                    //       pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
-                    //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    //         return child; // No animation, just return the page
-                    //       },
-                    //       transitionDuration: Duration.zero, // Zero duration for instant transition
-                    //     ),
-                    //     (route) => false, // Removes all previous routes
-                    //   );
-                    //   //mainProvider.clickAddButton('companyE');
-                    // }
-                  },
-                );
-              },
-            ),
+            );
+          } else if (person.companies.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [Icon(Icons.business, size: 64, color: Colors.grey), SizedBox(height: 16), Text("No companies found", style: TextStyle(fontSize: 18, color: Colors.grey))],
+              ),
+            );
+          }
+
+          return GridView.builder(
+            shrinkWrap: true,
+            itemCount: person.companies.length,
+            padding: const EdgeInsets.all(16),
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 340, mainAxisSpacing: 16, crossAxisSpacing: 16, childAspectRatio: 3),
+            itemBuilder: (context, index) {
+              final company = person.companies[index];
+              return CompanyCard(
+                title: company.companyName,
+                companyId: company.companyId,
+                companyAddress: company.address,
+                companyContactNumber: company.phone,
+                companyEmail: company.email,
+                taxId: company.taxId,
+                onClick: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        return child;
+                      },
+                      transitionDuration: Duration.zero,
+                    ),
+                    (route) => false,
+                  );
+                  mainProvider.selectedIndex = 1;
+                  mainProvider.topBarSelectedIndex = 1;
+                },
+              );
+            },
+          );
+        },
       ),
+
+      // if (company == "Company A") {
+      //   // mainProvider.selectedIndex==0;
+      //   mainProvider.topBarSelectedIndex = 0;
+      //   Navigator.pushAndRemoveUntil(
+      //     context,
+      //     PageRouteBuilder(
+      //       pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
+      //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      //         return child; // No animation, just return the page
+      //       },
+      //       transitionDuration: Duration.zero, // Zero duration for instant transition
+      //     ),
+      //     (route) => false, // Removes all previous routes
+      //   );
+      // } else if (companies[index] == "Company B") {
+      //   // mainProvider.selectedIndex==1;
+      //   mainProvider.topBarSelectedIndex = 1;
+      //   Navigator.pushAndRemoveUntil(
+      //     context,
+      //     PageRouteBuilder(
+      //       pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
+      //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      //         return child; // No animation, just return the page
+      //       },
+      //       transitionDuration: Duration.zero, // Zero duration for instant transition
+      //     ),
+      //     (route) => false, // Removes all previous routes
+      //   );
+      //   //mainProvider.clickAddButton('companyB');
+      // } else if (companies[index] == "Company C") {
+      //   // mainProvider.selectedIndex==2;
+      //   mainProvider.topBarSelectedIndex = 2;
+      //   Navigator.pushAndRemoveUntil(
+      //     context,
+      //     PageRouteBuilder(
+      //       pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
+      //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      //         return child; // No animation, just return the page
+      //       },
+      //       transitionDuration: Duration.zero, // Zero duration for instant transition
+      //     ),
+      //     (route) => false, // Removes all previous routes
+      //   );
+      //   //mainProvider.clickAddButton('companyC');
+      // } else if (companies[index] == "Company D") {
+      //   // mainProvider.selectedIndex==3;
+      //   mainProvider.topBarSelectedIndex = 3;
+      //   Navigator.pushAndRemoveUntil(
+      //     context,
+      //     PageRouteBuilder(
+      //       pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
+      //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      //         return child; // No animation, just return the page
+      //       },
+      //       transitionDuration: Duration.zero, // Zero duration for instant transition
+      //     ),
+      //     (route) => false, // Removes all previous routes
+      //   );
+      //   //mainProvider.clickAddButton('companyD');
+      // } else if (companies[index] == "Company E") {
+      //   // mainProvider.selectedIndex==5;
+      //   mainProvider.topBarSelectedIndex = 5;
+      //   Navigator.pushAndRemoveUntil(
+      //     context,
+      //     PageRouteBuilder(
+      //       pageBuilder: (context, animation, secondaryAnimation) => CompanySwitcherDemo(),
+      //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      //         return child; // No animation, just return the page
+      //       },
+      //       transitionDuration: Duration.zero, // Zero duration for instant transition
+      //     ),
+      //     (route) => false, // Removes all previous routes
+      //   );
+      //   //mainProvider.clickAddButton('companyE');
+      // }
     );
   }
 }
