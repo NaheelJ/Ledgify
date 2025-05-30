@@ -42,3 +42,21 @@ Widget textWid(String text, Color colors, double textsize, String fontFamily, Fo
   );
 }
 
+List<String> generateSearchKeywords2(String name, String phone, String role) {
+  List<String> keywords = [];
+
+  String lowerCaseName = name.toLowerCase();
+  for (int i = 1; i <= lowerCaseName.length; i++) {
+    keywords.add(lowerCaseName.substring(0, i));
+  }
+
+  for (int i = 1; i <= phone.length; i++) {
+    keywords.add(phone.substring(0, i));
+  }
+
+  for (int i = 1; i <= role.length; i++) {
+    keywords.add(role.substring(0, i));
+  }
+
+  return keywords;
+}

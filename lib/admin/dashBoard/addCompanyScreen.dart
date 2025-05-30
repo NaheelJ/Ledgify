@@ -1,13 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ledgifi/admin/dashBoard/dashBoardAdmin.dart';
-import 'package:ledgifi/company/employees%20management/employeesScreen.dart';
-import 'package:ledgifi/company/sales/customersScreen.dart';
 import 'package:ledgifi/providers/loginProvider.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/functions.dart';
 import '../../constants/myColors.dart';
 import '../../providers/mainProvider.dart';
 
@@ -18,7 +14,6 @@ class AddCompanyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     LoginProvider loginProvider = Provider.of<LoginProvider>(context, listen: false);
     final mainProvider = Provider.of<MainProvider>(context, listen: false);
-    var width = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: clwhite,
@@ -68,56 +63,72 @@ class AddCompanyScreen extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Container(
-                          // Optional: reduce outer padding if not needed
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(border: Border.all(color: mainProvider.borderColor), borderRadius: BorderRadius.circular(6)),
-                          child: TextField(
-                            controller: mainProvider.companyNameController,
-                            focusNode: mainProvider.focusCompanyName,
-                            style: GoogleFonts.notoSans(textStyle: TextStyle(color: clblack)),
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              isDense: true, // Reduces vertical spacing
-                              contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
-                              border: InputBorder.none,
-                              label: RichText(
-                                text: TextSpan(
-                                  text: 'Company Name ',
-                                  style: GoogleFonts.notoSans(textStyle: TextStyle(color: Colors.grey, fontSize: 16)),
-                                  children: [TextSpan(text: '*', style: TextStyle(color: Colors.red, fontSize: 16))],
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              // Optional: reduce outer padding if not needed
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(border: Border.all(color: mainProvider.borderColor), borderRadius: BorderRadius.circular(6)),
+                              child: TextField(
+                                controller: mainProvider.companyNameController,
+                                focusNode: mainProvider.focusCompanyName,
+                                style: GoogleFonts.notoSans(textStyle: TextStyle(color: clblack)),
+                                keyboardType: TextInputType.text,
+                                decoration: InputDecoration(
+                                  isDense: true, // Reduces vertical spacing
+                                  contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
+                                  border: InputBorder.none,
+                                  label: RichText(
+                                    text: TextSpan(
+                                      text: 'Company Name ',
+                                      style: GoogleFonts.notoSans(textStyle: TextStyle(color: Colors.grey, fontSize: 16)),
+                                      children: [TextSpan(text: '*', style: TextStyle(color: Colors.red, fontSize: 16))],
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                            Consumer<MainProvider>(
+                              builder: (context, value, child) => Text(value.companyNameError.toString(), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.red)),
+                            ),
+                          ],
                         ),
                       ),
 
                       const SizedBox(width: 16),
 
                       Expanded(
-                        child: Container(
-                          // Optional: reduce outer padding if not needed
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(border: Border.all(color: mainProvider.borderColor), borderRadius: BorderRadius.circular(6)),
-                          child: TextField(
-                            controller: mainProvider.emailController,
-                            focusNode: mainProvider.focusCompanyEmail,
-                            style: GoogleFonts.notoSans(textStyle: TextStyle(color: clblack)),
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              isDense: true, // Reduces vertical spacing
-                              contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
-                              border: InputBorder.none,
-                              label: RichText(
-                                text: TextSpan(
-                                  text: 'Email ',
-                                  style: GoogleFonts.notoSans(textStyle: TextStyle(color: Colors.grey, fontSize: 16)),
-                                  children: [TextSpan(text: '*', style: TextStyle(color: Colors.red, fontSize: 16))],
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              // Optional: reduce outer padding if not needed
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(border: Border.all(color: mainProvider.borderColor), borderRadius: BorderRadius.circular(6)),
+                              child: TextField(
+                                controller: mainProvider.companyEmailController,
+                                focusNode: mainProvider.focusCompanyEmail,
+                                style: GoogleFonts.notoSans(textStyle: TextStyle(color: clblack)),
+                                keyboardType: TextInputType.text,
+                                decoration: InputDecoration(
+                                  isDense: true, // Reduces vertical spacing
+                                  contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
+                                  border: InputBorder.none,
+                                  label: RichText(
+                                    text: TextSpan(
+                                      text: 'Email ',
+                                      style: GoogleFonts.notoSans(textStyle: TextStyle(color: Colors.grey, fontSize: 16)),
+                                      children: [TextSpan(text: '*', style: TextStyle(color: Colors.red, fontSize: 16))],
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                            Consumer<MainProvider>(
+                              builder: (context, value, child) => Text(value.companyEmailError.toString(), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.red)),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -126,54 +137,70 @@ class AddCompanyScreen extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Container(
-                          // Optional: reduce outer padding if not needed
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(border: Border.all(color: mainProvider.borderColor), borderRadius: BorderRadius.circular(6)),
-                          child: TextField(
-                            controller: mainProvider.addressController,
-                            focusNode: mainProvider.focusCompanyAddress,
-                            style: GoogleFonts.notoSans(textStyle: TextStyle(color: clblack)),
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              isDense: true, // Reduces vertical spacing
-                              contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
-                              border: InputBorder.none,
-                              label: RichText(
-                                text: TextSpan(
-                                  text: 'Address ',
-                                  style: GoogleFonts.notoSans(textStyle: TextStyle(color: Colors.grey, fontSize: 16)),
-                                  children: [TextSpan(text: '*', style: TextStyle(color: Colors.red, fontSize: 16))],
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              // Optional: reduce outer padding if not needed
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(border: Border.all(color: mainProvider.borderColor), borderRadius: BorderRadius.circular(6)),
+                              child: TextField(
+                                controller: mainProvider.companyAddressController,
+                                focusNode: mainProvider.focusCompanyAddress,
+                                style: GoogleFonts.notoSans(textStyle: TextStyle(color: clblack)),
+                                keyboardType: TextInputType.text,
+                                decoration: InputDecoration(
+                                  isDense: true, // Reduces vertical spacing
+                                  contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
+                                  border: InputBorder.none,
+                                  label: RichText(
+                                    text: TextSpan(
+                                      text: 'Address ',
+                                      style: GoogleFonts.notoSans(textStyle: TextStyle(color: Colors.grey, fontSize: 16)),
+                                      children: [TextSpan(text: '*', style: TextStyle(color: Colors.red, fontSize: 16))],
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                            Consumer<MainProvider>(
+                              builder: (context, value, child) => Text(value.companyAddressError.toString(), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.red)),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: Container(
-                          // Optional: reduce outer padding if not needed
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(border: Border.all(color: mainProvider.borderColor), borderRadius: BorderRadius.circular(6)),
-                          child: TextField(
-                            controller: mainProvider.contactNumberController,
-                            focusNode: mainProvider.focusCompanyContact,
-                            style: GoogleFonts.notoSans(textStyle: TextStyle(color: clblack)),
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              isDense: true, // Reduces vertical spacing
-                              contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
-                              border: InputBorder.none,
-                              label: RichText(
-                                text: TextSpan(
-                                  text: 'Contact Number ',
-                                  style: GoogleFonts.notoSans(textStyle: TextStyle(color: Colors.grey, fontSize: 16)),
-                                  children: [TextSpan(text: '*', style: TextStyle(color: Colors.red, fontSize: 16))],
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              // Optional: reduce outer padding if not needed
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(border: Border.all(color: mainProvider.borderColor), borderRadius: BorderRadius.circular(6)),
+                              child: TextField(
+                                controller: mainProvider.contactNumberController,
+                                focusNode: mainProvider.focusCompanyContact,
+                                style: GoogleFonts.notoSans(textStyle: TextStyle(color: clblack)),
+                                keyboardType: TextInputType.text,
+                                decoration: InputDecoration(
+                                  isDense: true, // Reduces vertical spacing
+                                  contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
+                                  border: InputBorder.none,
+                                  label: RichText(
+                                    text: TextSpan(
+                                      text: 'Contact Number ',
+                                      style: GoogleFonts.notoSans(textStyle: TextStyle(color: Colors.grey, fontSize: 16)),
+                                      children: [TextSpan(text: '*', style: TextStyle(color: Colors.red, fontSize: 16))],
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                            Consumer<MainProvider>(
+                              builder: (context, value, child) => Text(value.companyContactNumberError.toString(), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.red)),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -182,28 +209,36 @@ class AddCompanyScreen extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Container(
-                          // Optional: reduce outer padding if not needed
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(border: Border.all(color: mainProvider.borderColor), borderRadius: BorderRadius.circular(6)),
-                          child: TextField(
-                            controller: mainProvider.taxIdController,
-                            focusNode: mainProvider.focusCompanyPassword,
-                            style: GoogleFonts.notoSans(textStyle: TextStyle(color: clblack)),
-                            keyboardType: TextInputType.phone,
-                            decoration: InputDecoration(
-                              isDense: true, // Reduces vertical spacing
-                              contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
-                              border: InputBorder.none,
-                              label: RichText(
-                                text: TextSpan(
-                                  text: 'Tax ID',
-                                  style: GoogleFonts.notoSans(textStyle: TextStyle(color: Colors.grey, fontSize: 16)),
-                                  children: [TextSpan(text: '*', style: TextStyle(color: Colors.red, fontSize: 16))],
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              // Optional: reduce outer padding if not needed
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(border: Border.all(color: mainProvider.borderColor), borderRadius: BorderRadius.circular(6)),
+                              child: TextField(
+                                controller: mainProvider.companyTaxIdController,
+                                focusNode: mainProvider.focusCompanyPassword,
+                                style: GoogleFonts.notoSans(textStyle: TextStyle(color: clblack)),
+                                keyboardType: TextInputType.phone,
+                                decoration: InputDecoration(
+                                  isDense: true, // Reduces vertical spacing
+                                  contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8), // Adjust as needed
+                                  border: InputBorder.none,
+                                  label: RichText(
+                                    text: TextSpan(
+                                      text: 'Tax ID',
+                                      style: GoogleFonts.notoSans(textStyle: TextStyle(color: Colors.grey, fontSize: 16)),
+                                      children: [TextSpan(text: '*', style: TextStyle(color: Colors.red, fontSize: 16))],
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                            Consumer<MainProvider>(
+                              builder: (context, value, child) => Text(value.companyTaxIdError.toString(), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.red)),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -218,7 +253,9 @@ class AddCompanyScreen extends StatelessWidget {
                         width: 150,
                         height: 40,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            mainProvider.clickAddButton('dashBoard');
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: Colors.black,
@@ -239,16 +276,14 @@ class AddCompanyScreen extends StatelessWidget {
                                 onPressed: () async {
                                   if (mainPro.isLoadingAddCompany) return;
 
-                                  if (!mainPro.validateCompanyInputs(context)) return;
+                                  if (!mainPro.validateCompanyForm()) return;
 
-                                  String newCompanyId = DateTime.now().millisecondsSinceEpoch.toString();
+                                  bool success = await mainProvider.addNewCompany(context: context, userId: loginProvider.usermodel!.userId, userName: loginProvider.usermodel!.name);
 
-                                  bool success = await mainProvider.addNewCompany(
-                                    context: context,
-                                    userId: loginProvider.usermodel!.userId,
-                                    companyId: newCompanyId,
-                                    userName: loginProvider.usermodel!.name,
-                                  );
+                                  if (mainProvider.isCompanyEditing) {
+                                    mainProvider.clickAddButton('dashBoard');
+                                    return;
+                                  }
 
                                   if (success) {
                                     showSuccessDialog(context);

@@ -9,6 +9,7 @@ class VendorModel {
   final String contactPerson;
   final double openingBalance;
   final double balanceAmount;
+  final String status;
 
   final String addedById;
   final String addedByName;
@@ -27,6 +28,7 @@ class VendorModel {
     required this.contactPerson,
     required this.openingBalance,
     required this.balanceAmount,
+    required this.status,
     required this.addedById,
     required this.addedByName,
     this.addedOn,
@@ -45,6 +47,7 @@ class VendorModel {
       'CONTACT_PERSON': contactPerson,
       'OPENING_BALANCE': openingBalance,
       'BALANCE_AMOUNT': balanceAmount,
+      'STATUS': status,
       'ADDED_BY_ID': addedById,
       'ADDED_BY_NAME': addedByName,
       'ADDED_ON': addedOn,
@@ -64,16 +67,19 @@ class VendorModel {
       contactPerson: data['CONTACT_PERSON'] ?? '',
       openingBalance: (data['OPENING_BALANCE'] ?? 0).toDouble(),
       balanceAmount: (data['BALANCE_AMOUNT'] ?? 0).toDouble(),
+      status: data['STATUS'] ?? '',
       addedById: data['ADDED_BY_ID'] ?? '',
       addedByName: data['ADDED_BY_NAME'] ?? '',
-      addedOn: data['ADDED_ON'] is Timestamp
+      addedOn:
+          data['ADDED_ON'] is Timestamp
               ? (data['ADDED_ON'] as Timestamp).toDate()
               : data['ADDED_ON'] is DateTime
               ? data['ADDED_ON']
               : null,
       editedById: data['EDITED_BY_ID'],
       editedByName: data['EDITED_BY_NAME'],
-      editedOn: data['EDITED_ON'] is Timestamp
+      editedOn:
+          data['EDITED_ON'] is Timestamp
               ? (data['EDITED_ON'] as Timestamp).toDate()
               : data['EDITED_ON'] is DateTime
               ? data['EDITED_ON']

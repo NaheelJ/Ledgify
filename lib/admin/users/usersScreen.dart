@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ledgifi/constants/functions.dart';
 import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
+import 'package:ledgifi/widgets/custom_pagination.dart';
 import 'package:provider/provider.dart';
 
 import 'addUserScreen.dart';
@@ -48,9 +50,7 @@ class UsersScreenHome extends StatelessWidget {
   Widget build(BuildContext context) {
     final MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
     // Define controllers outside of the build method but inside the class
-    final TextEditingController controllerNew = TextEditingController();
     var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: clwhite,
@@ -74,7 +74,7 @@ class UsersScreenHome extends StatelessWidget {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text('Users', style: GoogleFonts.notoSans(fontWeight: FontWeight.w600, fontSize: 19, color: Colors.black)),
-                        ConstrainedBox(constraints: BoxConstraints(maxWidth: constraints.maxWidth < 500 ? constraints.maxWidth * 0.9 : 400), child: buildSearchTextField()),
+                        ConstrainedBox(constraints: BoxConstraints(maxWidth: constraints.maxWidth < 500 ? constraints.maxWidth * 0.9 : 400), child: buildSearchTextField(mainProvider)),
                       ],
                     ),
 
@@ -85,6 +85,7 @@ class UsersScreenHome extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {
                           mainProvider.setIsUserEditing(false);
+                          mainProvider.clearUserControllers();
                           Provider.of<MainProvider>(context, listen: false).clickAddButton('addUser');
                         },
                         style: ElevatedButton.styleFrom(
@@ -120,64 +121,84 @@ class UsersScreenHome extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Column(
                 children: [
-                  SingleChildScrollView(
+                  // Scrollable table container
+                  Expanded(
                     child: Container(
-                      width: 1600,
-                      height: height / 1.5,
                       decoration: BoxDecoration(
                         border: Border.all(color: clE9EAEB), // Outer border
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
                         children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Table Header
-                                Container(
-                                  width: 1900, // Sum of all column widths
-                                  height: 44,
-                                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border(bottom: BorderSide(color: Color(0xFFE9EAEB), width: 1)),
-                                    borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: 100, child: Text("Sl.No", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                      SizedBox(width: 360, child: Text("Name", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                      SizedBox(width: 360, child: Text("Surname", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                      SizedBox(width: 210, child: Text("Role", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-
-                                      SizedBox(width: 200, child: Text("View More", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                      SizedBox(width: 180, child: Text("Edit", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                      SizedBox(width: 100, child: Text("Delete", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                    ],
-                                  ),
+                          // Fixed Header
+                          Container(
+                            height: 44,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border(bottom: BorderSide(color: Color(0xFFE9EAEB), width: 1)),
+                              borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+                            ),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: SizedBox(
+                                width: 1900, // Sum of all column widths
+                                child: Row(
+                                  children: [
+                                    SizedBox(width: 100, child: Text("Sl.No", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                    SizedBox(width: 360, child: Text("Name", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                    SizedBox(width: 360, child: Text("Surname", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                    SizedBox(width: 210, child: Text("Role", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                    SizedBox(width: 200, child: Text("View More", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                    SizedBox(width: 180, child: Text("Edit", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                    SizedBox(width: 100, child: Text("Delete", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                                  ],
                                 ),
-
-                                // Table Rows
-                                SingleChildScrollView(child: Column(children: _buildUsersListRows(context))),
-                              ],
+                              ),
                             ),
                           ),
-                          buildPagination(),
+
+                          // Scrollable Table Body
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: _buildUsersListRows(context))),
+                            ),
+                          ),
                         ],
                       ),
                     ),
+                  ),
+
+                  // Pagination
+                  CustomPaginationButtons(
+                    currentPage: mainProvider.userCurrentPageIndex + 1,
+                    totalPages: (mainProvider.userDocCount / mainProvider.userPageSize).ceil(),
+                    onPageSelected: (page) => mainProvider.fetchUsersAtPage(page - 1),
+                    onPrevious: () {
+                      if (mainProvider.userCurrentPageIndex > 0) {
+                        mainProvider.fetchUsersAtPage(mainProvider.userCurrentPageIndex - 1);
+                      }
+                    },
+                    onNext: () {
+                      final nextPage = mainProvider.userCurrentPageIndex + 1;
+                      final totalPages = (mainProvider.userDocCount / mainProvider.userPageSize).ceil();
+                      if (nextPage < totalPages) {
+                        mainProvider.fetchUsersAtPage(nextPage);
+                      }
+                    },
                   ),
                 ],
               ),
             ),
           ),
+          SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  Widget buildSearchTextField() {
+  Widget buildSearchTextField(MainProvider mainProvider) {
     return Container(
       height: 45,
       width: 500, // Adjust width as needed
@@ -193,6 +214,7 @@ class UsersScreenHome extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
+              controller: mainProvider.usersSearchController,
               decoration: InputDecoration(
                 fillColor: clF2F2F2,
                 hintText: 'Search',
@@ -201,6 +223,9 @@ class UsersScreenHome extends StatelessWidget {
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
               ),
+              onSubmitted: (value) async {
+                await mainProvider.fetchInitialUsers();
+              },
               style: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 16, color: cl666666),
             ),
           ),
@@ -340,15 +365,76 @@ class UsersScreenHome extends StatelessWidget {
   }
 }
 
+// Updated _buildUsersListRows method
 List<Widget> _buildUsersListRows(BuildContext context) {
   final MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
 
-  return mainProvider.usersList.asMap().entries.map((entry) {
+    if (mainProvider.isLoadingUsersPagination) {
+    // Loading state
+    return [
+      Center(
+        child: SizedBox(
+          width: 1900,
+          height: 120,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(color: cl8F1A3F),
+                const SizedBox(height: 12),
+                Text(
+                  'Loading...',
+                  style: GoogleFonts.notoSans(
+                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.black),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ];
+  }
+
+  if (mainProvider.userList.isEmpty) {
+    // Empty state
+    return [
+      SizedBox(
+        width: 1900,
+        height: 150,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.person_off, size: 60, color: Colors.grey.shade400),
+              const SizedBox(height: 15),
+              Text(
+                'No users found',
+                style: GoogleFonts.notoSans(
+                  textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.grey.shade600),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Please add new users to see them here.',
+                style: GoogleFonts.notoSans(
+                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.grey.shade500),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ];
+  }
+
+  return mainProvider.userList.asMap().entries.map((entry) {
     final index = entry.key;
     final item = entry.value;
 
     return Container(
-      width: 2200,
+      width: 1900, // Match header width
       height: 41,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(color: index.isEven ? Colors.white : const Color(0xFFFAFAFA), border: const Border(bottom: BorderSide(color: Color(0xFFE9EAEB), width: 1))),
@@ -397,18 +483,18 @@ List<Widget> _buildUsersListRows(BuildContext context) {
             ),
           ),
           SizedBox(
-            width: 160,
+            width: 120,
             child: InkWell(
               onTap: () {
                 showDialog(
                   context: context,
                   builder:
                       (context) => DeleteEmployeeDialog(
-                        onDelete: () {
+                        onDelete: () async {
                           // Delete logic
-                          Navigator.pop(context);
+                          await mainProvider.deleteUser(context, item.userId);
                         },
-                        onCancel: () {
+                        onCancel: () async {
                           Navigator.pop(context);
                         },
                       ),
@@ -422,7 +508,6 @@ List<Widget> _buildUsersListRows(BuildContext context) {
     );
   }).toList();
 }
-
 // Reusable text cell builder
 
 void showMoreDialog(BuildContext context, {required String name, required String surName, required String role, required String password, required String email, required String contactNumber}) {
@@ -464,13 +549,7 @@ void showMoreDialog(BuildContext context, {required String name, required String
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildInfoItem("Surname", surName),
-                          SizedBox(height: 16),
-                          _buildInfoItem("Email", email),
-                          SizedBox(height: 16),
-                          _buildInfoItem("Contact Number ", contactNumber),
-                        ],
+                        children: [_buildInfoItem("Surname", surName), SizedBox(height: 16), _buildInfoItem("Email", email), SizedBox(height: 16), _buildInfoItem("Contact Number ", contactNumber)],
                       ),
                     ),
                   ],
@@ -507,75 +586,84 @@ class DeleteEmployeeDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: clwhite,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: SizedBox(
-        height: 180,
-        width: 360,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Expanded(child: Text('Delete User', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
-                  GestureDetector(onTap: onCancel, child: const Icon(Icons.close, size: 18)),
-                ],
-              ),
-              const SizedBox(height: 15),
-              const Text('Are you sure you want to delete User ?', style: TextStyle(fontSize: 16, color: cl382E2E, fontWeight: FontWeight.w400)),
-              const SizedBox(height: 25),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      width: 150,
-                      height: 40,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Cancel action
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                          elevation: 0,
+    final MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
+    return Consumer<MainProvider>(
+      builder:
+          (context, person, child) => Dialog(
+            backgroundColor: clwhite,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            child:
+                person.isLoadingUserAdding
+                    ? Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [CircularProgressIndicator(color: cl8F1A3F), const SizedBox(width: 24), Text('Loading..', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500))],
+                      ),
+                    )
+                    : SizedBox(
+                      height: 180,
+                      width: 360,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Expanded(child: Text('Delete User', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
+                                GestureDetector(onTap: onCancel, child: const Icon(Icons.close, size: 18)),
+                              ],
+                            ),
+                            const SizedBox(height: 15),
+                            const Text('Are you sure you want to delete User ?', style: TextStyle(fontSize: 16, color: cl382E2E, fontWeight: FontWeight.w400)),
+                            const SizedBox(height: 25),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Expanded(
+                                  child: SizedBox(
+                                    width: 150,
+                                    height: 40,
+                                    child: ElevatedButton(
+                                      onPressed: onCancel,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: Colors.black,
+                                        side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                                        elevation: 0,
+                                      ),
+                                      child: const Text("Cancel", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: SizedBox(
+                                    width: 150,
+                                    height: 40,
+                                    child: ElevatedButton(
+                                      onPressed: onDelete,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: clF34745,
+                                        foregroundColor: Colors.white,
+                                        side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                                        elevation: 0,
+                                      ),
+                                      child: const Text("Delete", style: TextStyle(color: clwhite, fontSize: 16, fontWeight: FontWeight.w500)),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        child: const Text("Cancel", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: SizedBox(
-                      width: 150,
-                      height: 40,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Save action
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: clF34745,
-                          foregroundColor: Colors.white,
-                          side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                          elevation: 0,
-                        ),
-                        child: const Text("Delete", style: TextStyle(color: clwhite, fontSize: 16, fontWeight: FontWeight.w500)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
           ),
-        ),
-      ),
     );
   }
 }

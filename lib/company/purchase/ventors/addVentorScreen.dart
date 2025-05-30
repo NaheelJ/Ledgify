@@ -14,9 +14,6 @@ class AddVentorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final LoginProvider loginProvider = Provider.of<LoginProvider>(context, listen: false);
 
-    var width = MediaQuery.of(context).size.width;
-    String selectedAccount = 'Cash in Hand';
-
     return Scaffold(
       backgroundColor: clwhite,
       appBar: PreferredSize(
@@ -53,7 +50,11 @@ class AddVentorScreen extends StatelessWidget {
                 ),
                 SizedBox(width: 12),
 
-                Text('Add Vendor', style: GoogleFonts.notoSans(fontWeight: FontWeight.w600, fontSize: 19, color: Colors.black)),
+                Consumer<MainProvider>(
+                  builder:
+                      (context, person, child) =>
+                          Text(person.isVendorEditing ? 'Edit Vendor' : "Add Vendor", style: GoogleFonts.notoSans(fontWeight: FontWeight.w600, fontSize: 19, color: Colors.black)),
+                ),
               ],
             ),
           ),
@@ -287,7 +288,7 @@ class AddVentorScreen extends StatelessWidget {
                         height: 40,
                         child: ElevatedButton(
                           onPressed: () {
-                            // Cancel action
+                            mainProvider.clickAddButton('addPurchase');
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
@@ -315,6 +316,8 @@ class AddVentorScreen extends StatelessWidget {
                               context: context,
                               addedById: loginProvider.usermodel!.userId,
                               addedByName: loginProvider.usermodel!.name,
+                              companyId: '',
+                              companyName: '',
                             );
 
                             if (vendorAddingSuccess) {

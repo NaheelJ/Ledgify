@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ledgifi/constants/functions.dart';
 import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
 import 'package:provider/provider.dart';
@@ -82,6 +83,9 @@ class DashBoardScreenAdminHome extends StatelessWidget {
                       height: 45,
                       child: ElevatedButton(
                         onPressed: () {
+                          mainProvider.clearCompanyControllers();
+                          String newCompanyId = DateTime.now().millisecondsSinceEpoch.toString();
+                          mainProvider.setCompanyIsEditing(false, newCompanyId);
                           mainProvider.clickAddButton('addCompany');
                         },
                         style: ElevatedButton.styleFrom(
@@ -323,89 +327,111 @@ void showMoreDialogForFDashboard(
   showDialog(
     context: context,
     builder: (context) {
-      return Dialog(
-        backgroundColor: clwhite,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: SizedBox(
-            width: 500, // Web-specific width
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                /// Title Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("More Details", style: GoogleFonts.notoSans(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black)),
-                    IconButton(icon: const Icon(Icons.close, size: 20), onPressed: () => Navigator.of(context).pop()),
-                  ],
-                ),
-                const SizedBox(height: 20),
+      final MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
+      return Consumer<MainProvider>(
+        builder:
+            (context, person, child) => Dialog(
+              backgroundColor: clwhite,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              child:
+                  person.isLoadingCompanyDelete
+                      ? Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [CircularProgressIndicator(color: cl8F1A3F), const SizedBox(width: 24), Text('Loading..', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500))],
+                        ),
+                      )
+                      : Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: SizedBox(
+                          width: 500, // Web-specific width
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              /// Title Row
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("More Details", style: GoogleFonts.notoSans(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black)),
+                                  IconButton(icon: const Icon(Icons.close, size: 20), onPressed: () => Navigator.of(context).pop()),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
 
-                /// Details Grid
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [_buildInfoItem("Company Name", title), SizedBox(height: 16), _buildInfoItem("Address", companyAddress), SizedBox(height: 16), _buildInfoItem("Tax ID", taxId)],
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [_buildInfoItem("Email", companyEmail), SizedBox(height: 16), _buildInfoItem("Contact Number", companyContactNumber)],
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 30),
+                              /// Details Grid
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        _buildInfoItem("Company Name", title),
+                                        SizedBox(height: 16),
+                                        _buildInfoItem("Address", companyAddress),
+                                        SizedBox(height: 16),
+                                        _buildInfoItem("Tax ID", taxId),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [_buildInfoItem("Email", companyEmail), SizedBox(height: 16), _buildInfoItem("Contact Number", companyContactNumber)],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 30),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Delete Button
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-                          // Handle delete
-                        },
-                        icon: Image.asset('asset/icons/deleteIcon.png', scale: 5.2),
-                        label: Text('Delete', style: GoogleFonts.notoSans(fontSize: 14, fontWeight: FontWeight.w500, color: clF34745)),
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Colors.grey.shade300),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 17),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  // Delete Button
+                                  Expanded(
+                                    child: OutlinedButton.icon(
+                                      onPressed: () {
+                                        mainProvider.deleteCompany(context, companyId);
+                                      },
+                                      icon: Image.asset('asset/icons/deleteIcon.png', scale: 5.2),
+                                      label: Text('Delete', style: GoogleFonts.notoSans(fontSize: 14, fontWeight: FontWeight.w500, color: clF34745)),
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(color: Colors.grey.shade300),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 17),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+
+                                  // Edit Button
+                                  Expanded(
+                                    child: OutlinedButton.icon(
+                                      onPressed: () {
+                                        mainProvider.setCompanyIsEditing(true, companyId);
+                                        mainProvider.setCompanyFormFields(companyName: title, address: companyAddress, taxId: taxId, email: companyEmail, contactNumber: companyContactNumber);
+                                        mainProvider.clickAddButton('addCompany');
+                                        back(context);
+                                      },
+                                      icon: Image.asset('asset/icons/editIcon.png', scale: 5.2),
+                                      label: Text('Edit', style: GoogleFonts.notoSans(fontSize: 14, fontWeight: FontWeight.w500, color: cl007AFF)),
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(color: Colors.grey.shade300),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 17),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-
-                    // Edit Button
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-                          // Handle edit
-                        },
-                        icon: Image.asset('asset/icons/editIcon.png', scale: 5.2),
-                        label: Text('Edit', style: GoogleFonts.notoSans(fontSize: 14, fontWeight: FontWeight.w500, color: cl007AFF)),
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Colors.grey.shade300),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 17),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ),
-          ),
-        ),
       );
     },
   );

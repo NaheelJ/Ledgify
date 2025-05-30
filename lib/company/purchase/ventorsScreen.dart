@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:ledgifi/company/purchase/ventors/addVentorScreen.dart';
 import 'package:ledgifi/constants/myColors.dart';
 import 'package:ledgifi/providers/mainProvider.dart';
+import 'package:ledgifi/widgets/custom_pagination.dart';
 import 'package:provider/provider.dart';
 
 class VendorsInPurchaseScreen extends StatelessWidget {
@@ -61,7 +63,7 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
                 Text('Vendors', style: GoogleFonts.notoSans(fontWeight: FontWeight.w600, fontSize: 19, color: Colors.black)),
                 const SizedBox(width: 18),
                 // Search Field
-                buildSearchTextField(),
+                buildSearchTextField(mainProvider),
 
                 Expanded(child: const SizedBox(width: 16)),
 
@@ -74,6 +76,7 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
                       // Save action
                       String vendorId = DateTime.now().millisecondsSinceEpoch.toString();
                       mainProvider.setVendorIsEditing(false, vendorId);
+                      mainProvider.clearVendorControllers();
                       Provider.of<MainProvider>(context, listen: false).clickAddButton('vendor_addVendor');
                     },
                     style: ElevatedButton.styleFrom(
@@ -151,6 +154,23 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
                               ],
                             ),
                           ),
+                          CustomPaginationButtons(
+                            currentPage: mainProvider.userCurrentPageIndex + 1,
+                            totalPages: 15,
+                            onPageSelected: (page) => mainProvider.fetchUsersAtPage(page - 1),
+                            onPrevious: () {
+                              // if (mainProvider.userCurrentPageIndex > 0) {
+                              //   mainProvider.fetchUsersAtPage(mainProvider.userCurrentPageIndex - 1);
+                              // }
+                            },
+                            onNext: () {
+                              final nextPage = mainProvider.userCurrentPageIndex + 1;
+                              final totalPages = (mainProvider.userDocCount / mainProvider.userPageSize).ceil();
+                              // if (nextPage < totalPages) {
+                              //   mainProvider.fetchUsersAtPage(nextPage);
+                              // }
+                            },
+                          ),
                           buildPagination(),
                         ],
                       ),
@@ -165,7 +185,7 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
     );
   }
 
-  Widget buildSearchTextField() {
+  Widget buildSearchTextField(MainProvider mainProvider) {
     return Container(
       height: 45,
       width: 320, // Adjust width as needed
@@ -188,6 +208,7 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
               ),
+              onChanged: (value) => mainProvider.searchVendors(value),
               style: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 14, color: cl666666),
             ),
           ),
@@ -330,7 +351,7 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
 List<Widget> _buildVendorListRows(BuildContext context) {
   var width = MediaQuery.of(context).size.width;
   final MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
-  if (mainProvider.vendorsList.isEmpty) {
+  if (mainProvider.filteredVendors.isEmpty) {
     return [
       Center(
         child: Container(
@@ -342,7 +363,7 @@ List<Widget> _buildVendorListRows(BuildContext context) {
       ),
     ];
   }
-  return mainProvider.vendorsList.asMap().entries.map((entry) {
+  return mainProvider.filteredVendors.asMap().entries.map((entry) {
     final index = entry.key;
     final item = entry.value;
 
@@ -375,7 +396,7 @@ List<Widget> _buildVendorListRows(BuildContext context) {
             width: 100,
             child: InkWell(
               onTap: () {
-                // Navigate to view more details
+                showMoreDialog(context, vendorName: item.name, email: item.email, vendorId: item.vendorId, contactNumber: item.phone, address: item.address, addedDate: item.addedOn!);
               },
               child: Text(
                 'View More',
@@ -396,7 +417,7 @@ List<Widget> _buildVendorListRows(BuildContext context) {
                   openingBalance: item.openingBalance,
                   balanceAmount: item.balanceAmount,
                 );
-                
+
                 mainProvider.setVendorIsEditing(true, item.vendorId);
                 Provider.of<MainProvider>(context, listen: false).clickAddButton('vendor_addVendor');
               },
@@ -413,7 +434,7 @@ List<Widget> _buildVendorListRows(BuildContext context) {
                       (context) => DeleteVendorDialog(
                         onDelete: () {
                           // Delete logic
-                          Navigator.pop(context);
+                          mainProvider.deleteVendor(context, item.vendorId);
                         },
                         onCancel: () {
                           Navigator.pop(context);
@@ -443,75 +464,167 @@ class DeleteVendorDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: clwhite,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: SizedBox(
-        height: 180,
-        width: 360,
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Expanded(child: Text('Delete Vendor !', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
-                  GestureDetector(onTap: onCancel, child: const Icon(Icons.close, size: 18)),
-                ],
-              ),
-              const SizedBox(height: 15),
-              const Text('Are you sure you want to delete vendor ?', style: TextStyle(fontSize: 14, color: Colors.black54)),
-              const SizedBox(height: 25),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      width: 150,
-                      height: 40,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Cancel action
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                          elevation: 0,
+    return Consumer<MainProvider>(
+      builder:
+          (context, person, child) => Dialog(
+            backgroundColor: clwhite,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            child:
+                person.isLoadingVendorAdding
+                    ? Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [CircularProgressIndicator(color: cl8F1A3F), const SizedBox(width: 24), Text('Loading..', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500))],
+                      ),
+                    )
+                    : SizedBox(
+                      height: 180,
+                      width: 360,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Expanded(child: Text('Delete Vendor !', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
+                                GestureDetector(onTap: onCancel, child: const Icon(Icons.close, size: 18)),
+                              ],
+                            ),
+                            const SizedBox(height: 15),
+                            const Text('Are you sure you want to delete vendor ?', style: TextStyle(fontSize: 14, color: Colors.black54)),
+                            const SizedBox(height: 25),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Expanded(
+                                  child: SizedBox(
+                                    width: 150,
+                                    height: 40,
+                                    child: ElevatedButton(
+                                      onPressed: onCancel,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: Colors.black,
+                                        side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                                        elevation: 0,
+                                      ),
+                                      child: const Text("Cancel", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: SizedBox(
+                                    width: 150,
+                                    height: 40,
+                                    child: ElevatedButton(
+                                      onPressed: onDelete,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: clF34745,
+                                        foregroundColor: Colors.white,
+                                        side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                                        elevation: 0,
+                                      ),
+                                      child: const Text("Delete", style: TextStyle(color: clwhite, fontSize: 16, fontWeight: FontWeight.w500)),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        child: const Text("Cancel", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: SizedBox(
-                      width: 150,
-                      height: 40,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Save action
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: clF34745,
-                          foregroundColor: Colors.white,
-                          side: const BorderSide(color: Color(0xFFD5D7DA), width: 1),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                          elevation: 0,
-                        ),
-                        child: const Text("Delete", style: TextStyle(color: clwhite, fontSize: 16, fontWeight: FontWeight.w500)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
           ),
-        ),
-      ),
     );
   }
+}
+
+// Reusable text cell builder
+
+void showMoreDialog(
+  BuildContext context, {
+  required String vendorName,
+  required String email,
+  required String vendorId,
+  required String contactNumber,
+  required String address,
+  required DateTime addedDate,
+}) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return Dialog(
+        backgroundColor: clwhite,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SizedBox(
+            width: 500, // Web-specific width
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// Title Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("More Details", style: GoogleFonts.notoSans(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black)),
+                    IconButton(icon: const Icon(Icons.close, size: 20), onPressed: () => Navigator.of(context).pop()),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                /// Details Grid
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [_buildInfoItem("Vendor Name", vendorName), SizedBox(height: 16), _buildInfoItem("Email", email), SizedBox(height: 16), _buildInfoItem("Vendor ID", vendorId)],
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildInfoItem("Contact Number", contactNumber),
+                          SizedBox(height: 16),
+                          _buildInfoItem("Address", address),
+                          SizedBox(height: 16),
+                          _buildInfoItem("Added Date Time", DateFormat('dd-MM-yyyy HH:mm').format(addedDate)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+Widget _buildInfoItem(String title, String value) {
+  return SizedBox(
+    width: 260,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 12, color: cl808080)),
+        const SizedBox(height: 4),
+        Text(value, style: GoogleFonts.notoSans(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)),
+      ],
+    ),
+  );
 }

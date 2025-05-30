@@ -7,9 +7,16 @@ class CompanyModel {
   String address;
   String phone;
   String taxId;
+  String status;
+
+  // Metadata
   String addedById;
-  DateTime? addedOn;
   String addedByName;
+  DateTime? addedOn;
+
+  String? editedById;
+  String? editedByName;
+  DateTime? editedOn;
 
   CompanyModel({
     required this.companyId,
@@ -18,12 +25,15 @@ class CompanyModel {
     required this.address,
     required this.phone,
     required this.taxId,
+    required this.status,
     required this.addedById,
-    this.addedOn,
     required this.addedByName,
+    this.addedOn,
+    this.editedById,
+    this.editedByName,
+    this.editedOn,
   });
 
-  // Convert a Company object to a Map (for JSON serialization)
   Map<String, dynamic> toJson() {
     return {
       'COMPANY_ID': companyId,
@@ -32,24 +42,41 @@ class CompanyModel {
       'ADDRESS': address,
       'PHONE': phone,
       'TAX_ID': taxId,
+      'STATUS': status,
       'ADDED_BY_ID': addedById,
-      'ADDED_ON': addedOn,
       'ADDED_BY_NAME': addedByName,
+      'ADDED_ON': addedOn,
+      'EDITED_BY_ID': editedById,
+      'EDITED_BY_NAME': editedByName,
+      'EDITED_ON': editedOn,
     };
   }
 
-  // Create a Company object from a Map (for JSON deserialization)
   factory CompanyModel.fromJson(Map<String, dynamic> json) {
     return CompanyModel(
-      companyId: json['COMPANY_ID'] as String,
-      companyName: json['COMPANY_NAME'] as String,
-      email: json['EMAIL'] as String,
-      address: json['ADDRESS'] as String,
-      phone: json['PHONE'] as String,
-      taxId: json['TAX_ID'] as String,
-      addedById: json['ADDED_BY_ID'] as String,
-      addedOn: json['ADDED_ON'] != null ? (json['ADDED_ON'] as Timestamp).toDate() : null,
-      addedByName: json['ADDED_BY_NAME'] as String,
+      companyId: json['COMPANY_ID']?.toString() ?? '',
+      companyName: json['COMPANY_NAME']?.toString() ?? '',
+      email: json['EMAIL']?.toString() ?? '',
+      address: json['ADDRESS']?.toString() ?? '',
+      phone: json['PHONE']?.toString() ?? '',
+      taxId: json['TAX_ID']?.toString() ?? '',
+      status: json['STATUS']?.toString() ?? '',
+      addedById: json['ADDED_BY_ID']?.toString() ?? '',
+      addedByName: json['ADDED_BY_NAME']?.toString() ?? '',
+      addedOn:
+          json['ADDED_ON'] is Timestamp
+              ? (json['ADDED_ON'] as Timestamp).toDate()
+              : json['ADDED_ON'] is DateTime
+              ? json['ADDED_ON']
+              : null,
+      editedById: json['EDITED_BY_ID']?.toString(),
+      editedByName: json['EDITED_BY_NAME']?.toString(),
+      editedOn:
+          json['EDITED_ON'] is Timestamp
+              ? (json['EDITED_ON'] as Timestamp).toDate()
+              : json['EDITED_ON'] is DateTime
+              ? json['EDITED_ON']
+              : null,
     );
   }
 }

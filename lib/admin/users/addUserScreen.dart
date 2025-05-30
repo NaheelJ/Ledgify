@@ -28,7 +28,7 @@ class AddUsersScreen extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
-                     mainProvider.clickAddButton('userScreen');
+                    mainProvider.clickAddButton('userScreen');
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -47,7 +47,10 @@ class AddUsersScreen extends StatelessWidget {
                 ),
                 SizedBox(width: 12),
 
-                Text('Add User', style: GoogleFonts.notoSans(fontWeight: FontWeight.w600, fontSize: 19, color: Colors.black)),
+                Consumer<MainProvider>(
+                  builder:
+                      (context, person, child) => Text(person.isUserEditing ? 'Edit User' : 'Add User', style: GoogleFonts.notoSans(fontWeight: FontWeight.w600, fontSize: 19, color: Colors.black)),
+                ),
               ],
             ),
           ),
@@ -302,6 +305,11 @@ class AddUsersScreen extends StatelessWidget {
                                   if (!isValid) return;
 
                                   bool userAddingSuccess = await mainProvider.addUser(context: context, addedById: loginProvider.usermodel!.userId, addedByName: loginProvider.usermodel!.name);
+
+                                  if (mainProvider.isUserEditing) {
+                                    mainProvider.clickAddButton('userScreen');
+                                    return;
+                                  }
 
                                   if (userAddingSuccess) {
                                     showSuccessDialog(context);

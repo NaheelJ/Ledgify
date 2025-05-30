@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ledgifi/constants/functions.dart';
 import 'package:ledgifi/model/company_model.dart';
 import 'package:ledgifi/model/user_model.dart';
 import 'package:ledgifi/model/vendor_model.dart';
@@ -553,26 +554,49 @@ class MainProvider with ChangeNotifier {
   bool get isLoadingAddCompany => _isLoadingAddCompany;
 
   final TextEditingController companyNameController = TextEditingController();
-  final TextEditingController addressController = TextEditingController();
-  final TextEditingController taxIdController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController companyAddressController = TextEditingController();
+  final TextEditingController companyTaxIdController = TextEditingController();
+  final TextEditingController companyEmailController = TextEditingController();
   final TextEditingController contactNumberController = TextEditingController();
+
+  String companyNameError = '';
+  String companyAddressError = '';
+  String companyTaxIdError = '';
+  String companyEmailError = '';
+  String companyContactNumberError = '';
 
   void setLoadingAddCompany(bool value) {
     _isLoadingAddCompany = value;
     notifyListeners();
   }
 
-  Future<bool> addNewCompany({required BuildContext context, required String userId, required String userName, required String companyId}) async {
+  bool isCompanyEditing = false;
+  String companyId = '';
+
+  void setCompanyIsEditing(bool value, String newCompanyId) {
+    isCompanyEditing = value;
+    companyId = newCompanyId;
+    notifyListeners();
+  }
+
+  Future<bool> addNewCompany({required BuildContext context, required String userId, required String userName}) async {
     final String companyName = companyNameController.text.trim();
-    final String address = addressController.text.trim();
-    final String taxId = taxIdController.text.trim();
+    final String address = companyAddressController.text.trim();
+    final String taxId = companyTaxIdController.text.trim();
     final String contactNumber = contactNumberController.text.trim();
-    final String email = emailController.text.trim();
+    final String email = companyEmailController.text.trim();
 
     setLoadingAddCompany(true);
 
     try {
+      final DateTime now = DateTime.now();
+
+      // Set metadata
+      final Map<String, dynamic> metaData =
+          isCompanyEditing
+              ? {'EDITED_BY_ID': userId, 'EDITED_BY_NAME': userName, 'EDITED_ON': FieldValue.serverTimestamp()}
+              : {'ADDED_BY_ID': userId, 'ADDED_BY_NAME': userName, 'ADDED_ON': FieldValue.serverTimestamp()};
+
       final Map<String, dynamic> data = {
         'COMPANY_ID': companyId,
         'COMPANY_NAME': companyName,
@@ -580,85 +604,162 @@ class MainProvider with ChangeNotifier {
         'ADDRESS': address,
         'PHONE': contactNumber,
         'TAX_ID': taxId,
-        'ADDED_BY_ID': userId,
-        'ADDED_BY_NAME': userName,
-        'ADDED_ON': FieldValue.serverTimestamp(),
+        'STATUS': 'ACTIVE',
+        ...metaData,
       };
 
-      final DocumentReference companyRef = FirebaseFirestore.instance.collection('COMPANIES').doc(companyId);
+      final DocumentReference companyRef = db.collection('COMPANIES').doc(companyId);
 
       await companyRef.set(data, SetOptions(merge: true));
+
+      // Add local timestamp for UI usage
+      if (isCompanyEditing) {
+        data['EDITED_ON'] = Timestamp.fromDate(now);
+      } else {
+        data['ADDED_ON'] = Timestamp.fromDate(now);
+      }
+
+      // Update local model list
+      final int existingIndex = _companiesList.indexWhere((c) => c.companyId == companyId);
+
+      if (existingIndex >= 0) {
+        _companiesList[existingIndex] = CompanyModel.fromJson(data);
+      } else {
+        _companiesList.add(CompanyModel.fromJson(data));
+      }
+
+      if (isCompanyEditing) {
+        showError(context, 'Company edited successfully', backgroundColor: Colors.green);
+      }
+
       clearCompanyControllers();
       return true;
     } catch (e) {
-      showError(context, 'Failed to add company: $e');
+      showError(context, 'Failed to save company: $e');
+      print('Failed to save company: $e');
       return false;
     } finally {
       setLoadingAddCompany(false);
     }
   }
 
-  StreamSubscription? _companySubscription;
-
-  List<CompanyModel> _companies = [];
-  List<CompanyModel> get companies => _companies;
+  List<CompanyModel> _companiesList = [];
+  List<CompanyModel> get companies => _companiesList;
 
   Future<void> fetchCompanies() async {
     try {
       final querySnapshot = await db.collection('COMPANIES').get();
 
-      _companies = querySnapshot.docs.map((doc) => CompanyModel.fromJson(doc.data())).toList();
+      _companiesList = querySnapshot.docs.map((doc) => CompanyModel.fromJson(doc.data())).where((company) => company.status == 'ACTIVE').toList();
 
-      debugPrint('✅ Fetched ${_companies.length} companies');
       notifyListeners();
     } catch (e) {
       debugPrint('❌ Error fetching companies: $e');
     }
   }
 
-  bool validateCompanyInputs(BuildContext context) {
+  bool isLoadingCompanyDelete = false;
+
+  void setCompanyDeleteLoading(value) {
+    isLoadingCompanyDelete = value;
+    notifyListeners();
+  }
+
+  Future<void> deleteCompany(BuildContext context, String companyId) async {
+    setCompanyDeleteLoading(true);
+
+    try {
+      // Mark company as deleted in Firestore
+      await db.collection('COMPANIES').doc(companyId).set({'STATUS': 'DELETE'}, SetOptions(merge: true));
+
+      // Remove from local model lists
+      _companiesList.removeWhere((company) => company.companyId == companyId);
+
+      back(context);
+      setCompanyDeleteLoading(false);
+
+      showError(context, 'Company deleted successfully', backgroundColor: Colors.green);
+    } catch (e) {
+      back(context);
+      setCompanyDeleteLoading(false);
+
+      debugPrint('Error deleting company: $e');
+      showError(context, 'Error deleting company', backgroundColor: Colors.red);
+    }
+  }
+
+  bool validateCompanyForm() {
+    bool isValid = true;
+
+    // Validate Company Name
     if (companyNameController.text.trim().isEmpty) {
-      showError(context, 'Please enter the company name');
-      return false;
-    }
-    if (addressController.text.trim().isEmpty) {
-      showError(context, 'Please enter the company address');
-      return false;
-    }
-    if (taxIdController.text.trim().isEmpty) {
-      showError(context, 'Please enter the tax ID');
-      return false;
-    }
-    if (emailController.text.trim().isEmpty) {
-      showError(context, 'Please enter the email');
-      return false;
-    }
-    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(emailController.text.trim())) {
-      showError(context, 'Please enter a valid email address');
-      return false;
-    }
-    if (contactNumberController.text.trim().isEmpty) {
-      showError(context, 'Please enter the contact number');
-      return false;
-    }
-    if (contactNumberController.text.isEmpty) {
-      showError(context, 'Please enter a Contact number');
-      return false;
+      companyNameError = 'Company name is required';
+      isValid = false;
+    } else {
+      companyNameError = '';
     }
 
-    return true;
+    // Validate Address
+    if (companyAddressController.text.trim().isEmpty) {
+      companyAddressError = 'Address is required';
+      isValid = false;
+    } else {
+      companyAddressError = '';
+    }
+
+    // Validate Tax ID
+    if (companyTaxIdController.text.trim().isEmpty) {
+      companyTaxIdError = 'Tax ID is required';
+      isValid = false;
+    } else {
+      companyTaxIdError = '';
+    }
+
+    // Validate Email
+    String email = companyEmailController.text.trim();
+    if (email.isEmpty) {
+      companyEmailError = 'Email is required';
+      isValid = false;
+    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$').hasMatch(email)) {
+      companyEmailError = 'Enter a valid email';
+      isValid = false;
+    } else {
+      companyEmailError = '';
+    }
+
+    // Validate Contact Number
+    String phone = contactNumberController.text.trim();
+    if (phone.isEmpty) {
+      companyContactNumberError = 'Contact number is required';
+      isValid = false;
+    } else {
+      companyContactNumberError = '';
+    }
+
+    notifyListeners();
+    return isValid;
+  }
+
+  void setCompanyFormFields({required String companyName, required String address, required String taxId, required String email, required String contactNumber}) {
+    companyNameController.text = companyName;
+    companyAddressController.text = address;
+    companyTaxIdController.text = taxId;
+    companyEmailController.text = email;
+    contactNumberController.text = contactNumber;
   }
 
   void clearCompanyControllers() {
-    userNameController.clear();
-    userSurnameController.clear();
-    userEmailController.clear();
-    userPasswordController.clear();
-    userContactNumberController.clear();
+    companyNameController.clear();
+    companyAddressController.clear();
+    companyTaxIdController.clear();
+    companyEmailController.clear();
+    contactNumberController.clear();
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //// USER ADDING PROCCESS /////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   final TextEditingController userNameController = TextEditingController();
@@ -705,13 +806,11 @@ class MainProvider with ChangeNotifier {
       final String phone = userContactNumberController.text.trim();
       final String email = userEmailController.text.trim();
       final String password = userPasswordController.text.trim();
-
-      // Date Time Now
       final DateTime now = DateTime.now();
-
-      // Meta Data
       final Map<String, dynamic> metaData = {};
       String userId;
+
+      List<String> keywords = generateSearchKeywords2(name, phone, userSelectedRole);
 
       if (isUserEditing && selectedUserId.isNotEmpty) {
         /// EDIT MODE
@@ -741,7 +840,18 @@ class MainProvider with ChangeNotifier {
         metaData['ADDED_ON'] = FieldValue.serverTimestamp();
       }
 
-      final userData = {'USER_ID': userId, 'NAME': name, 'SUR_NAME': surName, 'PHONE': phone, 'EMAIL': email, 'PASSWORD': password, 'ROLE': userSelectedRole, 'STATUS': 'Active', ...metaData};
+      final userData = {
+        'USER_ID': userId,
+        'NAME': name,
+        'SUR_NAME': surName,
+        'PHONE': phone,
+        'EMAIL': email,
+        'PASSWORD': password,
+        'ROLE': userSelectedRole,
+        'STATUS': 'ACTIVE',
+        'KEY_WORDS': keywords,
+        ...metaData,
+      };
 
       // Upload to Firestore
       await db.collection('USERS').doc(userId).set(userData, SetOptions(merge: true));
@@ -754,11 +864,15 @@ class MainProvider with ChangeNotifier {
       }
 
       // Update local user list
-      final int index = _usersList.indexWhere((u) => u.userId == userId);
+      final int index = userList.indexWhere((u) => u.userId == userId);
       if (index >= 0) {
-        _usersList[index] = UserModel.from(userData);
+        userList[index] = UserModel.from(userData);
       } else {
-        _usersList.add(UserModel.from(userData));
+        userList.add(UserModel.from(userData));
+      }
+
+      if (isUserEditing) {
+        showError(context, 'User edited successfully', backgroundColor: Colors.green);
       }
 
       clearUserControllers();
@@ -771,18 +885,29 @@ class MainProvider with ChangeNotifier {
     }
   }
 
-  List<UserModel> _usersList = [];
-  List<UserModel> get usersList => _usersList;
+  //////////////////////////////////////////////////////////////////////////////
 
-  Future<void> fetchUsersList() async {
+  Future<void> deleteUser(BuildContext context, String userId) async {
+    setLoadingUser(true);
+
     try {
-      final snapshot = await db.collection('USERS').orderBy('ADDED_ON', descending: true).get();
+      // Update status to 'DELETE' in Firestore
+      await db.collection('USERS').doc(userId).set({'STATUS': 'DELETE'}, SetOptions(merge: true));
 
-      _usersList = snapshot.docs.map((doc) => UserModel.from(doc.data())).toList();
+      // Remove from local lists
+      userList.removeWhere((user) => user.userId == userId);
 
-      notifyListeners();
+      back(context);
+      setLoadingUser(false);
+
+      // Show success message
+      showError(context, 'User deleted successfully', backgroundColor: Colors.green);
     } catch (e) {
-      debugPrint('Error fetching users: $e');
+      back(context);
+      setLoadingUser(false);
+
+      debugPrint('Error deleting user: $e');
+      showError(context, 'Error deleting user', backgroundColor: Colors.red);
     }
   }
 
@@ -896,18 +1021,18 @@ class MainProvider with ChangeNotifier {
   bool isVendorEditing = false;
   String vendorId = '';
 
+  void setLoadingVendor(bool value) {
+    isLoadingVendorAdding = value;
+    notifyListeners();
+  }
+
   void setVendorIsEditing(bool value, String newVendorId) {
     isVendorEditing = value;
     vendorId = newVendorId;
     notifyListeners();
   }
 
-  void setLoadingVendor(bool value) {
-    isLoadingVendorAdding = value;
-    notifyListeners();
-  }
-
-  Future<bool> addVendor({required BuildContext context, required String addedById, required String addedByName}) async {
+  Future<bool> addVendor({required BuildContext context, required String addedById, required String addedByName, required String companyId, required String companyName}) async {
     try {
       setLoadingVendor(true);
 
@@ -938,6 +1063,9 @@ class MainProvider with ChangeNotifier {
         'CONTACT_PERSON': contactPerson,
         'OPENING_BALANCE': openingBalance,
         'BALANCE_AMOUNT': balanceAmount,
+        'STATUS': "ACTIVE",
+        'COMPANY_NAME': companyName,
+        'COMPANY_ID': companyId,
         ...metaData,
       };
 
@@ -962,7 +1090,7 @@ class MainProvider with ChangeNotifier {
         vendorsList.add(VendorModel.from(vendor));
       }
 
-      showError(context, 'Vendor added successfully', backgroundColor: Colors.green);
+      showError(context, isVendorEditing ? 'Vendor edited successfully' : 'Vendor added successfully', backgroundColor: Colors.green);
 
       clearVendorControllers();
       return true;
@@ -981,11 +1109,60 @@ class MainProvider with ChangeNotifier {
     try {
       final snapshot = await db.collection('VENDORS').orderBy('ADDED_ON', descending: true).get();
 
-      _vendorsList = snapshot.docs.map((doc) => VendorModel.from(doc.data())).toList();
+      _vendorsList = snapshot.docs.map((doc) => VendorModel.from(doc.data())).where((vendor) => vendor.status == 'ACTIVE').toList();
+      _filteredVendors = _vendorsList;
 
       notifyListeners();
     } catch (e) {
       debugPrint('Error fetching vendors: $e');
+    }
+  }
+
+  List<VendorModel> _filteredVendors = [];
+  List<VendorModel> get filteredVendors => _filteredVendors;
+
+  // Search vendors by any field
+  void searchVendors(String query) {
+    if (query.isEmpty) {
+      _filteredVendors = _vendorsList;
+    } else {
+      _filteredVendors =
+          _vendorsList.where((vendor) {
+            return (vendor.vendorId.toLowerCase().contains(query.toLowerCase())) ||
+                (vendor.name.toLowerCase().contains(query.toLowerCase())) ||
+                (vendor.email.toLowerCase().contains(query.toLowerCase())) ||
+                (vendor.address.toLowerCase().contains(query.toLowerCase())) ||
+                (vendor.phone.toLowerCase().contains(query.toLowerCase())) ||
+                (vendor.contactPerson.toLowerCase().contains(query.toLowerCase())) ||
+                (vendor.openingBalance.toString().toLowerCase().contains(query.toLowerCase())) ||
+                (vendor.balanceAmount.toString().toLowerCase().contains(query.toLowerCase()));
+          }).toList();
+    }
+    notifyListeners();
+  }
+
+  Future<void> deleteVendor(BuildContext context, String vendorId) async {
+    setLoadingVendor(true);
+
+    try {
+      // Update status to 'DELETE' in Firestore
+      await db.collection('VENDORS').doc(vendorId).set({'STATUS': 'DELETE'}, SetOptions(merge: true));
+
+      // Remove from local lists
+      _vendorsList.removeWhere((vendor) => vendor.vendorId == vendorId);
+      _filteredVendors.removeWhere((vendor) => vendor.vendorId == vendorId);
+
+      back(context);
+      setLoadingVendor(false);
+
+      // Show success message
+      showError(context, 'Vendor deleted successfully', backgroundColor: Colors.green);
+    } catch (e) {
+      back(context);
+      setLoadingVendor(false);
+
+      debugPrint('Error deleting vendor: $e');
+      showError(context, 'Error deleting vendor', backgroundColor: Colors.red);
     }
   }
 
@@ -1080,6 +1257,112 @@ class MainProvider with ChangeNotifier {
     vendorContactPersonController.clear();
     vendorOpeningBalanceController.clear();
     vendorBalanceAmountController.clear();
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+  /// PAGINATION  ////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  List<List<DocumentSnapshot>> userPages = [];
+  int userCurrentPageIndex = 0;
+  DocumentSnapshot? userLastDocument;
+  bool isLoadingUsersPagination = false;
+  int userDocCount = 0;
+  final int userPageSize = 10;
+  List<UserModel> userList = [];
+
+  TextEditingController usersSearchController = TextEditingController();
+
+  Future<void> fetchInitialUsers() async {
+    isLoadingUsersPagination = true;
+    notifyListeners();
+
+    try {
+      Query query = db.collection("USERS").orderBy("ADDED_ON", descending: true).limit(userPageSize);
+
+      if (usersSearchController.text.isNotEmpty) {
+        query = query..where('KEY_WORDS', arrayContains: usersSearchController.text);
+      }
+
+      final snapshot = await query.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        userPages = [snapshot.docs];
+        userCurrentPageIndex = 0;
+        userLastDocument = snapshot.docs.last;
+        _processUsers(snapshot.docs);
+      } else {
+        userList.clear();
+      }
+
+      final countSnap = await db.collection("USERS").count().get();
+      userDocCount = countSnap.count ?? 0;
+    } catch (e) {
+      print("Error fetching initial users: $e");
+    } finally {
+      isLoadingUsersPagination = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchNextUsers() async {
+    if (userLastDocument == null && userPages.isNotEmpty) return;
+
+    isLoadingUsersPagination = true;
+    notifyListeners();
+
+    try {
+      Query query = db.collection("USERS").orderBy("ADDED_ON", descending: true).startAfterDocument(userLastDocument!).limit(userPageSize);
+
+      final snapshot = await query.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        userPages.add(snapshot.docs);
+        userLastDocument = snapshot.docs.last;
+      }
+    } catch (e) {
+      print("Error fetching next page: $e");
+    } finally {
+      isLoadingUsersPagination = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchUsersAtPage(int pageIndex) async {
+    if (pageIndex < 0 || pageIndex >= (userDocCount / userPageSize).ceil()) return;
+
+    isLoadingUsersPagination = true;
+    notifyListeners();
+
+    if (pageIndex < userPages.length) {
+      userCurrentPageIndex = pageIndex;
+      _processUsers(userPages[pageIndex]);
+      isLoadingUsersPagination = false;
+      notifyListeners();
+      return;
+    }
+
+    try {
+      for (int i = userPages.length; i <= pageIndex; i++) {
+        await fetchNextUsers();
+      }
+
+      if (pageIndex < userPages.length) {
+        userCurrentPageIndex = pageIndex;
+        _processUsers(userPages[pageIndex]);
+      }
+    } catch (e) {
+      print("Pagination error: $e");
+    } finally {
+      isLoadingUsersPagination = false;
+      notifyListeners();
+    }
+  }
+
+  void _processUsers(List<DocumentSnapshot> docs) {
+    userList = docs.map((doc) => UserModel.from(doc.data() as Map<String, dynamic>)).toList();
+    notifyListeners();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////

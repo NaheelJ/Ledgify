@@ -99,7 +99,7 @@ class LoginProvider with ChangeNotifier {
     final role = usermodel!.role;
 
     if (role == 'Admin') {
-      await mainProvider.fetchUsersList();
+      await mainProvider.fetchInitialUsers();
     }
 
     callNextReplacement(CompanySwitcherDemo(), context);
