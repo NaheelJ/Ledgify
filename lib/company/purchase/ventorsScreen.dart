@@ -44,10 +44,6 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
-    // Define controllers outside of the build method but inside the class
-    final TextEditingController controllerNew = TextEditingController();
-    var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: clwhite,
@@ -103,84 +99,79 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
         ),
       ),
 
-      body: Column(
-        children: [
-          // Table content
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Column(
-                children: [
-                  SingleChildScrollView(
-                    child: Container(
-                      width: 1900,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Column(
+          children: [
+            // Table content
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: clE9EAEB), // Outer border
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                ),
+                child: Column(
+                  children: [
+                    // Fixed Header
+                    Container(
+                      height: 44,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
-                        border: Border.all(color: clE9EAEB), // Outer border
-                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.white,
+                        border: Border(bottom: BorderSide(color: Color(0xFFE9EAEB), width: 1)),
+                        borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
                       ),
-                      child: Column(
-                        children: [
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Table Header
-                                Container(
-                                  width: 1900, // Sum of all column widths
-                                  height: 44,
-                                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border(bottom: BorderSide(color: Color(0xFFE9EAEB), width: 1)),
-                                    borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: 80, child: Text("Sl.No", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                      SizedBox(width: 400, child: Text("Vendor Name", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                      SizedBox(width: 250, child: Text("Contact Number", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                      SizedBox(width: 380, child: Text("Email", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                      SizedBox(width: 200, child: Text("Invoices", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                      SizedBox(width: 200, child: Text("View More", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                      SizedBox(width: 180, child: Text("Edit", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                      SizedBox(width: 180, child: Text("Delete", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
-                                    ],
-                                  ),
-                                ),
-
-                                // Table Rows
-                                Column(children: _buildVendorListRows(context)),
-                              ],
-                            ),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                          width: 1900, // Sum of all column widths
+                          child: Row(
+                            children: [
+                              SizedBox(width: 80, child: Text("Sl.No", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                              SizedBox(width: 400, child: Text("Vendor Name", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                              SizedBox(width: 250, child: Text("Contact Number", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                              SizedBox(width: 380, child: Text("Email", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                              SizedBox(width: 200, child: Text("Invoices", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                              SizedBox(width: 200, child: Text("View More", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                              SizedBox(width: 180, child: Text("Edit", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                              SizedBox(width: 180, child: Text("Delete", style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: clblack)))),
+                            ],
                           ),
-                          CustomPaginationButtons(
-                            currentPage: mainProvider.userCurrentPageIndex + 1,
-                            totalPages: 15,
-                            onPageSelected: (page) => mainProvider.fetchUsersAtPage(page - 1),
-                            onPrevious: () {
-                              // if (mainProvider.userCurrentPageIndex > 0) {
-                              //   mainProvider.fetchUsersAtPage(mainProvider.userCurrentPageIndex - 1);
-                              // }
-                            },
-                            onNext: () {
-                              final nextPage = mainProvider.userCurrentPageIndex + 1;
-                              final totalPages = (mainProvider.userDocCount / mainProvider.userPageSize).ceil();
-                              // if (nextPage < totalPages) {
-                              //   mainProvider.fetchUsersAtPage(nextPage);
-                              // }
-                            },
-                          ),
-                          buildPagination(),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+
+                    // Scrollable Table Body
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: _buildVendorListRows(context))),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+            CustomPaginationButtons(
+              currentPage: mainProvider.vendorCurrentPageIndex + 1,
+              totalPages: (mainProvider.vendorDocCount / mainProvider.vendorPageSize).ceil(),
+              onPageSelected: (page) => mainProvider.fetchVendorsAtPage(page - 1),
+              onPrevious: () {
+                if (mainProvider.vendorCurrentPageIndex > 0) {
+                  mainProvider.fetchVendorsAtPage(mainProvider.vendorCurrentPageIndex - 1);
+                }
+              },
+              onNext: () {
+                final nextPage = mainProvider.vendorCurrentPageIndex + 1;
+                final totalPages = (mainProvider.vendorDocCount / mainProvider.vendorPageSize).ceil();
+                if (nextPage < totalPages) {
+                  mainProvider.fetchVendorsAtPage(nextPage);
+                }
+              },
+            ),
+            SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
@@ -201,6 +192,7 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
+              controller: mainProvider.vendorsSearchController,
               decoration: InputDecoration(
                 hintText: 'Search',
                 hintStyle: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 14, color: cl666666),
@@ -208,7 +200,7 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
               ),
-              onChanged: (value) => mainProvider.searchVendors(value),
+              onSubmitted: (value) => mainProvider.fetchInitialVendors(),
               style: GoogleFonts.notoSans(fontWeight: FontWeight.w400, fontSize: 14, color: cl666666),
             ),
           ),
@@ -270,88 +262,36 @@ class VendorsInPurchaseScreenHome extends StatelessWidget {
   Widget _buildDateField(String label, bool isFromDate) {
     return Container(decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), color: clwhite));
   }
-
-  Widget buildPagination() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      width: 2200,
-      child: Row(
-        children: [
-          Align(alignment: Alignment.centerLeft, child: Text('Total : 10', style: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 14, color: cl666666))),
-          Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: Container(
-                height: 50,
-                width: 500,
-                /* decoration: const BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x1F000000),
-                      offset: Offset(0, -1),
-                      blurRadius: 16.6,
-                    ),
-                  ],
-                ),*/
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Previous button
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
-                      decoration: BoxDecoration(border: Border.all(color: clD5D7DA, width: 0.5), borderRadius: BorderRadius.circular(7)),
-                      child: Icon(Icons.arrow_back, color: Colors.black, size: 18),
-                    ),
-
-                    // Scrollable pagination numbers
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          for (int i = 1; i <= 6; i++)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
-                              child: TextButton(
-                                onPressed: () {},
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    side: BorderSide(color: i == 3 ? Colors.grey : clwhite), // Border color
-                                  ),
-                                  minimumSize: const Size(40, 40),
-                                ),
-                                child: Text('$i', style: GoogleFonts.inter(textStyle: TextStyle(color: clblack, fontWeight: i == 3 ? FontWeight.bold : FontWeight.normal))),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-
-                    // Next button
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
-
-                      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                      decoration: BoxDecoration(border: Border.all(color: clD5D7DA, width: 0.5), borderRadius: BorderRadius.circular(7)),
-                      child: Icon(Icons.arrow_forward, color: Colors.black, size: 18),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 List<Widget> _buildVendorListRows(BuildContext context) {
   var width = MediaQuery.of(context).size.width;
   final MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
-  if (mainProvider.filteredVendors.isEmpty) {
+
+  if (mainProvider.isLoadingVendorsPagination) {
+    // Loading state
+    return [
+      Center(
+        child: SizedBox(
+          width: 1900,
+          height: 120,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(color: cl8F1A3F),
+                const SizedBox(height: 12),
+                Text('Loading...', style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.black))),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ];
+  }
+
+  if (mainProvider.vendorList.isEmpty) {
     return [
       Center(
         child: Container(
@@ -363,90 +303,98 @@ List<Widget> _buildVendorListRows(BuildContext context) {
       ),
     ];
   }
-  return mainProvider.filteredVendors.asMap().entries.map((entry) {
+
+  return mainProvider.vendorList.asMap().entries.map((entry) {
     final index = entry.key;
     final item = entry.value;
 
-    return Container(
-      width: 2200,
-      height: 40,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(color: index.isEven ? Colors.white : const Color(0xFFFAFAFA), border: const Border(bottom: BorderSide(color: Color(0xFFE9EAEB), width: 1))),
-      child: Row(
-        children: [
-          SizedBox(width: 80, child: Text(index.toString(), style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)))),
-          SizedBox(width: 400, child: Text(item.name, style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)))),
-          SizedBox(width: 250, child: Text(item.phone, style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)))),
+    return Consumer<MainProvider>(
+      builder:
+          (context, value, child) => Container(
+            width: 2200,
+            height: 40,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(color: index.isEven ? Colors.white : const Color(0xFFFAFAFA), border: const Border(bottom: BorderSide(color: Color(0xFFE9EAEB), width: 1))),
+            child: Row(
+              children: [
+                SizedBox(width: 80, child: Text('${index + 1}', style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)))),
+                SizedBox(width: 400, child: Text(item.name, style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)))),
+                SizedBox(width: 250, child: Text(item.phone, style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)))),
 
-          // Bill Amount column (empty placeholder for now)
-          SizedBox(width: 380, child: Text(item.email, style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)))),
-          SizedBox(
-            width: 200,
-            child: InkWell(
-              onTap: () {
-                // Navigate to invoices screen
-              },
-              child: Text(
-                'Invoices',
-                style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: cl5856D6, decoration: TextDecoration.underline, decorationColor: cl5856D6)),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 100,
-            child: InkWell(
-              onTap: () {
-                showMoreDialog(context, vendorName: item.name, email: item.email, vendorId: item.vendorId, contactNumber: item.phone, address: item.address, addedDate: item.addedOn!);
-              },
-              child: Text(
-                'View More',
-                style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: cl5856D6, decoration: TextDecoration.underline, decorationColor: cl5856D6)),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 230,
-            child: InkWell(
-              onTap: () {
-                mainProvider.setVendorControllers(
-                  name: item.name,
-                  email: item.email,
-                  address: item.address,
-                  phone: item.phone,
-                  contactPerson: item.contactPerson,
-                  openingBalance: item.openingBalance,
-                  balanceAmount: item.balanceAmount,
-                );
-
-                mainProvider.setVendorIsEditing(true, item.vendorId);
-                Provider.of<MainProvider>(context, listen: false).clickAddButton('vendor_addVendor');
-              },
-              child: Image.asset('asset/icons/editIcon.png', scale: 5),
-            ),
-          ),
-          SizedBox(
-            width: 160,
-            child: InkWell(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder:
-                      (context) => DeleteVendorDialog(
-                        onDelete: () {
-                          // Delete logic
-                          mainProvider.deleteVendor(context, item.vendorId);
-                        },
-                        onCancel: () {
-                          Navigator.pop(context);
-                        },
+                // Bill Amount column (empty placeholder for now)
+                SizedBox(width: 380, child: Text(item.email, style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black)))),
+                SizedBox(
+                  width: 200,
+                  child: InkWell(
+                    onTap: () {
+                      // Navigate to invoices screen
+                    },
+                    child: Text(
+                      'Invoices',
+                      style: GoogleFonts.notoSans(
+                        textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: cl5856D6, decoration: TextDecoration.underline, decorationColor: cl5856D6),
                       ),
-                );
-              },
-              child: Image.asset('asset/icons/deleteIcon.png', scale: 4),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 100,
+                  child: InkWell(
+                    onTap: () {
+                      showMoreDialog(context, vendorName: item.name, email: item.email, vendorId: item.vendorId, contactNumber: item.phone, address: item.address, addedDate: item.addedOn!);
+                    },
+                    child: Text(
+                      'View More',
+                      style: GoogleFonts.notoSans(
+                        textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: cl5856D6, decoration: TextDecoration.underline, decorationColor: cl5856D6),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 230,
+                  child: InkWell(
+                    onTap: () {
+                      mainProvider.setVendorControllers(
+                        name: item.name,
+                        email: item.email,
+                        address: item.address,
+                        phone: item.phone,
+                        contactPerson: item.contactPerson,
+                        openingBalance: item.openingBalance,
+                        balanceAmount: item.balanceAmount,
+                      );
+
+                      mainProvider.setVendorIsEditing(true, item.vendorId);
+                      Provider.of<MainProvider>(context, listen: false).clickAddButton('vendor_addVendor');
+                    },
+                    child: Image.asset('asset/icons/editIcon.png', scale: 5),
+                  ),
+                ),
+                SizedBox(
+                  width: 160,
+                  child: InkWell(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (context) => DeleteVendorDialog(
+                              onDelete: () {
+                                // Delete logic
+                                mainProvider.deleteVendor(context, item.vendorId);
+                              },
+                              onCancel: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                      );
+                    },
+                    child: Image.asset('asset/icons/deleteIcon.png', scale: 4),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
     );
   }).toList();
 }

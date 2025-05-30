@@ -95,7 +95,7 @@ class LoginProvider with ChangeNotifier {
 
     await fetchUserData(userId);
     await mainProvider.fetchCompanies();
-    await mainProvider.fetchVendorsList();
+    await mainProvider.fetchInitialVendors();
     final role = usermodel!.role;
 
     if (role == 'Admin') {

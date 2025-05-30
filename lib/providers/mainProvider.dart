@@ -810,7 +810,7 @@ class MainProvider with ChangeNotifier {
       final Map<String, dynamic> metaData = {};
       String userId;
 
-      List<String> keywords = generateSearchKeywords2(name, phone, userSelectedRole);
+      List<String> keywords = generateSearchKeywords(name, phone, userSelectedRole);
 
       if (isUserEditing && selectedUserId.isNotEmpty) {
         /// EDIT MODE
@@ -1044,8 +1044,9 @@ class MainProvider with ChangeNotifier {
       final String contactPerson = vendorContactPersonController.text.trim();
       final double openingBalance = double.tryParse(vendorOpeningBalanceController.text.trim()) ?? 0.0;
       final double balanceAmount = double.tryParse(vendorBalanceAmountController.text.trim()) ?? 0.0;
-
       final DateTime dateTimeNow = DateTime.now();
+
+      List<String> keywords = generateSearchKeywords(name, phone);
 
       // Determine metadata based on edit state
       final Map<String, dynamic> metaData =
@@ -1066,28 +1067,17 @@ class MainProvider with ChangeNotifier {
         'STATUS': "ACTIVE",
         'COMPANY_NAME': companyName,
         'COMPANY_ID': companyId,
+        'KEY_WORDS': keywords,
         ...metaData,
       };
 
       // Save vendor to Firestore
       await db.collection('VENDORS').doc(vendorId).set(vendor, SetOptions(merge: true));
 
-      // Locally add the timestamp for UI or model use
-      if (isVendorEditing) {
-        vendor['EDITED_ON'] = Timestamp.fromDate(dateTimeNow);
+      if (isVendorEditing && vendorCurrentPageIndex > 0) {
+        refreshCurrentVendorPage();
       } else {
-        vendor['ADDED_ON'] = Timestamp.fromDate(dateTimeNow);
-      }
-
-      // Check if vendor already exists in vendorsList
-      final int existingIndex = vendorsList.indexWhere((v) => v.vendorId == vendorId);
-
-      if (existingIndex >= 0) {
-        // Update existing vendor
-        vendorsList[existingIndex] = VendorModel.from(vendor);
-      } else {
-        // Add to local model list
-        vendorsList.add(VendorModel.from(vendor));
+        fetchInitialVendors();
       }
 
       showError(context, isVendorEditing ? 'Vendor edited successfully' : 'Vendor added successfully', backgroundColor: Colors.green);
@@ -1102,45 +1092,6 @@ class MainProvider with ChangeNotifier {
     }
   }
 
-  List<VendorModel> _vendorsList = [];
-  List<VendorModel> get vendorsList => _vendorsList;
-
-  Future<void> fetchVendorsList() async {
-    try {
-      final snapshot = await db.collection('VENDORS').orderBy('ADDED_ON', descending: true).get();
-
-      _vendorsList = snapshot.docs.map((doc) => VendorModel.from(doc.data())).where((vendor) => vendor.status == 'ACTIVE').toList();
-      _filteredVendors = _vendorsList;
-
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error fetching vendors: $e');
-    }
-  }
-
-  List<VendorModel> _filteredVendors = [];
-  List<VendorModel> get filteredVendors => _filteredVendors;
-
-  // Search vendors by any field
-  void searchVendors(String query) {
-    if (query.isEmpty) {
-      _filteredVendors = _vendorsList;
-    } else {
-      _filteredVendors =
-          _vendorsList.where((vendor) {
-            return (vendor.vendorId.toLowerCase().contains(query.toLowerCase())) ||
-                (vendor.name.toLowerCase().contains(query.toLowerCase())) ||
-                (vendor.email.toLowerCase().contains(query.toLowerCase())) ||
-                (vendor.address.toLowerCase().contains(query.toLowerCase())) ||
-                (vendor.phone.toLowerCase().contains(query.toLowerCase())) ||
-                (vendor.contactPerson.toLowerCase().contains(query.toLowerCase())) ||
-                (vendor.openingBalance.toString().toLowerCase().contains(query.toLowerCase())) ||
-                (vendor.balanceAmount.toString().toLowerCase().contains(query.toLowerCase()));
-          }).toList();
-    }
-    notifyListeners();
-  }
-
   Future<void> deleteVendor(BuildContext context, String vendorId) async {
     setLoadingVendor(true);
 
@@ -1149,8 +1100,8 @@ class MainProvider with ChangeNotifier {
       await db.collection('VENDORS').doc(vendorId).set({'STATUS': 'DELETE'}, SetOptions(merge: true));
 
       // Remove from local lists
-      _vendorsList.removeWhere((vendor) => vendor.vendorId == vendorId);
-      _filteredVendors.removeWhere((vendor) => vendor.vendorId == vendorId);
+      // _vendorsList.removeWhere((vendor) => vendor.vendorId == vendorId);
+      // _filteredVendors.removeWhere((vendor) => vendor.vendorId == vendorId);
 
       back(context);
       setLoadingVendor(false);
@@ -1261,7 +1212,7 @@ class MainProvider with ChangeNotifier {
 
   ////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////
-  /// PAGINATION  ////////////////////////////////////////////////////////////////////////
+  /// USERS PAGINATION FUNCTIONS /////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////
 
   List<List<DocumentSnapshot>> userPages = [];
@@ -1279,10 +1230,10 @@ class MainProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      Query query = db.collection("USERS").orderBy("ADDED_ON", descending: true).limit(userPageSize);
+      Query query = db.collection("USERS").where('STATUS', isEqualTo: 'ACTIVE').orderBy("ADDED_ON", descending: true).limit(userPageSize);
 
       if (usersSearchController.text.isNotEmpty) {
-        query = query..where('KEY_WORDS', arrayContains: usersSearchController.text);
+        query = query.where('KEY_WORDS', arrayContains: usersSearchController.text);
       }
 
       final snapshot = await query.get();
@@ -1296,7 +1247,7 @@ class MainProvider with ChangeNotifier {
         userList.clear();
       }
 
-      final countSnap = await db.collection("USERS").count().get();
+      final countSnap = await db.collection("USERS").where('STATUS', isEqualTo: 'ACTIVE').count().get();
       userDocCount = countSnap.count ?? 0;
     } catch (e) {
       print("Error fetching initial users: $e");
@@ -1313,7 +1264,7 @@ class MainProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      Query query = db.collection("USERS").orderBy("ADDED_ON", descending: true).startAfterDocument(userLastDocument!).limit(userPageSize);
+      Query query = db.collection("USERS").where('STATUS', isEqualTo: 'ACTIVE').orderBy("ADDED_ON", descending: true).startAfterDocument(userLastDocument!).limit(userPageSize);
 
       final snapshot = await query.get();
 
@@ -1362,6 +1313,145 @@ class MainProvider with ChangeNotifier {
 
   void _processUsers(List<DocumentSnapshot> docs) {
     userList = docs.map((doc) => UserModel.from(doc.data() as Map<String, dynamic>)).toList();
+    notifyListeners();
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+  /// VENDOR PAGINATION FUNCTIONS ////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  List<List<DocumentSnapshot>> vendorPages = [];
+  int vendorCurrentPageIndex = 0;
+  DocumentSnapshot? vendorLastDocument;
+  bool isLoadingVendorsPagination = false;
+  int vendorDocCount = 0;
+  final int vendorPageSize = 10;
+  List<VendorModel> vendorList = [];
+
+  TextEditingController vendorsSearchController = TextEditingController();
+
+  Future<void> fetchInitialVendors() async {
+    isLoadingVendorsPagination = true;
+    notifyListeners();
+
+    try {
+      Query query = db.collection("VENDORS").where('STATUS', isEqualTo: 'ACTIVE').orderBy("ADDED_ON", descending: true).limit(vendorPageSize);
+
+      if (vendorsSearchController.text.isNotEmpty) {
+        query = query.where('KEY_WORDS', arrayContains: vendorsSearchController.text);
+      }
+
+      final snapshot = await query.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        vendorPages = [snapshot.docs];
+        vendorCurrentPageIndex = 0;
+        vendorLastDocument = snapshot.docs.last;
+        _processVendors(snapshot.docs);
+      } else {
+        vendorList.clear();
+      }
+
+      final countSnap = await db.collection("VENDORS").where('STATUS', isEqualTo: 'ACTIVE').count().get();
+      vendorDocCount = countSnap.count ?? 0;
+    } catch (e) {
+      print("Error fetching initial vendors: $e");
+    } finally {
+      isLoadingVendorsPagination = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchNextVendors() async {
+    if (vendorLastDocument == null && vendorPages.isNotEmpty) return;
+
+    isLoadingVendorsPagination = true;
+    notifyListeners();
+
+    try {
+      Query query = db.collection("VENDORS").where('STATUS', isEqualTo: 'ACTIVE').orderBy("ADDED_ON", descending: true).startAfterDocument(vendorLastDocument!).limit(vendorPageSize);
+
+      final snapshot = await query.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        vendorPages.add(snapshot.docs);
+        vendorLastDocument = snapshot.docs.last;
+      }
+    } catch (e) {
+      print("Error fetching next vendor page: $e");
+    } finally {
+      isLoadingVendorsPagination = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchVendorsAtPage(int pageIndex) async {
+    if (pageIndex < 0 || pageIndex >= (vendorDocCount / vendorPageSize).ceil()) return;
+
+    isLoadingVendorsPagination = true;
+    notifyListeners();
+
+    if (pageIndex < vendorPages.length) {
+      vendorCurrentPageIndex = pageIndex;
+      _processVendors(vendorPages[pageIndex]);
+      isLoadingVendorsPagination = false;
+      notifyListeners();
+      return;
+    }
+
+    try {
+      for (int i = vendorPages.length; i <= pageIndex; i++) {
+        await fetchNextVendors();
+      }
+
+      if (pageIndex < vendorPages.length) {
+        vendorCurrentPageIndex = pageIndex;
+        _processVendors(vendorPages[pageIndex]);
+      }
+    } catch (e) {
+      print("Pagination error: $e");
+    } finally {
+      isLoadingVendorsPagination = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> refreshCurrentVendorPage() async {
+    isLoadingVendorsPagination = true;
+    notifyListeners();
+
+    try {
+      final currentPageDocs = vendorPages[vendorCurrentPageIndex];
+
+      if (currentPageDocs.isEmpty) return;
+
+      // Use the first document of current page to get consistent results
+      final DocumentSnapshot firstDoc = currentPageDocs.first;
+
+      print('firstDoc.............: $firstDoc');
+
+      Query query = db.collection("VENDORS").where('STATUS', isEqualTo: 'ACTIVE').orderBy("ADDED_ON", descending: true).startAtDocument(firstDoc).limit(vendorPageSize);
+
+      final snapshot = await query.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        vendorPages[vendorCurrentPageIndex] = snapshot.docs;
+
+        // Update the vendorList with all pages combined
+        _processVendors(vendorPages.expand((page) => page).toList());
+      }
+    } catch (e) {
+      print("Error refreshing current vendor page: $e");
+    } finally {
+      isLoadingVendorsPagination = false;
+      notifyListeners();
+    }
+  }
+
+  void _processVendors(List<DocumentSnapshot> docs) {
+    vendorList = docs.map((doc) => VendorModel.from(doc.data() as Map<String, dynamic>)).toList();
     notifyListeners();
   }
 

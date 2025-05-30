@@ -126,7 +126,7 @@ class UsersScreenHome extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border.all(color: clE9EAEB), // Outer border
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
                       ),
                       child: Column(
                         children: [
@@ -369,7 +369,7 @@ class UsersScreenHome extends StatelessWidget {
 List<Widget> _buildUsersListRows(BuildContext context) {
   final MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
 
-    if (mainProvider.isLoadingUsersPagination) {
+  if (mainProvider.isLoadingUsersPagination) {
     // Loading state
     return [
       Center(
@@ -383,12 +383,7 @@ List<Widget> _buildUsersListRows(BuildContext context) {
               children: [
                 CircularProgressIndicator(color: cl8F1A3F),
                 const SizedBox(height: 12),
-                Text(
-                  'Loading...',
-                  style: GoogleFonts.notoSans(
-                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.black),
-                  ),
-                ),
+                Text('Loading...', style: GoogleFonts.notoSans(textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.black))),
               ],
             ),
           ),
@@ -409,19 +404,9 @@ List<Widget> _buildUsersListRows(BuildContext context) {
             children: [
               Icon(Icons.person_off, size: 60, color: Colors.grey.shade400),
               const SizedBox(height: 15),
-              Text(
-                'No users found',
-                style: GoogleFonts.notoSans(
-                  textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.grey.shade600),
-                ),
-              ),
+              Text('No users found', style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.grey.shade600))),
               const SizedBox(height: 6),
-              Text(
-                'Please add new users to see them here.',
-                style: GoogleFonts.notoSans(
-                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.grey.shade500),
-                ),
-              ),
+              Text('Please add new users to see them here.', style: GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.grey.shade500))),
             ],
           ),
         ),

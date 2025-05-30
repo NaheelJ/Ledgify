@@ -9,14 +9,7 @@ class CustomPaginationButtons extends StatelessWidget {
   final VoidCallback onPrevious;
   final VoidCallback onNext;
 
-  const CustomPaginationButtons({
-    Key? key,
-    required this.currentPage,
-    required this.totalPages,
-    required this.onPageSelected,
-    required this.onPrevious,
-    required this.onNext,
-  }) : super(key: key);
+  const CustomPaginationButtons({Key? key, required this.currentPage, required this.totalPages, required this.onPageSelected, required this.onPrevious, required this.onNext}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,22 +39,10 @@ class CustomPaginationButtons extends StatelessWidget {
             style: TextButton.styleFrom(
               backgroundColor: Colors.white,
               padding: EdgeInsets.all(7),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(color: isSelected ? Colors.grey : clwhite),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: isSelected ? Colors.grey : clwhite)),
               minimumSize: const Size(40, 40),
             ),
-            child: Text(
-              '$i',
-              style: GoogleFonts.inter(
-                textStyle: TextStyle(
-                  fontSize: 14,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: Colors.grey.shade700,
-                ),
-              ),
-            ),
+            child: Text('$i', style: GoogleFonts.inter(textStyle: TextStyle(fontSize: 14, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500, color: Colors.grey.shade700))),
           ),
         ),
       );
@@ -69,23 +50,10 @@ class CustomPaginationButtons extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey.shade300)),
-      ),
+      decoration: BoxDecoration(color: Colors.white, border: Border.all(color: Colors.grey.shade300),borderRadius: BorderRadius.vertical(bottom: Radius.circular(10))),
       child: Row(
         children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Total : $totalPages',
-              style: GoogleFonts.inter(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-                color: cl666666,
-              ),
-            ),
-          ),
+          Align(alignment: Alignment.centerLeft, child: Text('Total : $totalPages', style: GoogleFonts.inter(fontWeight: FontWeight.w500, fontSize: 16, color: cl666666))),
           Expanded(
             child: Center(
               child: SizedBox(
@@ -97,19 +65,10 @@ class CustomPaginationButtons extends StatelessWidget {
                     GestureDetector(
                       onTap: currentPage > 1 ? onPrevious : null,
                       child: Container(
-                        padding: const EdgeInsets.all(7),
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
                         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: currentPage > 1 ? Colors.grey.shade300 : Colors.grey.shade200,
-                            width: 0.5,
-                          ),
-                          borderRadius: BorderRadius.circular(7),
-                        ),
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: currentPage > 1 ? Colors.grey.shade700 : Colors.grey.shade400,
-                        ),
+                        decoration: BoxDecoration(border: Border.all(color: currentPage > 1 ? clD5D7DA : Colors.grey.shade400, width: 0.5), borderRadius: BorderRadius.circular(7)),
+                        child: Center(child: Icon(Icons.arrow_back, color: currentPage > 1 ? Colors.black : Colors.grey.shade400)),
                       ),
                     ),
                     SizedBox(width: 8),
@@ -123,19 +82,11 @@ class CustomPaginationButtons extends StatelessWidget {
                     GestureDetector(
                       onTap: currentPage < totalPages ? onNext : null,
                       child: Container(
-                        padding: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+
                         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: currentPage < totalPages ? Colors.grey.shade300 : Colors.grey.shade200,
-                            width: 0.5,
-                          ),
-                          borderRadius: BorderRadius.circular(7),
-                        ),
-                        child: Icon(
-                          Icons.arrow_forward,
-                          color: currentPage < totalPages ? Colors.grey.shade700 : Colors.grey.shade400,
-                        ),
+                        decoration: BoxDecoration(border: Border.all(color: currentPage < totalPages ? clD5D7DA : Colors.grey.shade400, width: 0.5), borderRadius: BorderRadius.circular(7)),
+                        child: Center(child: Icon(Icons.arrow_forward, color: currentPage < totalPages ? Colors.black : Colors.grey.shade400)),
                       ),
                     ),
                   ],
