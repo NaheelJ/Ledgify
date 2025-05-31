@@ -49,7 +49,7 @@ class LoginProvider with ChangeNotifier {
       await pref.setString('USER_ID', uid!);
       await pref.setString('ROLE', role);
 
-      userAuthorized(uid, context);
+      await userAuthorized(uid, context);
     } on FirebaseAuthException catch (e) {
       _showError(context, e.message ?? "Login failed. Please try again.");
     } finally {
@@ -96,6 +96,7 @@ class LoginProvider with ChangeNotifier {
     await fetchUserData(userId);
     await mainProvider.fetchCompanies();
     await mainProvider.fetchInitialVendors();
+    await mainProvider.fetchInitialLedgers();
     final role = usermodel!.role;
 
     if (role == 'Admin') {

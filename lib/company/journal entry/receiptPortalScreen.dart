@@ -128,7 +128,7 @@ class ReceiptPortalScreen extends StatelessWidget {
                               GestureDetector(
                                 onTap: () {
                                   // Handle tap
-                                  showCreateLedgerDialog(context);
+                                  showCreateLedgerDialog(context, mainProvider);
                                 },
                                 child: Container(
                                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 19.6),

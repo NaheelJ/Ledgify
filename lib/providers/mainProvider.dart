@@ -10,7 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ledgifi/constants/functions.dart';
+import 'package:ledgifi/main.dart';
 import 'package:ledgifi/model/company_model.dart';
+import 'package:ledgifi/model/ledger_model.dart';
 import 'package:ledgifi/model/user_model.dart';
 import 'package:ledgifi/model/vendor_model.dart';
 
@@ -1044,7 +1046,6 @@ class MainProvider with ChangeNotifier {
       final String contactPerson = vendorContactPersonController.text.trim();
       final double openingBalance = double.tryParse(vendorOpeningBalanceController.text.trim()) ?? 0.0;
       final double balanceAmount = double.tryParse(vendorBalanceAmountController.text.trim()) ?? 0.0;
-      final DateTime dateTimeNow = DateTime.now();
 
       List<String> keywords = generateSearchKeywords(name, phone);
 
@@ -1075,12 +1076,14 @@ class MainProvider with ChangeNotifier {
       await db.collection('VENDORS').doc(vendorId).set(vendor, SetOptions(merge: true));
 
       if (isVendorEditing && vendorCurrentPageIndex > 0) {
+        showError(context, 'Vendor edited successfully', backgroundColor: Colors.green);
         refreshCurrentVendorPage();
       } else {
+        showError(context, 'Vendor added successfully', backgroundColor: Colors.green);
         fetchInitialVendors();
       }
 
-      showError(context, isVendorEditing ? 'Vendor edited successfully' : 'Vendor added successfully', backgroundColor: Colors.green);
+      // showError(context, isVendorEditing ? 'Vendor edited successfully' : 'Vendor added successfully', backgroundColor: Colors.green);
 
       clearVendorControllers();
       return true;
@@ -1210,6 +1213,160 @@ class MainProvider with ChangeNotifier {
     vendorBalanceAmountController.clear();
   }
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //// LEDGER ADDING PROCESS ////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  final TextEditingController ledgerNameController = TextEditingController();
+  final TextEditingController ledgerOpeningBalanceController = TextEditingController();
+
+  // FocusNodes
+  final FocusNode ledgerNameFocus = FocusNode();
+  final FocusNode ledgerOpeningBalanceFocus = FocusNode();
+
+  // Error Strings
+  String? ledgerNameError = '';
+  String? ledgerOpeningBalanceError = '';
+  String? selectedGroupError = '';
+
+  // Selected group name and group id
+  String selectedGroupName = '';
+  String selectedGroupId = '';
+
+  // State flags
+  bool isLedgerEditing = false;
+  String ledgerId = '';
+  bool isLoadingLedgerAdding = false;
+
+  void setLoadingLedger(bool value) {
+    isLoadingLedgerAdding = value;
+    notifyListeners();
+  }
+
+  void setLedgerIsEditing(bool value, String newLedgerId) {
+    isLedgerEditing = value;
+    ledgerId = newLedgerId;
+    notifyListeners();
+  }
+
+  void setSelectedGroup(String newGroupName, String newGroupId) {
+    selectedGroupName = newGroupName;
+    selectedGroupId = newGroupId;
+    notifyListeners();
+  }
+
+  bool validateLedgerForm() {
+    bool isValid = true;
+
+    if (ledgerNameController.text.trim().isEmpty) {
+      ledgerNameError = 'Ledger name is required';
+      isValid = false;
+    } else {
+      ledgerNameError = '';
+    }
+
+    String openingBalance = ledgerOpeningBalanceController.text.trim();
+    if (openingBalance.isEmpty) {
+      ledgerOpeningBalanceError = 'Opening balance is required';
+      isValid = false;
+    } else if (double.tryParse(openingBalance) == null) {
+      ledgerOpeningBalanceError = 'Enter a valid number';
+      isValid = false;
+    } else {
+      ledgerOpeningBalanceError = '';
+    }
+
+    if (selectedGroupName.isEmpty) {
+      selectedGroupError = 'Please select a group';
+      isValid = false;
+    } else {
+      selectedGroupError = '';
+    }
+
+    notifyListeners();
+    return isValid;
+  }
+
+  void setLedgerControllers({required String name, required double openingBalance, required String groupName, required String groupId}) {
+    ledgerNameController.text = name;
+    ledgerOpeningBalanceController.text = openingBalance.toString();
+    selectedGroupName = groupName;
+    selectedGroupId = groupId;
+  }
+
+  void clearLedgerControllers() {
+    ledgerNameController.clear();
+    ledgerOpeningBalanceController.clear();
+    selectedGroupName = '';
+    selectedGroupId = '';
+  }
+
+  Future<bool> addLedger({required BuildContext context, required String addedById, required String addedByName, required String companyId, required String companyName}) async {
+    try {
+      setLoadingLedger(true);
+
+      final String name = ledgerNameController.text.trim();
+      final double openingBalance = double.tryParse(ledgerOpeningBalanceController.text.trim()) ?? 0.0;
+      final List<String> keywords = generateSearchKeywords(name, selectedGroupName);
+
+      final Map<String, dynamic> metaData =
+          isLedgerEditing
+              ? {'EDITED_BY_ID': addedById, 'EDITED_BY_NAME': addedByName, 'EDITED_ON': FieldValue.serverTimestamp()}
+              : {'ADDED_BY_ID': addedById, 'ADDED_BY_NAME': addedByName, 'ADDED_ON': FieldValue.serverTimestamp()};
+
+      final Map<String, dynamic> ledger = {
+        'LEDGER_ID': ledgerId,
+        'NAME': name,
+        'OPENING_BALANCE': openingBalance,
+        'GROUP_NAME': selectedGroupName,
+        'GROUP_ID': selectedGroupId,
+        'COMPANY_ID': companyId,
+        'COMPANY_NAME': companyName,
+        'KEY_WORDS': keywords,
+        'STATUS': 'ACTIVE',
+        ...metaData,
+      };
+
+      await db.collection('LEDGERS').doc(ledgerId).set(ledger, SetOptions(merge: true));
+
+      if (isLedgerEditing) {
+        print('sdfghjkl');
+        showError(navigatorKey.currentContext!, 'Ledger edited successfully', backgroundColor: Colors.green);
+        refreshCurrentLedgerPage();
+      } else {
+        print('nnnnnnnnnnnnnn');
+        showError(navigatorKey.currentContext!, 'Ledger added successfully', backgroundColor: Colors.green);
+        fetchInitialLedgers();
+      }
+
+      return true;
+    } catch (e) {
+      showError(navigatorKey.currentContext!, 'Failed to add ledger: $e', backgroundColor: Colors.red);
+      return false;
+    } finally {
+      back(navigatorKey.currentContext!);
+      setLoadingLedger(false);
+      clearLedgerControllers();
+    }
+  }
+
+  Future<void> deleteLedger(BuildContext context, String ledgerId) async {
+    setLoadingLedger(true);
+
+    try {
+      await db.collection('LEDGERS').doc(ledgerId).set({'STATUS': 'DELETE'}, SetOptions(merge: true));
+
+      back(context);
+      showError(context, 'Ledger deleted successfully', backgroundColor: Colors.green);
+    } catch (e) {
+      back(context);
+      debugPrint('Error deleting ledger: $e');
+      showError(context, 'Error deleting ledger', backgroundColor: Colors.red);
+    } finally {
+      setLoadingLedger(false);
+    }
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////
   /// USERS PAGINATION FUNCTIONS /////////////////////////////////////////////////////////
@@ -1325,6 +1482,7 @@ class MainProvider with ChangeNotifier {
   List<List<DocumentSnapshot>> vendorPages = [];
   int vendorCurrentPageIndex = 0;
   DocumentSnapshot? vendorLastDocument;
+  DocumentSnapshot? vendorStartDocument;
   bool isLoadingVendorsPagination = false;
   int vendorDocCount = 0;
   final int vendorPageSize = 10;
@@ -1349,6 +1507,7 @@ class MainProvider with ChangeNotifier {
         vendorPages = [snapshot.docs];
         vendorCurrentPageIndex = 0;
         vendorLastDocument = snapshot.docs.last;
+        vendorStartDocument = snapshot.docs.first;
         _processVendors(snapshot.docs);
       } else {
         vendorList.clear();
@@ -1378,6 +1537,7 @@ class MainProvider with ChangeNotifier {
       if (snapshot.docs.isNotEmpty) {
         vendorPages.add(snapshot.docs);
         vendorLastDocument = snapshot.docs.last;
+        vendorStartDocument = snapshot.docs.first;
       }
     } catch (e) {
       print("Error fetching next vendor page: $e");
@@ -1422,36 +1582,188 @@ class MainProvider with ChangeNotifier {
     isLoadingVendorsPagination = true;
     notifyListeners();
 
+    print("🔄 Refreshing current vendor page... ${vendorLastDocument!.id}");
+
     try {
-      final currentPageDocs = vendorPages[vendorCurrentPageIndex];
+      // Build the Firestore query
+      Query query = db.collection("VENDORS").where('STATUS', isEqualTo: 'ACTIVE').orderBy("ADDED_ON", descending: true).startAtDocument(vendorStartDocument!).limit(vendorPageSize);
 
-      if (currentPageDocs.isEmpty) return;
+      print("📤 Sending query to Firestore...");
 
-      // Use the first document of current page to get consistent results
-      final DocumentSnapshot firstDoc = currentPageDocs.first;
-
-      print('firstDoc.............: $firstDoc');
-
-      Query query = db.collection("VENDORS").where('STATUS', isEqualTo: 'ACTIVE').orderBy("ADDED_ON", descending: true).startAtDocument(firstDoc).limit(vendorPageSize);
-
+      // Fetch data
       final snapshot = await query.get();
 
+      print("📥 Data fetched. Number of documents: ${snapshot.docs.length}");
+
       if (snapshot.docs.isNotEmpty) {
+        print("✅ Snapshot is not empty. Updating page ${vendorCurrentPageIndex}");
+
+        // Replace the current page in vendorPages
         vendorPages[vendorCurrentPageIndex] = snapshot.docs;
 
-        // Update the vendorList with all pages combined
-        _processVendors(vendorPages.expand((page) => page).toList());
+        // Update the last document pointer for pagination
+        vendorLastDocument = snapshot.docs.last;
+        vendorStartDocument = snapshot.docs.first;
+
+        _processVendors(vendorPages[vendorCurrentPageIndex]);
+
+        print("🔁 Vendor list successfully updated and flattened.");
+      } else {
+        print("⚠️ Snapshot is empty. No vendors found in refresh.");
       }
     } catch (e) {
-      print("Error refreshing current vendor page: $e");
+      print("❌ Error refreshing current vendor page: $e");
     } finally {
       isLoadingVendorsPagination = false;
       notifyListeners();
+      print("✅ Finished refreshCurrentVendorPage()");
     }
   }
 
   void _processVendors(List<DocumentSnapshot> docs) {
     vendorList = docs.map((doc) => VendorModel.from(doc.data() as Map<String, dynamic>)).toList();
+    notifyListeners();
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+  //// LEDGER PAGINATION FUNCTIONS ///////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  List<List<DocumentSnapshot>> ledgerPages = [];
+  int ledgerCurrentPageIndex = 0;
+  DocumentSnapshot? ledgerLastDocument;
+  DocumentSnapshot? ledgerStartDocument;
+  bool isLoadingLedgersPagination = false;
+  int ledgerDocCount = 0;
+  final int ledgerPageSize = 10;
+  List<LedgerModel> ledgerList = [];
+
+  TextEditingController ledgersSearchController = TextEditingController();
+
+  Future<void> fetchInitialLedgers() async {
+    isLoadingLedgersPagination = true;
+    notifyListeners();
+
+    try {
+      Query query = db.collection("LEDGERS").where('STATUS', isEqualTo: 'ACTIVE').orderBy("ADDED_ON", descending: true).limit(ledgerPageSize);
+
+      if (ledgersSearchController.text.isNotEmpty) {
+        query = query.where('KEY_WORDS', arrayContains: ledgersSearchController.text.toLowerCase());
+      }
+
+      final snapshot = await query.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        ledgerPages = [snapshot.docs];
+        ledgerCurrentPageIndex = 0;
+        ledgerLastDocument = snapshot.docs.last;
+        ledgerStartDocument = snapshot.docs.first;
+        _processLedgers(snapshot.docs);
+      } else {
+        ledgerList.clear();
+      }
+
+      final countSnap = await db.collection("LEDGERS").where('STATUS', isEqualTo: 'ACTIVE').count().get();
+      ledgerDocCount = countSnap.count ?? 0;
+    } catch (e) {
+      print("Error fetching initial ledgers: $e");
+      isLoadingLedgersPagination = false;
+      notifyListeners();
+    } finally {
+      isLoadingLedgersPagination = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchNextLedgers() async {
+    if (ledgerLastDocument == null && ledgerPages.isNotEmpty) return;
+
+    isLoadingLedgersPagination = true;
+    notifyListeners();
+
+    try {
+      Query query = db.collection("LEDGERS").where('STATUS', isEqualTo: 'ACTIVE').orderBy("ADDED_ON", descending: true).startAfterDocument(ledgerLastDocument!).limit(ledgerPageSize);
+
+      final snapshot = await query.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        ledgerPages.add(snapshot.docs);
+        ledgerLastDocument = snapshot.docs.last;
+        ledgerStartDocument = snapshot.docs.first;
+      }
+    } catch (e) {
+      print("Error fetching next ledger page: $e");
+    } finally {
+      isLoadingLedgersPagination = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchLedgersAtPage(int pageIndex) async {
+    if (pageIndex < 0 || pageIndex >= (ledgerDocCount / ledgerPageSize).ceil()) return;
+
+    isLoadingLedgersPagination = true;
+    notifyListeners();
+
+    if (pageIndex < ledgerPages.length) {
+      ledgerCurrentPageIndex = pageIndex;
+      _processLedgers(ledgerPages[pageIndex]);
+      isLoadingLedgersPagination = false;
+      notifyListeners();
+      return;
+    }
+
+    try {
+      for (int i = ledgerPages.length; i <= pageIndex; i++) {
+        await fetchNextLedgers();
+      }
+
+      if (pageIndex < ledgerPages.length) {
+        ledgerCurrentPageIndex = pageIndex;
+        _processLedgers(ledgerPages[pageIndex]);
+      }
+    } catch (e) {
+      print("Pagination error: $e");
+    } finally {
+      isLoadingLedgersPagination = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> refreshCurrentLedgerPage() async {
+    isLoadingLedgersPagination = true;
+    notifyListeners();
+
+    print("🔄 Refreshing current ledger page...");
+
+    try {
+      Query query = db.collection("LEDGERS").where('STATUS', isEqualTo: 'ACTIVE').orderBy("ADDED_ON", descending: true).startAtDocument(ledgerStartDocument!).limit(ledgerPageSize);
+
+      final snapshot = await query.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        print("✅ Refreshing with ${snapshot.docs.length} documents");
+
+        ledgerPages[ledgerCurrentPageIndex] = snapshot.docs;
+        ledgerLastDocument = snapshot.docs.last;
+        ledgerStartDocument = snapshot.docs.first;
+
+        _processLedgers(ledgerPages[ledgerCurrentPageIndex]);
+      } else {
+        print("⚠️ No ledgers found in current page refresh.");
+      }
+    } catch (e) {
+      print("❌ Error refreshing ledger page: $e");
+    } finally {
+      isLoadingLedgersPagination = false;
+      notifyListeners();
+    }
+  }
+
+  void _processLedgers(List<DocumentSnapshot> docs) {
+    ledgerList = docs.map((doc) => LedgerModel.from(doc.data() as Map<String, dynamic>)).toList();
     notifyListeners();
   }
 
